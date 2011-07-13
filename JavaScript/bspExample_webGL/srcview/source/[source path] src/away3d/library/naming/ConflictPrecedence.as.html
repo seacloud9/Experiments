@@ -1,0 +1,36 @@
+<!-- saved from url=(0014)about:internet -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>ConflictPrecedence.as</title>
+<link rel="stylesheet" type="text/css" href="../../../../../SourceStyles.css"/>
+</head>
+
+<body><pre><span class="ActionScriptpackage">package</span> <span class="ActionScriptDefault_Text">away3d</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">library</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">naming</span>
+<span class="ActionScriptBracket/Brace">{</span>
+    <span class="ActionScriptASDoc">/**
+     * Enumaration class for precedence when resolving naming conflicts in the library.
+     * 
+     * @see away3d.library.AssetLibrary.conflictPrecedence
+     * @see away3d.library.AssetLibrary.conflictStrategy
+     * @see away3d.library.naming.ConflictStrategy
+    */</span>
+    <span class="ActionScriptReserved">public</span> <span class="ActionScriptclass">class</span> <span class="ActionScriptDefault_Text">ConflictPrecedence</span>
+    <span class="ActionScriptBracket/Brace">{</span>
+        <span class="ActionScriptASDoc">/**
+         * Signals that in a conflict, the previous owner of the conflicting name
+         * should be favored (and keep it's name) and that the newly renamed asset
+         * is reverted to a non-conflicting name.
+        */</span>
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptReserved">static</span> <span class="ActionScriptReserved">const</span> <span class="ActionScriptDefault_Text">FAVOR_OLD</span> : <span class="ActionScriptDefault_Text">String</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptString">'favorOld'</span>;
+        
+        <span class="ActionScriptASDoc">/**
+         * Signales that in a conflict, the newly renamed asset is favored (and keeps
+         * it's newly defined name) and that the previous owner of that name gets
+         * renamed to a non-conflicting name.
+        */</span>
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptReserved">static</span> <span class="ActionScriptReserved">const</span> <span class="ActionScriptDefault_Text">FAVOR_NEW</span> : <span class="ActionScriptDefault_Text">String</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptString">'favorNew'</span>;
+    <span class="ActionScriptBracket/Brace">}</span>
+<span class="ActionScriptBracket/Brace">}</span></pre></body>
+</html>

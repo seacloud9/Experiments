@@ -1,0 +1,184 @@
+<!-- saved from url=(0014)about:internet -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>SkeletonAnimation.as</title>
+<link rel="stylesheet" type="text/css" href="../../../../../SourceStyles.css"/>
+</head>
+
+<body><pre><span class="ActionScriptpackage">package</span> <span class="ActionScriptDefault_Text">away3d</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">animators</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">data</span>
+<span class="ActionScriptBracket/Brace">{</span>
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">away3d</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">animators</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">skeleton</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">Skeleton</span>;
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">away3d</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">arcane</span>;
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">away3d</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">materials</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">passes</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">MaterialPassBase</span>;
+    
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">flash</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">display3D</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">Context3D</span>;
+
+    <span class="ActionScriptReserved">use</span> <span class="ActionScriptReserved">namespace</span> <span class="ActionScriptDefault_Text">arcane</span>;
+
+    <span class="ActionScriptASDoc">/**
+     * SkeletonAnimation defines an animation type that blends different skeletal poses into a final pose and transforms
+     * the geometries' vertices along the skeleton. Each vertex is bound to a number of skeleton joints with a number of
+     * weights, which define how the skeleton influences the vertex position.
+     *
+     * @see away3d.core.animation.skeleton.Skeleton
+     * @see away3d.core.animation.skeleton.Joint
+     */</span>
+    <span class="ActionScriptReserved">public</span> <span class="ActionScriptclass">class</span> <span class="ActionScriptDefault_Text">SkeletonAnimation</span> <span class="ActionScriptReserved">extends</span> <span class="ActionScriptDefault_Text">AnimationBase</span>
+    <span class="ActionScriptBracket/Brace">{</span>
+        <span class="ActionScriptReserved">private</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_forceCPU</span> : <span class="ActionScriptDefault_Text">Boolean</span>;
+        <span class="ActionScriptReserved">private</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_usesCPU</span> : <span class="ActionScriptDefault_Text">Boolean</span>;
+        <span class="ActionScriptReserved">private</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_skeleton</span> : <span class="ActionScriptDefault_Text">Skeleton</span>;
+        <span class="ActionScriptReserved">private</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_nullAnimation</span> : <span class="ActionScriptDefault_Text">NullAnimation</span>;
+        <span class="ActionScriptReserved">private</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_jointsPerVertex</span> : <span class="ActionScriptDefault_Text">uint</span>;
+
+        <span class="ActionScriptASDoc">/**
+         * Creates a SkeletonAnimation instance.
+         * @param skeleton The skeleton that's used for this SkeletonAnimation instance.
+         * @param jointsPerVertex The amount of joints that can be linked to a vertex.
+         */</span>
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">SkeletonAnimation</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">skeleton</span> : <span class="ActionScriptDefault_Text">Skeleton</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">jointsPerVertex</span> : <span class="ActionScriptDefault_Text">uint</span> <span class="ActionScriptOperator">=</span> 4<span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">forceCPU</span> : <span class="ActionScriptDefault_Text">Boolean</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptReserved">false</span><span class="ActionScriptBracket/Brace">)</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptDefault_Text">_forceCPU</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">_usesCPU</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">forceCPU</span>;
+            <span class="ActionScriptDefault_Text">_skeleton</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">skeleton</span>;
+            <span class="ActionScriptDefault_Text">_jointsPerVertex</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">jointsPerVertex</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptASDoc">/**
+         * Indicates whether or not the vertex transformation happens on CPU or GPU. Returns false if it cannot run on GPU,
+         * due to too many joints or too many joints per vertex.
+         */</span>
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptReserved">get</span> <span class="ActionScriptDefault_Text">usesCPU</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">Boolean</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptDefault_Text">_usesCPU</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptASDoc">/**
+         * The amount of joints that can be linked to a vertex.
+         */</span>
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptReserved">get</span> <span class="ActionScriptDefault_Text">jointsPerVertex</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">uint</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptDefault_Text">_jointsPerVertex</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptReserved">set</span> <span class="ActionScriptDefault_Text">jointsPerVertex</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">value</span> : <span class="ActionScriptDefault_Text">uint</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptReserved">void</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptDefault_Text">_jointsPerVertex</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">value</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptASDoc">/**
+         * The skeleton that's used for this SkeletonAnimation instance.
+         */</span>
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptReserved">get</span> <span class="ActionScriptDefault_Text">skeleton</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">Skeleton</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptDefault_Text">_skeleton</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptReserved">set</span> <span class="ActionScriptDefault_Text">skeleton</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">value</span> : <span class="ActionScriptDefault_Text">Skeleton</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptReserved">void</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptDefault_Text">_skeleton</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">value</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptASDoc">/**
+         * The amount of joints in the skeleton.
+         */</span>
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptReserved">get</span> <span class="ActionScriptDefault_Text">numJoints</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">uint</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptDefault_Text">_skeleton</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">numJoints</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptASDoc">/**
+         * @inheritDoc
+         */</span>
+        <span class="ActionScriptReserved">override</span> <span class="ActionScriptDefault_Text">arcane</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">deactivate</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">context3D</span> : <span class="ActionScriptDefault_Text">Context3D</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">pass</span> : <span class="ActionScriptDefault_Text">MaterialPassBase</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptReserved">void</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">_usesCPU</span><span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptReserved">return</span>;
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">streamOffset</span> : <span class="ActionScriptDefault_Text">uint</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">pass</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">numUsedStreams</span>;
+            <span class="ActionScriptDefault_Text">context3D</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">setVertexBufferAt</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">streamOffset</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptReserved">null</span><span class="ActionScriptBracket/Brace">)</span>;
+            <span class="ActionScriptDefault_Text">context3D</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">setVertexBufferAt</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">streamOffset</span> <span class="ActionScriptOperator">+</span> 1<span class="ActionScriptOperator">,</span> <span class="ActionScriptReserved">null</span><span class="ActionScriptBracket/Brace">)</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptASDoc">/**
+         * @inheritDoc
+         */</span>
+        <span class="ActionScriptReserved">override</span> <span class="ActionScriptDefault_Text">arcane</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">createAnimationState</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">AnimationStateBase</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptReserved">new</span> <span class="ActionScriptDefault_Text">SkeletonAnimationState</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptReserved">this</span><span class="ActionScriptBracket/Brace">)</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+
+        <span class="ActionScriptASDoc">/**
+         * @inheritDoc
+         */</span>
+        <span class="ActionScriptReserved">override</span> <span class="ActionScriptDefault_Text">arcane</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">getAGALVertexCode</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">pass</span> : <span class="ActionScriptDefault_Text">MaterialPassBase</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">String</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">attributes</span> : <span class="ActionScriptDefault_Text">Array</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">pass</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">getAnimationSourceRegisters</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">len</span> : <span class="ActionScriptDefault_Text">uint</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">attributes</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">length</span>;
+
+            <span class="ActionScriptComment">// if too many bones to fit in the constants, fall back to cpu animation :(
+</span>            <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">_forceCPU</span> <span class="ActionScriptOperator">||</span> <span class="ActionScriptDefault_Text">_jointsPerVertex</span> <span class="ActionScriptOperator">&gt;</span> 4 <span class="ActionScriptOperator">||</span> <span class="ActionScriptDefault_Text">pass</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">numUsedVertexConstants</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">_skeleton</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">numJoints</span> <span class="ActionScriptOperator">*</span> 3 <span class="ActionScriptOperator">&gt;</span> 128<span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptBracket/Brace">{</span>
+                <span class="ActionScriptDefault_Text">_usesCPU</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptReserved">true</span>;
+                <span class="ActionScriptDefault_Text">_nullAnimation</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptReserved">new</span> <span class="ActionScriptDefault_Text">NullAnimation</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+                <span class="ActionScriptReserved">return</span> <span class="ActionScriptDefault_Text">_nullAnimation</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">getAGALVertexCode</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">pass</span><span class="ActionScriptBracket/Brace">)</span>;
+            <span class="ActionScriptBracket/Brace">}</span>
+
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">targets</span> : <span class="ActionScriptDefault_Text">Array</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">pass</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">getAnimationTargetRegisters</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">indexOffset0</span> : <span class="ActionScriptDefault_Text">uint</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">pass</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">numUsedVertexConstants</span>;
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">indexOffset1</span> : <span class="ActionScriptDefault_Text">uint</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">indexOffset0</span> <span class="ActionScriptOperator">+</span> 1;
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">indexOffset2</span> : <span class="ActionScriptDefault_Text">uint</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">indexOffset0</span> <span class="ActionScriptOperator">+</span> 2;
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">indexStream</span> : <span class="ActionScriptDefault_Text">String</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptString">"va"</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">pass</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">numUsedStreams</span>;
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">weightStream</span> : <span class="ActionScriptDefault_Text">String</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptString">"va"</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">pass</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">numUsedStreams</span> <span class="ActionScriptOperator">+</span> 1<span class="ActionScriptBracket/Brace">)</span>;
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">indices</span> : <span class="ActionScriptDefault_Text">Array</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptBracket/Brace">[</span> <span class="ActionScriptDefault_Text">indexStream</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptString">".x"</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">indexStream</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptString">".y"</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">indexStream</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptString">".z"</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">indexStream</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptString">".w"</span> <span class="ActionScriptBracket/Brace">]</span>;
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">weights</span> : <span class="ActionScriptDefault_Text">Array</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptBracket/Brace">[</span> <span class="ActionScriptDefault_Text">weightStream</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptString">".x"</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">weightStream</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptString">".y"</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">weightStream</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptString">".z"</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">weightStream</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptString">".w"</span> <span class="ActionScriptBracket/Brace">]</span>;
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">temp1</span> : <span class="ActionScriptDefault_Text">String</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">findTempReg</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">targets</span><span class="ActionScriptBracket/Brace">)</span>;
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">temp2</span> : <span class="ActionScriptDefault_Text">String</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">findTempReg</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">targets</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">temp1</span><span class="ActionScriptBracket/Brace">)</span>;
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">dot</span> : <span class="ActionScriptDefault_Text">String</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptString">"dp4"</span>;
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">code</span> : <span class="ActionScriptDefault_Text">String</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptString">""</span>;
+
+            <span class="ActionScriptReserved">for</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">i</span> : <span class="ActionScriptDefault_Text">uint</span> <span class="ActionScriptOperator">=</span> 0; <span class="ActionScriptDefault_Text">i</span> <span class="ActionScriptOperator">&lt;</span> <span class="ActionScriptDefault_Text">len</span>; <span class="ActionScriptOperator">++</span><span class="ActionScriptDefault_Text">i</span><span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptBracket/Brace">{</span>
+
+                <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">src</span> : <span class="ActionScriptDefault_Text">String</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">attributes</span><span class="ActionScriptBracket/Brace">[</span><span class="ActionScriptDefault_Text">i</span><span class="ActionScriptBracket/Brace">]</span>;
+
+                <span class="ActionScriptReserved">for</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">j</span> : <span class="ActionScriptDefault_Text">uint</span> <span class="ActionScriptOperator">=</span> 0; <span class="ActionScriptDefault_Text">j</span> <span class="ActionScriptOperator">&lt;</span> <span class="ActionScriptDefault_Text">_jointsPerVertex</span>; <span class="ActionScriptOperator">++</span><span class="ActionScriptDefault_Text">j</span><span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptBracket/Brace">{</span>
+                    <span class="ActionScriptDefault_Text">code</span> <span class="ActionScriptOperator">+=</span>    <span class="ActionScriptDefault_Text">dot</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptString">" "</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">temp1</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptString">".x, "</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">src</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptString">", vc["</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">indices</span><span class="ActionScriptBracket/Brace">[</span><span class="ActionScriptDefault_Text">j</span><span class="ActionScriptBracket/Brace">]</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptString">"+"</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">indexOffset0</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptString">"]        \n"</span> <span class="ActionScriptOperator">+</span>
+                            <span class="ActionScriptDefault_Text">dot</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptString">" "</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">temp1</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptString">".y, "</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">src</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptString">", vc["</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">indices</span><span class="ActionScriptBracket/Brace">[</span><span class="ActionScriptDefault_Text">j</span><span class="ActionScriptBracket/Brace">]</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptString">"+"</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">indexOffset1</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptString">"]        \n"</span> <span class="ActionScriptOperator">+</span>
+                            <span class="ActionScriptDefault_Text">dot</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptString">" "</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">temp1</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptString">".z, "</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">src</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptString">", vc["</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">indices</span><span class="ActionScriptBracket/Brace">[</span><span class="ActionScriptDefault_Text">j</span><span class="ActionScriptBracket/Brace">]</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptString">"+"</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">indexOffset2</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptString">"]        \n"</span> <span class="ActionScriptOperator">+</span>
+                            <span class="ActionScriptString">"mov "</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">temp1</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptString">".w, "</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">src</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptString">".w        \n"</span> <span class="ActionScriptOperator">+</span>
+                            <span class="ActionScriptString">"mul "</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">temp1</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptString">", "</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">temp1</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptString">", "</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">weights</span><span class="ActionScriptBracket/Brace">[</span><span class="ActionScriptDefault_Text">j</span><span class="ActionScriptBracket/Brace">]</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptString">"\n"</span>;    <span class="ActionScriptComment">// apply weight
+</span>
+                    <span class="ActionScriptComment">// add or mov to target. Need to write to a temp reg first, because an output can be a target
+</span>                    <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">j</span> <span class="ActionScriptOperator">==</span> 0<span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptDefault_Text">code</span> <span class="ActionScriptOperator">+=</span> <span class="ActionScriptString">"mov "</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">temp2</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptString">", "</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">temp1</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptString">"\n"</span>;
+                    <span class="ActionScriptReserved">else</span> <span class="ActionScriptDefault_Text">code</span> <span class="ActionScriptOperator">+=</span> <span class="ActionScriptString">"add "</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">temp2</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptString">", "</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">temp2</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptString">", "</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">temp1</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptString">"\n"</span>;
+                <span class="ActionScriptBracket/Brace">}</span>
+                <span class="ActionScriptComment">// switch to dp3 once positions have been transformed, from now on, it should only be vectors instead of points
+</span>                <span class="ActionScriptDefault_Text">dot</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptString">"dp3"</span>;
+                <span class="ActionScriptDefault_Text">code</span> <span class="ActionScriptOperator">+=</span> <span class="ActionScriptString">"mov "</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">targets</span><span class="ActionScriptBracket/Brace">[</span><span class="ActionScriptDefault_Text">i</span><span class="ActionScriptBracket/Brace">]</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptString">", "</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">temp2</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptString">"\n"</span>;
+            <span class="ActionScriptBracket/Brace">}</span>
+
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptDefault_Text">code</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptASDoc">/**
+         * Retrieves a temporary register that's still free.
+         * @param exclude An array of non-free temporary registers
+         * @param excludeAnother An additional register that's not free
+         * @return A temporary register that can be used
+         */</span>
+        <span class="ActionScriptReserved">private</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">findTempReg</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">exclude</span> : <span class="ActionScriptDefault_Text">Array</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">excludeAnother</span> : <span class="ActionScriptDefault_Text">String</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptReserved">null</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">String</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">i</span> : <span class="ActionScriptDefault_Text">uint</span>;
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">reg</span> : <span class="ActionScriptDefault_Text">String</span>;
+
+            <span class="ActionScriptReserved">while</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptReserved">true</span><span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptBracket/Brace">{</span>
+                <span class="ActionScriptDefault_Text">reg</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptString">"vt"</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">i</span>;
+                <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">exclude</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">indexOf</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">reg</span><span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptOperator">==</span> <span class="ActionScriptOperator">-</span>1 <span class="ActionScriptOperator">&amp;&amp;</span> <span class="ActionScriptDefault_Text">excludeAnother</span> <span class="ActionScriptOperator">!=</span> <span class="ActionScriptDefault_Text">reg</span><span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptReserved">return</span> <span class="ActionScriptDefault_Text">reg</span>;
+                <span class="ActionScriptOperator">++</span><span class="ActionScriptDefault_Text">i</span>;
+            <span class="ActionScriptBracket/Brace">}</span>
+
+            <span class="ActionScriptComment">// can't be reached
+</span>            <span class="ActionScriptReserved">return</span> <span class="ActionScriptReserved">null</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+    <span class="ActionScriptBracket/Brace">}</span>
+<span class="ActionScriptBracket/Brace">}</span></pre></body>
+</html>

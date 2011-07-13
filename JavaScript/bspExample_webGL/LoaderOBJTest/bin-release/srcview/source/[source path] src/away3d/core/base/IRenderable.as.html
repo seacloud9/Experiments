@@ -1,0 +1,105 @@
+<!-- saved from url=(0014)about:internet -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>IRenderable.as</title>
+<link rel="stylesheet" type="text/css" href="../../../../../SourceStyles.css"/>
+</head>
+
+<body><pre><span class="ActionScriptpackage">package</span> <span class="ActionScriptDefault_Text">away3d</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">core</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">base</span>
+<span class="ActionScriptBracket/Brace">{</span>
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">away3d</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">entities</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">Entity</span>;
+
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">flash</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">display3D</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">Context3D</span>;
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">flash</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">display3D</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">IndexBuffer3D</span>;
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">flash</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">display3D</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">VertexBuffer3D</span>;
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">flash</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">geom</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">Matrix3D</span>;
+
+    <span class="ActionScriptASDoc">/**
+     * IRenderable provides an interface for objects that can be rendered in the rendering pipeline.
+     */</span>
+    <span class="ActionScriptReserved">public</span> <span class="ActionScriptinterface">interface</span> <span class="ActionScriptDefault_Text">IRenderable</span> <span class="ActionScriptReserved">extends</span> <span class="ActionScriptDefault_Text">IMaterialOwner</span>
+    <span class="ActionScriptBracket/Brace">{</span>
+        <span class="ActionScriptASDoc">/**
+         * The transformation matrix that transforms from model to world space.
+         */</span>
+        <span class="ActionScriptfunction">function</span> <span class="ActionScriptReserved">get</span> <span class="ActionScriptDefault_Text">sceneTransform</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">Matrix3D</span>;
+
+        <span class="ActionScriptASDoc">/**
+         * The inverse scene transform object that transforms from world to model space.
+         */</span>
+        <span class="ActionScriptfunction">function</span> <span class="ActionScriptReserved">get</span> <span class="ActionScriptDefault_Text">inverseSceneTransform</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">Matrix3D</span>;
+
+        <span class="ActionScriptASDoc">/**
+         * The model-view-projection (MVP) matrix used to transform from model to homogeneous projection space.
+         */</span>
+        <span class="ActionScriptfunction">function</span> <span class="ActionScriptReserved">get</span> <span class="ActionScriptDefault_Text">modelViewProjection</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">Matrix3D</span>;
+
+        <span class="ActionScriptASDoc">/**
+         * The distance of the IRenderable object to the view, used to sort per object.
+         */</span>
+        <span class="ActionScriptfunction">function</span> <span class="ActionScriptReserved">get</span> <span class="ActionScriptDefault_Text">zIndex</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">Number</span>;
+
+        <span class="ActionScriptASDoc">/**
+         * Indicates whether the IRenderable should trigger mouse events, and hence should be rendered for hit testing.
+         */</span>
+        <span class="ActionScriptfunction">function</span> <span class="ActionScriptReserved">get</span> <span class="ActionScriptDefault_Text">mouseEnabled</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">Boolean</span>;
+
+        <span class="ActionScriptASDoc">/**
+         * Indicates whether the IRenderable needs to provide mouse event details, such as position and uv coordinates.
+         */</span>
+        <span class="ActionScriptfunction">function</span> <span class="ActionScriptReserved">get</span> <span class="ActionScriptDefault_Text">mouseDetails</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">Boolean</span>;
+
+        <span class="ActionScriptASDoc">/**
+         * Retrieves the VertexBuffer3D object that contains vertex positions.
+         * @param context The Context3D for which we request the buffer
+         * @return The VertexBuffer3D object that contains vertex positions.
+         */</span>
+        <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">getVertexBuffer</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">context</span> : <span class="ActionScriptDefault_Text">Context3D</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">contextIndex</span> : <span class="ActionScriptDefault_Text">uint</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">VertexBuffer3D</span>;
+
+        <span class="ActionScriptASDoc">/**
+         * Retrieves the VertexBuffer3D object that contains texture coordinates.
+         * @param context The Context3D for which we request the buffer
+         * @return The VertexBuffer3D object that contains texture coordinates.
+         */</span>
+        <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">getUVBuffer</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">context</span> : <span class="ActionScriptDefault_Text">Context3D</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">contextIndex</span> : <span class="ActionScriptDefault_Text">uint</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">VertexBuffer3D</span>;
+
+        <span class="ActionScriptASDoc">/**
+         * Retrieves the VertexBuffer3D object that contains vertex normals.
+         * @param context The Context3D for which we request the buffer
+         * @return The VertexBuffer3D object that contains vertex normals.
+         */</span>
+        <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">getVertexNormalBuffer</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">context</span> : <span class="ActionScriptDefault_Text">Context3D</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">contextIndex</span> : <span class="ActionScriptDefault_Text">uint</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">VertexBuffer3D</span>;
+
+        <span class="ActionScriptASDoc">/**
+         * Retrieves the VertexBuffer3D object that contains vertex tangents.
+         * @param context The Context3D for which we request the buffer
+         * @return The VertexBuffer3D object that contains vertex tangents.
+         */</span>
+        <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">getVertexTangentBuffer</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">context</span> : <span class="ActionScriptDefault_Text">Context3D</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">contextIndex</span> : <span class="ActionScriptDefault_Text">uint</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">VertexBuffer3D</span>;
+
+        <span class="ActionScriptASDoc">/**
+         * Retrieves the VertexBuffer3D object that contains triangle indices.
+         * @param context The Context3D for which we request the buffer
+         * @return The VertexBuffer3D object that contains triangle indices.
+         */</span>
+        <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">getIndexBuffer</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">context</span> : <span class="ActionScriptDefault_Text">Context3D</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">contextIndex</span> : <span class="ActionScriptDefault_Text">uint</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">IndexBuffer3D</span>;
+
+        <span class="ActionScriptASDoc">/**
+         * The amount of triangles that comprise the IRenderable geometry.
+         */</span>
+        <span class="ActionScriptfunction">function</span> <span class="ActionScriptReserved">get</span> <span class="ActionScriptDefault_Text">numTriangles</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">uint</span>;
+
+        <span class="ActionScriptASDoc">/**
+         * The entity that that initially provided the IRenderable to the render pipeline.
+         */</span>
+        <span class="ActionScriptfunction">function</span> <span class="ActionScriptReserved">get</span> <span class="ActionScriptDefault_Text">sourceEntity</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">Entity</span>;
+
+        <span class="ActionScriptASDoc">/**
+         * Indicates whether the renderable can cast shadows
+         */</span>
+        <span class="ActionScriptfunction">function</span> <span class="ActionScriptReserved">get</span> <span class="ActionScriptDefault_Text">castsShadows</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">Boolean</span>;
+    <span class="ActionScriptBracket/Brace">}</span>
+<span class="ActionScriptBracket/Brace">}</span></pre></body>
+</html>

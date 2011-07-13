@@ -1,0 +1,123 @@
+<!-- saved from url=(0014)about:internet -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>DefaultRenderer.as</title>
+<link rel="stylesheet" type="text/css" href="../../../../../SourceStyles.css"/>
+</head>
+
+<body><pre><span class="ActionScriptpackage">package</span> <span class="ActionScriptDefault_Text">away3d</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">core</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">render</span>
+<span class="ActionScriptBracket/Brace">{</span>
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">away3d</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">arcane</span>;
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">away3d</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">cameras</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">Camera3D</span>;
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">away3d</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">core</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">base</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">IRenderable</span>;
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">away3d</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">core</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">data</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">RenderableListItem</span>;
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">away3d</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">core</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">managers</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">Stage3DProxy</span>;
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">away3d</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">core</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">traverse</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">EntityCollector</span>;
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">away3d</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">materials</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">MaterialBase</span>;
+
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">flash</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">display3D</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">Context3DBlendFactor</span>;
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">flash</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">display3D</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">Context3DCompareMode</span>;
+
+    <span class="ActionScriptReserved">use</span> <span class="ActionScriptReserved">namespace</span> <span class="ActionScriptDefault_Text">arcane</span>;
+
+    <span class="ActionScriptASDoc">/**
+     * The DefaultRenderer class provides the default rendering method. It renders the scene graph objects using the
+     * materials assigned to them.
+     */</span>
+    <span class="ActionScriptReserved">public</span> <span class="ActionScriptclass">class</span> <span class="ActionScriptDefault_Text">DefaultRenderer</span> <span class="ActionScriptReserved">extends</span> <span class="ActionScriptDefault_Text">RendererBase</span>
+    <span class="ActionScriptBracket/Brace">{</span>
+        <span class="ActionScriptReserved">private</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_activeMaterial</span> : <span class="ActionScriptDefault_Text">MaterialBase</span>;
+
+        <span class="ActionScriptASDoc">/**
+         * Creates a new DefaultRenderer object.
+         * @param antiAlias The amount of anti-aliasing to use.
+         * @param renderMode The render mode to use.
+         */</span>
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">DefaultRenderer</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">antiAlias</span> : <span class="ActionScriptDefault_Text">uint</span> <span class="ActionScriptOperator">=</span> 0<span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">renderMode</span> : <span class="ActionScriptDefault_Text">String</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptString">"auto"</span><span class="ActionScriptBracket/Brace">)</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">super</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">antiAlias</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptReserved">true</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">renderMode</span><span class="ActionScriptBracket/Brace">)</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+
+        <span class="ActionScriptDefault_Text">arcane</span> <span class="ActionScriptReserved">override</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptReserved">set</span> <span class="ActionScriptDefault_Text">stage3DProxy</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">value</span> : <span class="ActionScriptDefault_Text">Stage3DProxy</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptReserved">void</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">super</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">stage3DProxy</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">value</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptASDoc">/**
+         * @inheritDoc
+         */</span>
+        <span class="ActionScriptReserved">override</span> <span class="ActionScriptReserved">protected</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">draw</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">entityCollector</span> : <span class="ActionScriptDefault_Text">EntityCollector</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptReserved">void</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptDefault_Text">_context</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">setDepthTest</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptReserved">true</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">Context3DCompareMode</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">LESS</span><span class="ActionScriptBracket/Brace">)</span>;
+
+            <span class="ActionScriptDefault_Text">_context</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">setBlendFactors</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">Context3DBlendFactor</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">ONE</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">Context3DBlendFactor</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">ZERO</span><span class="ActionScriptBracket/Brace">)</span>;
+            <span class="ActionScriptDefault_Text">drawRenderables</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">entityCollector</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">opaqueRenderableHead</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">entityCollector</span><span class="ActionScriptBracket/Brace">)</span>;
+
+            <span class="ActionScriptDefault_Text">_context</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">setDepthTest</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptReserved">false</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">Context3DCompareMode</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">LESS</span><span class="ActionScriptBracket/Brace">)</span>;
+
+            <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">entityCollector</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">skyBox</span><span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptBracket/Brace">{</span>
+                <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">_activeMaterial</span><span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptDefault_Text">_activeMaterial</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">deactivate</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">_context</span><span class="ActionScriptBracket/Brace">)</span>;
+                <span class="ActionScriptDefault_Text">_activeMaterial</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptReserved">null</span>;
+                <span class="ActionScriptDefault_Text">drawSkyBox</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">entityCollector</span><span class="ActionScriptBracket/Brace">)</span>;
+            <span class="ActionScriptBracket/Brace">}</span>
+
+            <span class="ActionScriptDefault_Text">drawRenderables</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">entityCollector</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">blendedRenderableHead</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">entityCollector</span><span class="ActionScriptBracket/Brace">)</span>;
+
+            <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">_activeMaterial</span><span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptDefault_Text">_activeMaterial</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">deactivate</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">_context</span><span class="ActionScriptBracket/Brace">)</span>;
+            <span class="ActionScriptDefault_Text">_activeMaterial</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptReserved">null</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptASDoc">/**
+         * Draw the skybox if present.
+         * @param entityCollector The EntityCollector containing all potentially visible information.
+         */</span>
+        <span class="ActionScriptReserved">private</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">drawSkyBox</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">entityCollector</span> : <span class="ActionScriptDefault_Text">EntityCollector</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptReserved">void</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">skyBox</span> : <span class="ActionScriptDefault_Text">IRenderable</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">entityCollector</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">skyBox</span>;
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">material</span> : <span class="ActionScriptDefault_Text">MaterialBase</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">skyBox</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">material</span>;
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">camera</span> : <span class="ActionScriptDefault_Text">Camera3D</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">entityCollector</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">camera</span>;
+
+            <span class="ActionScriptDefault_Text">material</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">activatePass</span><span class="ActionScriptBracket/Brace">(</span>0<span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">_context</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">_contextIndex</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">camera</span><span class="ActionScriptBracket/Brace">)</span>;
+            <span class="ActionScriptDefault_Text">material</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">renderPass</span><span class="ActionScriptBracket/Brace">(</span>0<span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">skyBox</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">_context</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">_contextIndex</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">camera</span><span class="ActionScriptBracket/Brace">)</span>;
+            <span class="ActionScriptDefault_Text">material</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">deactivatePass</span><span class="ActionScriptBracket/Brace">(</span>0<span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">_context</span><span class="ActionScriptBracket/Brace">)</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptASDoc">/**
+         * Draw a list of renderables.
+         * @param renderables The renderables to draw.
+         * @param entityCollector The EntityCollector containing all potentially visible information.
+         */</span>
+        <span class="ActionScriptReserved">private</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">drawRenderables</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">item</span> : <span class="ActionScriptDefault_Text">RenderableListItem</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">entityCollector</span> : <span class="ActionScriptDefault_Text">EntityCollector</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptReserved">void</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">renderable</span> : <span class="ActionScriptDefault_Text">IRenderable</span>;
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">numPasses</span> : <span class="ActionScriptDefault_Text">uint</span>;
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">j</span> : <span class="ActionScriptDefault_Text">uint</span>;
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">camera</span> : <span class="ActionScriptDefault_Text">Camera3D</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">entityCollector</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">camera</span>;
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">item2</span> : <span class="ActionScriptDefault_Text">RenderableListItem</span>;
+
+            <span class="ActionScriptReserved">while</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">item</span><span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptBracket/Brace">{</span>
+                <span class="ActionScriptDefault_Text">_activeMaterial</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">item</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">renderable</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">material</span>;
+                <span class="ActionScriptDefault_Text">_activeMaterial</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">updateMaterial</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">_context</span><span class="ActionScriptBracket/Brace">)</span>;
+
+                <span class="ActionScriptDefault_Text">numPasses</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">_activeMaterial</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">numPasses</span>;
+                <span class="ActionScriptDefault_Text">j</span> <span class="ActionScriptOperator">=</span> 0;
+
+                <span class="ActionScriptReserved">do</span> <span class="ActionScriptBracket/Brace">{</span>
+                    <span class="ActionScriptDefault_Text">item2</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">item</span>;
+                    <span class="ActionScriptDefault_Text">_activeMaterial</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">activatePass</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">j</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">_context</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">_contextIndex</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">camera</span><span class="ActionScriptBracket/Brace">)</span>;
+                    <span class="ActionScriptReserved">do</span> <span class="ActionScriptBracket/Brace">{</span>
+                        <span class="ActionScriptDefault_Text">_activeMaterial</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">renderPass</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">j</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">item2</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">renderable</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">_context</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">_contextIndex</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">camera</span><span class="ActionScriptBracket/Brace">)</span>;
+                        <span class="ActionScriptDefault_Text">item2</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">item2</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">next</span>;
+                    <span class="ActionScriptBracket/Brace">}</span> <span class="ActionScriptReserved">while</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">item2</span> <span class="ActionScriptOperator">&amp;&amp;</span> <span class="ActionScriptDefault_Text">item2</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">renderable</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">material</span> <span class="ActionScriptOperator">==</span> <span class="ActionScriptDefault_Text">_activeMaterial</span><span class="ActionScriptBracket/Brace">)</span>;
+                    <span class="ActionScriptDefault_Text">_activeMaterial</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">deactivatePass</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">j</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">_context</span><span class="ActionScriptBracket/Brace">)</span>;
+                <span class="ActionScriptBracket/Brace">}</span> <span class="ActionScriptReserved">while</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptOperator">++</span><span class="ActionScriptDefault_Text">j</span> <span class="ActionScriptOperator">&lt;</span> <span class="ActionScriptDefault_Text">numPasses</span><span class="ActionScriptBracket/Brace">)</span>;
+
+                <span class="ActionScriptDefault_Text">item</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">item2</span>;
+            <span class="ActionScriptBracket/Brace">}</span>
+        <span class="ActionScriptBracket/Brace">}</span>
+    <span class="ActionScriptBracket/Brace">}</span>
+<span class="ActionScriptBracket/Brace">}</span></pre></body>
+</html>

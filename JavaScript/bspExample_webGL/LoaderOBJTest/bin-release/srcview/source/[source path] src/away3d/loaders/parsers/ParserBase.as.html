@@ -1,0 +1,364 @@
+<!-- saved from url=(0014)about:internet -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>ParserBase.as</title>
+<link rel="stylesheet" type="text/css" href="../../../../../SourceStyles.css"/>
+</head>
+
+<body><pre><span class="ActionScriptpackage">package</span> <span class="ActionScriptDefault_Text">away3d</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">loaders</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">parsers</span>
+<span class="ActionScriptBracket/Brace">{</span>
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">away3d</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">arcane</span>;
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">away3d</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">errors</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">AbstractMethodError</span>;
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">away3d</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">events</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">AssetEvent</span>;
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">away3d</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">events</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">ParserEvent</span>;
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">away3d</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">library</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">assets</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">AssetType</span>;
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">away3d</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">library</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">assets</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">IAsset</span>;
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">away3d</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">loaders</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">misc</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">ResourceDependency</span>;
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">away3d</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">loaders</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">parsers</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">data</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">DefaultBitmapData</span>;
+    
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">flash</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">display</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">BitmapData</span>;
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">flash</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">events</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">EventDispatcher</span>;
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">flash</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">events</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">TimerEvent</span>;
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">flash</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">net</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">URLRequest</span>;
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">flash</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">utils</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">ByteArray</span>;
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">flash</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">utils</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">Timer</span>;
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">flash</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">utils</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">getTimer</span>;
+    
+    <span class="ActionScriptReserved">use</span> <span class="ActionScriptReserved">namespace</span> <span class="ActionScriptDefault_Text">arcane</span>;
+    
+    <span class="ActionScriptASDoc">/**
+     * &lt;code&gt;ParserBase&lt;/code&gt; provides an abstract base class for objects that convert blocks of data to data structures
+     * supported by Away3D.
+     *
+     * If used by &lt;code&gt;AssetLoader&lt;/code&gt; to automatically determine the parser type, two static public methods should
+     * be implemented, with the following signatures:
+     *
+     * &lt;code&gt;public static function supportsType(extension : String) : Boolean&lt;/code&gt;
+     * Indicates whether or not a given file extension is supported by the parser.
+     *
+     * &lt;code&gt;public static function supportsData(data : *) : Boolean&lt;/code&gt;
+     * Tests whether a data block can be parsed by the parser.
+     *
+     * Furthermore, for any concrete subtype, the method &lt;code&gt;initHandle&lt;/code&gt; should be overridden to immediately
+     * create the object that will contain the parsed data. This allows &lt;code&gt;ResourceManager&lt;/code&gt; to return an object
+     * handle regardless of whether the object was loaded or not.
+     *
+     * @see away3d.loading.parsers.AssetLoader
+     * @see away3d.loading.ResourceManager
+     */</span>
+    <span class="ActionScriptReserved">public</span> <span class="ActionScriptclass">class</span> <span class="ActionScriptDefault_Text">ParserBase</span> <span class="ActionScriptReserved">extends</span> <span class="ActionScriptDefault_Text">EventDispatcher</span>
+    <span class="ActionScriptBracket/Brace">{</span>
+        <span class="ActionScriptReserved">protected</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_dataFormat</span> : <span class="ActionScriptDefault_Text">String</span>;
+        <span class="ActionScriptReserved">protected</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_byteData</span> : <span class="ActionScriptDefault_Text">ByteArray</span>;
+        <span class="ActionScriptReserved">protected</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_textData</span> : <span class="ActionScriptDefault_Text">String</span>;
+        <span class="ActionScriptReserved">protected</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_frameLimit</span> : <span class="ActionScriptDefault_Text">Number</span>;
+        <span class="ActionScriptReserved">protected</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_lastFrameTime</span> : <span class="ActionScriptDefault_Text">Number</span>;
+        
+        <span class="ActionScriptReserved">private</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_dependencies</span> : <span class="ActionScriptDefault_Text">Vector</span><span class="ActionScriptBracket/Brace">.&lt;</span><span class="ActionScriptDefault_Text">ResourceDependency</span><span class="ActionScriptBracket/Brace">&gt;</span>;
+        <span class="ActionScriptReserved">private</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_parsingPaused</span> : <span class="ActionScriptDefault_Text">Boolean</span>;
+        <span class="ActionScriptReserved">private</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_parsingComplete</span> : <span class="ActionScriptDefault_Text">Boolean</span>;
+        <span class="ActionScriptReserved">private</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_parsingFailure</span>:<span class="ActionScriptDefault_Text">Boolean</span>;
+        <span class="ActionScriptReserved">private</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_timer</span> : <span class="ActionScriptDefault_Text">Timer</span>;
+        
+        <span class="ActionScriptASDoc">/**
+         * Returned by &lt;code&gt;proceedParsing&lt;/code&gt; to indicate no more parsing is needed.
+         */</span>
+        <span class="ActionScriptReserved">protected</span> <span class="ActionScriptReserved">static</span> <span class="ActionScriptReserved">const</span> <span class="ActionScriptDefault_Text">PARSING_DONE</span> : <span class="ActionScriptDefault_Text">Boolean</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptReserved">true</span>;
+        
+        <span class="ActionScriptASDoc">/**
+         * Returned by &lt;code&gt;proceedParsing&lt;/code&gt; to indicate more parsing is needed, allowing asynchronous parsing.
+         */</span>
+        <span class="ActionScriptReserved">protected</span> <span class="ActionScriptReserved">static</span> <span class="ActionScriptReserved">const</span> <span class="ActionScriptDefault_Text">MORE_TO_PARSE</span> : <span class="ActionScriptDefault_Text">Boolean</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptReserved">false</span>;
+        
+        
+        <span class="ActionScriptASDoc">/**
+         * Creates a new ParserBase object
+         * @param format The data format of the file data to be parsed. Can be either &lt;code&gt;ParserDataFormat.BINARY&lt;/code&gt; or &lt;code&gt;ParserDataFormat.PLAIN_TEXT&lt;/code&gt;, and should be provided by the concrete subtype.
+         *
+         * @see away3d.loading.parsers.ParserDataFormat
+         */</span>
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">ParserBase</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">format</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptBracket/Brace">)</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptDefault_Text">_dataFormat</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">format</span>;
+            <span class="ActionScriptDefault_Text">_dependencies</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptReserved">new</span> <span class="ActionScriptDefault_Text">Vector</span><span class="ActionScriptBracket/Brace">.&lt;</span><span class="ActionScriptDefault_Text">ResourceDependency</span><span class="ActionScriptBracket/Brace">&gt;</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+        
+        <span class="ActionScriptASDoc">/**
+         * The url or id of the data or file to be parsed.
+         */</span>
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptReserved">get</span> <span class="ActionScriptDefault_Text">defaultBitmapData</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">BitmapData</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptDefault_Text">DefaultBitmapData</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">bitmapData</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+        
+        <span class="ActionScriptASDoc">/**
+         * Validates a bitmapData loaded before assigning to a default BitmapMaterial 
+         */</span>
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">isBitmapDataValid</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">bitmapData</span>: <span class="ActionScriptDefault_Text">BitmapData</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">Boolean</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">isValid</span>:<span class="ActionScriptDefault_Text">Boolean</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">DefaultBitmapData</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">isBitmapDataValid</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">bitmapData</span><span class="ActionScriptBracket/Brace">)</span>;
+            <span class="ActionScriptReserved">if</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptOperator">!</span><span class="ActionScriptDefault_Text">isValid</span><span class="ActionScriptBracket/Brace">)</span> <span class="ActionScripttrace">trace</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptString">"&gt;&gt; bitmap loaded is not having power of 2 dimensions or is higher than 4096"</span><span class="ActionScriptBracket/Brace">)</span>;
+            
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptDefault_Text">isValid</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+        
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptReserved">set</span> <span class="ActionScriptDefault_Text">parsingFailure</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">b</span>:<span class="ActionScriptDefault_Text">Boolean</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptReserved">void</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptDefault_Text">_parsingFailure</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">b</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptReserved">get</span> <span class="ActionScriptDefault_Text">parsingFailure</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">Boolean</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptDefault_Text">_parsingFailure</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+        
+        
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptReserved">get</span> <span class="ActionScriptDefault_Text">parsingPaused</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">Boolean</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptDefault_Text">_parsingPaused</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+        
+        
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptReserved">get</span> <span class="ActionScriptDefault_Text">parsingComplete</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">Boolean</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptDefault_Text">_parsingComplete</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+        
+        
+        <span class="ActionScriptASDoc">/**
+         * The data format of the file data to be parsed. Can be either &lt;code&gt;ParserDataFormat.BINARY&lt;/code&gt; or &lt;code&gt;ParserDataFormat.PLAIN_TEXT&lt;/code&gt;.
+         */</span>
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptReserved">get</span> <span class="ActionScriptDefault_Text">dataFormat</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">String</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptDefault_Text">_dataFormat</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+        
+        <span class="ActionScriptASDoc">/**
+         * Parse byte array (possibly containing plain text) asynchronously, meaning that
+         * the parser will periodically stop parsing so that the AVM may proceed to the
+         * next frame.
+         *
+         * @param bytes The byte array in which the loaded data resides.
+         * @param frameLimit number of milliseconds of parsing allowed per frame. The
+         * actual time spent on a frame can exceed this number since time-checks can
+         * only be performed between logical sections of the parsing procedure.
+         */</span>
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">parseBytesAsync</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">bytes</span> : <span class="ActionScriptDefault_Text">ByteArray</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">frameLimit</span> : <span class="ActionScriptDefault_Text">Number</span> <span class="ActionScriptOperator">=</span> 30<span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptReserved">void</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">_dataFormat</span> <span class="ActionScriptOperator">==</span> <span class="ActionScriptDefault_Text">ParserDataFormat</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">BINARY</span><span class="ActionScriptBracket/Brace">)</span>
+                <span class="ActionScriptDefault_Text">_byteData</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">bytes</span>;
+            <span class="ActionScriptReserved">else</span> <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">_dataFormat</span> <span class="ActionScriptOperator">==</span> <span class="ActionScriptDefault_Text">ParserDataFormat</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">PLAIN_TEXT</span><span class="ActionScriptBracket/Brace">)</span>
+                <span class="ActionScriptDefault_Text">_textData</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">bytes</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">readUTFBytes</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">bytes</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">bytesAvailable</span><span class="ActionScriptBracket/Brace">)</span>;
+            
+            <span class="ActionScriptDefault_Text">startParsing</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">frameLimit</span><span class="ActionScriptBracket/Brace">)</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+        
+        <span class="ActionScriptASDoc">/**
+         * Parse plaintext string asynchronously, meaning that the parser will periodically
+         * stop parsing so that the AVM may proceed to the next frame. If this parser
+         * requires binary data, an error will be thrown.
+         *
+         * @param str Text data used for parsing.
+         * @param frameLimit number of milliseconds of parsing allowed per frame. The
+         * actual time spent on a frame can exceed this number since time-checks can
+         * only be performed between logical sections of the parsing procedure.
+         */</span>
+        
+        
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">parseTextAsync</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">str</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">frameLimit</span> : <span class="ActionScriptDefault_Text">Number</span> <span class="ActionScriptOperator">=</span> 30<span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptReserved">void</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">_dataFormat</span> <span class="ActionScriptOperator">==</span> <span class="ActionScriptDefault_Text">ParserDataFormat</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">PLAIN_TEXT</span><span class="ActionScriptBracket/Brace">)</span>
+                <span class="ActionScriptDefault_Text">_textData</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">str</span>;
+            <span class="ActionScriptReserved">else</span> <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">_dataFormat</span> <span class="ActionScriptOperator">==</span> <span class="ActionScriptDefault_Text">ParserDataFormat</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">BINARY</span><span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptBracket/Brace">{</span>
+                <span class="ActionScriptComment">// TODO: Throw error when trying to parse text with binary parser
+</span>            <span class="ActionScriptBracket/Brace">}</span>
+            
+            <span class="ActionScriptDefault_Text">startParsing</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">frameLimit</span><span class="ActionScriptBracket/Brace">)</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+        
+        <span class="ActionScriptASDoc">/**
+         * A list of dependencies that need to be loaded and resolved for the object being parsed.
+         */</span>
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptReserved">get</span> <span class="ActionScriptDefault_Text">dependencies</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">Vector</span><span class="ActionScriptBracket/Brace">.&lt;</span><span class="ActionScriptDefault_Text">ResourceDependency</span><span class="ActionScriptBracket/Brace">&gt;</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptDefault_Text">_dependencies</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+        
+        <span class="ActionScriptASDoc">/**
+         * Resolve a dependency when it's loaded. For example, a dependency containing an ImageResource would be assigned
+         * to a Mesh instance as a BitmapMaterial, a scene graph object would be added to its intended parent. The
+         * dependency should be a member of the dependencies property.
+         *
+         * @param resourceDependency The dependency to be resolved.
+         */</span>
+        <span class="ActionScriptDefault_Text">arcane</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">resolveDependency</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">resourceDependency</span> : <span class="ActionScriptDefault_Text">ResourceDependency</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptReserved">void</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">throw</span> <span class="ActionScriptReserved">new</span> <span class="ActionScriptDefault_Text">AbstractMethodError</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+        
+        <span class="ActionScriptASDoc">/**
+         * Resolve a dependency loading failure. Used by parser to eventually provide a default map
+         *
+         * @param resourceDependency The dependency to be resolved.
+         */</span>
+        <span class="ActionScriptDefault_Text">arcane</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">resolveDependencyFailure</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">resourceDependency</span> : <span class="ActionScriptDefault_Text">ResourceDependency</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptReserved">void</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">throw</span> <span class="ActionScriptReserved">new</span> <span class="ActionScriptDefault_Text">AbstractMethodError</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+        
+        <span class="ActionScriptDefault_Text">arcane</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">resumeParsingAfterDependencies</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptReserved">void</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScripttrace">trace</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptString">'RESUMING PARSE'</span><span class="ActionScriptBracket/Brace">)</span>;
+            <span class="ActionScriptDefault_Text">_dependencies</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">length</span> <span class="ActionScriptOperator">=</span> 0;
+            <span class="ActionScriptDefault_Text">_parsingPaused</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptReserved">false</span>;
+            <span class="ActionScriptDefault_Text">_timer</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">start</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+        
+        
+        
+        <span class="ActionScriptReserved">protected</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">finalizeAsset</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">asset</span> : <span class="ActionScriptDefault_Text">IAsset</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">name</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptOperator">=</span><span class="ActionScriptReserved">null</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptReserved">void</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">type_event</span> : <span class="ActionScriptDefault_Text">String</span>;
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">type_name</span> : <span class="ActionScriptDefault_Text">String</span>;
+            
+            <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">name</span><span class="ActionScriptBracket/Brace">)</span>
+                <span class="ActionScriptDefault_Text">asset</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">name</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">name</span>;
+            
+            <span class="ActionScriptReserved">switch</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">asset</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">assetType</span><span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptBracket/Brace">{</span>
+                <span class="ActionScriptReserved">case</span> <span class="ActionScriptDefault_Text">AssetType</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">ANIMATION</span>:
+                    <span class="ActionScriptDefault_Text">type_name</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptString">'animation'</span>;
+                    <span class="ActionScriptDefault_Text">type_event</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">AssetEvent</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">ANIMATION_COMPLETE</span>;
+                    <span class="ActionScriptReserved">break</span>;
+                <span class="ActionScriptReserved">case</span> <span class="ActionScriptDefault_Text">AssetType</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">ANIMATOR</span>:
+                    <span class="ActionScriptDefault_Text">type_name</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptString">'animator'</span>;
+                    <span class="ActionScriptDefault_Text">type_event</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">AssetEvent</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">ANIMATOR_COMPLETE</span>;
+                    <span class="ActionScriptReserved">break</span>;
+                <span class="ActionScriptReserved">case</span> <span class="ActionScriptDefault_Text">AssetType</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">BITMAP</span>:
+                    <span class="ActionScriptDefault_Text">type_name</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptString">'bitmap'</span>;
+                    <span class="ActionScriptDefault_Text">type_event</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">AssetEvent</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">BITMAP_COMPLETE</span>;
+                    <span class="ActionScriptReserved">break</span>;
+                <span class="ActionScriptReserved">case</span> <span class="ActionScriptDefault_Text">AssetType</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">CONTAINER</span>:
+                    <span class="ActionScriptDefault_Text">type_name</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptString">'container'</span>;
+                    <span class="ActionScriptDefault_Text">type_event</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">AssetEvent</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">CONTAINER_COMPLETE</span>;
+                    <span class="ActionScriptReserved">break</span>;
+                <span class="ActionScriptReserved">case</span> <span class="ActionScriptDefault_Text">AssetType</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">GEOMETRY</span>:
+                    <span class="ActionScriptDefault_Text">type_name</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptString">'geometry'</span>;
+                    <span class="ActionScriptDefault_Text">type_event</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">AssetEvent</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">GEOMETRY_COMPLETE</span>;
+                    <span class="ActionScriptReserved">break</span>;
+                <span class="ActionScriptReserved">case</span> <span class="ActionScriptDefault_Text">AssetType</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">MATERIAL</span>:
+                    <span class="ActionScriptDefault_Text">type_name</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptString">'material'</span>;
+                    <span class="ActionScriptDefault_Text">type_event</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">AssetEvent</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">MATERIAL_COMPLETE</span>;
+                    <span class="ActionScriptReserved">break</span>;
+                <span class="ActionScriptReserved">case</span> <span class="ActionScriptDefault_Text">AssetType</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">MESH</span>:
+                    <span class="ActionScriptDefault_Text">type_name</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptString">'mesh'</span>;
+                    <span class="ActionScriptDefault_Text">type_event</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">AssetEvent</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">MESH_COMPLETE</span>;
+                    <span class="ActionScriptReserved">break</span>;
+                <span class="ActionScriptReserved">case</span> <span class="ActionScriptDefault_Text">AssetType</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">SKELETON</span>:
+                    <span class="ActionScriptDefault_Text">type_name</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptString">'skeleton'</span>;
+                    <span class="ActionScriptDefault_Text">type_event</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">AssetEvent</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">SKELETON_COMPLETE</span>;
+                    <span class="ActionScriptReserved">break</span>;
+                <span class="ActionScriptReserved">case</span> <span class="ActionScriptDefault_Text">AssetType</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">SKELETON_POSE</span>:
+                    <span class="ActionScriptDefault_Text">type_name</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptString">'skelpose'</span>;
+                    <span class="ActionScriptDefault_Text">type_event</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">AssetEvent</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">SKELETON_POSE_COMPLETE</span>;
+                    <span class="ActionScriptReserved">break</span>;
+                <span class="ActionScriptReserved">default</span>:
+                    <span class="ActionScriptReserved">throw</span> <span class="ActionScriptReserved">new</span> <span class="ActionScriptDefault_Text">Error</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptString">'Unhandled asset type '</span><span class="ActionScriptOperator">+</span><span class="ActionScriptDefault_Text">asset</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">assetType</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">'. Report as bug!'</span><span class="ActionScriptBracket/Brace">)</span>;
+                    <span class="ActionScriptReserved">break</span>;
+            <span class="ActionScriptBracket/Brace">}</span>
+                
+            <span class="ActionScriptComment">// If the asset has no name, give it
+</span>            <span class="ActionScriptComment">// a per-type default name.
+</span>            <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptOperator">!</span><span class="ActionScriptDefault_Text">asset</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">name</span><span class="ActionScriptBracket/Brace">)</span>
+                <span class="ActionScriptDefault_Text">asset</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">name</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">type_name</span>;
+            
+            <span class="ActionScriptDefault_Text">dispatchEvent</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptReserved">new</span> <span class="ActionScriptDefault_Text">AssetEvent</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">AssetEvent</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">ASSET_COMPLETE</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">asset</span><span class="ActionScriptBracket/Brace">)</span><span class="ActionScriptBracket/Brace">)</span>;
+            <span class="ActionScriptDefault_Text">dispatchEvent</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptReserved">new</span> <span class="ActionScriptDefault_Text">AssetEvent</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">type_event</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">asset</span><span class="ActionScriptBracket/Brace">)</span><span class="ActionScriptBracket/Brace">)</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+        
+        <span class="ActionScriptASDoc">/**
+         * Parse the next block of data.
+         * @return Whether or not more data needs to be parsed. Can be &lt;code&gt;ParserBase.PARSING_DONE&lt;/code&gt; or
+         * &lt;code&gt;ParserBase.MORE_TO_PARSE&lt;/code&gt;.
+         */</span>
+        <span class="ActionScriptReserved">protected</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">proceedParsing</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">Boolean</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">throw</span> <span class="ActionScriptReserved">new</span> <span class="ActionScriptDefault_Text">AbstractMethodError</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptReserved">true</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+        
+        <span class="ActionScriptReserved">protected</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">dieWithError</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">message</span> : <span class="ActionScriptDefault_Text">String</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptString">'Unknown parsing error'</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptReserved">void</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptDefault_Text">_timer</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">removeEventListener</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">TimerEvent</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">TIMER</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">onInterval</span><span class="ActionScriptBracket/Brace">)</span>;
+            <span class="ActionScriptDefault_Text">_timer</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">stop</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+            <span class="ActionScriptDefault_Text">_timer</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptReserved">null</span>;
+            <span class="ActionScriptDefault_Text">dispatchEvent</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptReserved">new</span> <span class="ActionScriptDefault_Text">ParserEvent</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">ParserEvent</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">PARSE_ERROR</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">message</span><span class="ActionScriptBracket/Brace">)</span><span class="ActionScriptBracket/Brace">)</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+        
+        
+        <span class="ActionScriptReserved">protected</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">addDependency</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">id</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">req</span> : <span class="ActionScriptDefault_Text">URLRequest</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">retrieveAsRawData</span> : <span class="ActionScriptDefault_Text">Boolean</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptReserved">false</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptReserved">void</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptDefault_Text">_dependencies</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">push</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptReserved">new</span> <span class="ActionScriptDefault_Text">ResourceDependency</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">id</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">req</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptReserved">null</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptReserved">this</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">retrieveAsRawData</span><span class="ActionScriptBracket/Brace">)</span><span class="ActionScriptBracket/Brace">)</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+        
+        
+        <span class="ActionScriptReserved">protected</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">pauseAndRetrieveDependencies</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptReserved">void</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptDefault_Text">_timer</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">stop</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+            <span class="ActionScriptDefault_Text">_parsingPaused</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptReserved">true</span>;
+            <span class="ActionScripttrace">trace</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptString">'PAUSING PARSE!'</span><span class="ActionScriptBracket/Brace">)</span>;
+            <span class="ActionScriptDefault_Text">dispatchEvent</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptReserved">new</span> <span class="ActionScriptDefault_Text">ParserEvent</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">ParserEvent</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">READY_FOR_DEPENDENCIES</span><span class="ActionScriptBracket/Brace">)</span><span class="ActionScriptBracket/Brace">)</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+        
+        
+        <span class="ActionScriptASDoc">/**
+         * Tests whether or not there is still time left for parsing within the maximum allowed time frame per session.
+         * @return True if there is still time left, false if the maximum allotted time was exceeded and parsing should be interrupted.
+         */</span>
+        <span class="ActionScriptReserved">protected</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">hasTime</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">Boolean</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">getTimer</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptOperator">-</span> <span class="ActionScriptDefault_Text">_lastFrameTime</span><span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptOperator">&lt;</span> <span class="ActionScriptDefault_Text">_frameLimit</span><span class="ActionScriptBracket/Brace">)</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+        
+        <span class="ActionScriptASDoc">/**
+         * Called when the parsing pause interval has passed and parsing can proceed.
+         */</span>
+        <span class="ActionScriptReserved">protected</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">onInterval</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">event</span> : <span class="ActionScriptDefault_Text">TimerEvent</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptReserved">null</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptReserved">void</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptDefault_Text">_lastFrameTime</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">getTimer</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+            
+            <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">proceedParsing</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptOperator">&amp;&amp;</span> <span class="ActionScriptOperator">!</span><span class="ActionScriptDefault_Text">_parsingFailure</span><span class="ActionScriptBracket/Brace">)</span>
+                <span class="ActionScriptDefault_Text">finishParsing</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+        
+        <span class="ActionScriptASDoc">/**
+         * Initializes the parsing of data.
+         * @param frameLimit The maximum duration of a parsing session.
+         */</span>
+        <span class="ActionScriptReserved">private</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">startParsing</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">frameLimit</span> : <span class="ActionScriptDefault_Text">Number</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptReserved">void</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptDefault_Text">_frameLimit</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">frameLimit</span>;
+            <span class="ActionScriptDefault_Text">_timer</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptReserved">new</span> <span class="ActionScriptDefault_Text">Timer</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">_frameLimit</span><span class="ActionScriptOperator">,</span> 0<span class="ActionScriptBracket/Brace">)</span>;
+            <span class="ActionScriptDefault_Text">_timer</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">addEventListener</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">TimerEvent</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">TIMER</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">onInterval</span><span class="ActionScriptBracket/Brace">)</span>;
+            <span class="ActionScriptDefault_Text">_timer</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">start</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+            <span class="ActionScriptComment">// synchronously right away
+</span>            <span class="ActionScriptDefault_Text">onInterval</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+        
+        
+        <span class="ActionScriptASDoc">/**
+         * Finish parsing the data.
+         */</span>
+        <span class="ActionScriptReserved">protected</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">finishParsing</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptReserved">void</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptDefault_Text">_timer</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">removeEventListener</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">TimerEvent</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">TIMER</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">onInterval</span><span class="ActionScriptBracket/Brace">)</span>;
+            <span class="ActionScriptDefault_Text">_timer</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">stop</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+            <span class="ActionScriptDefault_Text">_timer</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptReserved">null</span>;
+            <span class="ActionScriptDefault_Text">_parsingComplete</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptReserved">true</span>;
+            <span class="ActionScriptDefault_Text">dispatchEvent</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptReserved">new</span> <span class="ActionScriptDefault_Text">ParserEvent</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">ParserEvent</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">PARSE_COMPLETE</span><span class="ActionScriptBracket/Brace">)</span><span class="ActionScriptBracket/Brace">)</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+    <span class="ActionScriptBracket/Brace">}</span>
+<span class="ActionScriptBracket/Brace">}</span>
+
+</pre></body>
+</html>

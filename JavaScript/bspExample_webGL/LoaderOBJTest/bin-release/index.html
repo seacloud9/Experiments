@@ -1,0 +1,111 @@
+<!DOCTYPE HTML>
+<html lang="en">
+	<head>
+		<title>Simple BSP</title>
+		<meta charset="utf-8">
+         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+         <script type="text/javascript" src="js/Three.js"></script>
+		 <script type="text/javascript" src="js/Detector.js"></script>
+		 <script type="text/javascript" src="js/RequestAnimationFrame.js"></script>
+		 <script type="text/javascript" src="js/Stats.js"></script>
+	</head>
+	<body>
+ 
+		<div id="container"></div>
+		
+
+		<script type="text/javascript">
+			if ( ! Detector.webgl ) {
+				Detector.addGetWebGLMessage();
+				document.getElementById( 'container' ).innerHTML = "";
+			}
+			
+			//global variables
+			var container;
+			var camera, scene, renderer, loader;
+			var mesh, texture,geometry, material;
+			var worldWidth = 128, worldDepth = 128,
+			worldHalfWidth = worldWidth / 2, worldHalfDepth = worldDepth / 2;
+			
+			
+			function startGame(){
+				gameOn = true;
+				init();
+				animate();
+			}
+
+			function init() {
+				loader = new THREE.JSONLoader( true );
+				container = document.getElementById( 'container' );
+				camera = new THREE.QuakeCamera( { fov: 45, aspect: window.innerWidth / window.innerHeight, near: 1, far: 100000,
+												  movement_speed: 1000, look_speed: 0.9, nofly: false, look_vertical: true } );
+				
+				scene = new THREE.Scene();
+				//fog it helps to hide objects and lower the proceeing power needed
+				//scene.fog = new THREE.Fog( 0xaaccff, 1, 800 );
+				camera.target.position.z = - 0;
+				camera.position.y = 500;
+				camera.target.position.y = camera.position.y;
+				cameraCube = new THREE.Camera( 60, window.innerWidth / window.innerHeight, 1, 100000 );
+				var path = "assets/skybox/";
+				var format = '.jpg';
+				var urls = [
+					path + 'px' + format, path + 'nx' + format,
+					path + 'py' + format, path + 'ny' + format,
+					path + 'pz' + format, path + 'nz' + format
+				];
+ 
+				var textureCube = THREE.ImageUtils.loadTextureCube( urls );
+				var material = new THREE.MeshBasicMaterial( { color: 0xffffff, envMap: textureCube } );
+				
+				THREE.SceneUtils.addPanoramaCubeWebGL( scene, 10000, textureCube );
+				document.body.appendChild( loader.statusDomElement );
+				loader.load( { model: "assets/substation.js", callback: function(geometry){ 
+					try{
+				    	THREE.SceneUtils.addMesh( scene, geometry, 1, 0, 500, 40, 0, 0, 0, new THREE.MeshFaceMaterial());
+					}catch(e){
+						console.log('fail' + e);
+					}
+			
+			 } });
+				
+				//render all the cool stuff
+				renderer = new THREE.WebGLRenderer();
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				container.innerHTML = "";
+				container.appendChild( renderer.domElement );
+				stats = new Stats();
+				stats.domElement.style.position = 'absolute';
+				stats.domElement.style.top = '0px';
+				container.appendChild( stats.domElement );
+
+			}
+		
+			
+			// this is the main game loop where most of the magic happens
+			function animate() {
+				if(gameOn === true){
+					requestAnimationFrame( animate );
+					render();
+					stats.update();
+				}
+			}
+			
+			
+			
+			function render() {
+				var time = new Date().getTime() * 0.01;
+				renderer.render(scene, camera);
+				
+			}
+			
+			startGame();
+				jQuery(document).ready(function() {
+					startGame();
+				});
+				
+			
+		</script>
+
+	</body>
+</html>

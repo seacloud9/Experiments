@@ -1,0 +1,202 @@
+<!-- saved from url=(0014)about:internet -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>SOCameraController.as</title>
+<link rel="stylesheet" type="text/css" href="../../../../../SourceStyles.css"/>
+</head>
+
+<body><pre><span class="ActionScriptASDoc">/**
+ * Created by IntelliJ IDEA.
+ * User: li
+ * Date: 1/29/11
+ * Time: 1:38 AM
+ * To change this template use File | Settings | File Templates.
+ */</span>
+<span class="ActionScriptpackage">package</span> <span class="ActionScriptDefault_Text">com</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">li</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">away3d</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">camera</span>
+<span class="ActionScriptBracket/Brace">{</span>
+<span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">away3d</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">cameras</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">Camera3D</span>;
+
+<span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">com</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">li</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">away3d</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">camera</span><span class="ActionScriptOperator">.</span><span class="ActionScriptOperator">*</span>;
+
+<span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">flash</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">geom</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">Vector3D</span>;
+
+<span class="ActionScriptComment">/*
+    SmootherOrbitCameraController.
+    Idem. OrbitCameraController but with easing.
+ */</span>
+<span class="ActionScriptReserved">public</span> <span class="ActionScriptclass">class</span> <span class="ActionScriptDefault_Text">SOCameraController</span>
+<span class="ActionScriptBracket/Brace">{</span>
+    <span class="ActionScriptReserved">private</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_orbitCameraController</span>:<span class="ActionScriptDefault_Text">OCameraController</span>;
+    <span class="ActionScriptReserved">private</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_targetSphericalCoordinates</span>:<span class="ActionScriptDefault_Text">Vector3D</span>;
+    <span class="ActionScriptReserved">private</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_targetCenter</span>:<span class="ActionScriptDefault_Text">Vector3D</span>;
+    <span class="ActionScriptReserved">private</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_dx</span>:<span class="ActionScriptDefault_Text">Number</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">_dy</span>:<span class="ActionScriptDefault_Text">Number</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">_dz</span>:<span class="ActionScriptDefault_Text">Number</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">_dsq</span>:<span class="ActionScriptDefault_Text">Number</span>;
+    <span class="ActionScriptReserved">private</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_sphericalDirty</span>:<span class="ActionScriptDefault_Text">Boolean</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">_targetDirty</span>:<span class="ActionScriptDefault_Text">Boolean</span>;
+    <span class="ActionScriptReserved">private</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_dirtyTolerance</span>:<span class="ActionScriptDefault_Text">Number</span> <span class="ActionScriptOperator">=</span> 0.00001;
+
+    <span class="ActionScriptReserved">public</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">orbitEasing</span>:<span class="ActionScriptDefault_Text">Number</span> <span class="ActionScriptOperator">=</span> 0.2;
+    <span class="ActionScriptReserved">public</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">centerEasing</span>:<span class="ActionScriptDefault_Text">Number</span> <span class="ActionScriptOperator">=</span> 0.2;
+
+    <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">SOCameraController</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">camera</span>:<span class="ActionScriptDefault_Text">Camera3D</span><span class="ActionScriptBracket/Brace">)</span>
+    <span class="ActionScriptBracket/Brace">{</span>
+        <span class="ActionScriptDefault_Text">_orbitCameraController</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptReserved">new</span> <span class="ActionScriptDefault_Text">OCameraController</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">camera</span><span class="ActionScriptBracket/Brace">)</span>;
+        <span class="ActionScriptDefault_Text">_targetSphericalCoordinates</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">_orbitCameraController</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">sphericalCoordinates</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">clone</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+        <span class="ActionScriptDefault_Text">_targetCenter</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptReserved">new</span> <span class="ActionScriptDefault_Text">Vector3D</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+    <span class="ActionScriptBracket/Brace">}</span>
+
+    <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptReserved">get</span> <span class="ActionScriptDefault_Text">oCameraController</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>:<span class="ActionScriptDefault_Text">OCameraController</span>
+    <span class="ActionScriptBracket/Brace">{</span>
+        <span class="ActionScriptReserved">return</span> <span class="ActionScriptDefault_Text">_orbitCameraController</span>;
+    <span class="ActionScriptBracket/Brace">}</span>
+
+    <span class="ActionScriptComment">// Should be called continuously.
+</span>    <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">update</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>:<span class="ActionScriptReserved">void</span>
+    <span class="ActionScriptBracket/Brace">{</span>
+        <span class="ActionScriptComment">// Update target.
+</span>        <span class="ActionScriptReserved">if</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">_targetDirty</span><span class="ActionScriptBracket/Brace">)</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptDefault_Text">_dx</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">_targetCenter</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">x</span> <span class="ActionScriptOperator">-</span> <span class="ActionScriptDefault_Text">_orbitCameraController</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">centerX</span>;
+            <span class="ActionScriptDefault_Text">_dy</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">_targetCenter</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">y</span> <span class="ActionScriptOperator">-</span> <span class="ActionScriptDefault_Text">_orbitCameraController</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">centerY</span>;
+            <span class="ActionScriptDefault_Text">_dz</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">_targetCenter</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">z</span> <span class="ActionScriptOperator">-</span> <span class="ActionScriptDefault_Text">_orbitCameraController</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">centerZ</span>;
+            <span class="ActionScriptDefault_Text">_dsq</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">_dx</span><span class="ActionScriptOperator">*</span><span class="ActionScriptDefault_Text">_dx</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">_dy</span><span class="ActionScriptOperator">*</span><span class="ActionScriptDefault_Text">_dy</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">_dz</span><span class="ActionScriptOperator">*</span><span class="ActionScriptDefault_Text">_dz</span>;
+            <span class="ActionScriptReserved">if</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">_dsq</span> <span class="ActionScriptOperator">&lt;</span> <span class="ActionScriptDefault_Text">_dirtyTolerance</span><span class="ActionScriptBracket/Brace">)</span>
+            <span class="ActionScriptBracket/Brace">{</span>
+                <span class="ActionScriptDefault_Text">_targetDirty</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptReserved">false</span>;
+                <span class="ActionScriptDefault_Text">_orbitCameraController</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">centerX</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">_targetCenter</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">x</span>;
+                <span class="ActionScriptDefault_Text">_orbitCameraController</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">centerY</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">_targetCenter</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">y</span>;
+                <span class="ActionScriptDefault_Text">_orbitCameraController</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">centerZ</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">_targetCenter</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">z</span>;
+            <span class="ActionScriptBracket/Brace">}</span>
+            <span class="ActionScriptReserved">else</span>
+            <span class="ActionScriptBracket/Brace">{</span>
+                <span class="ActionScriptDefault_Text">_orbitCameraController</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">centerX</span> <span class="ActionScriptOperator">+=</span> <span class="ActionScriptDefault_Text">_dx</span><span class="ActionScriptOperator">*</span><span class="ActionScriptDefault_Text">centerEasing</span>;
+                <span class="ActionScriptDefault_Text">_orbitCameraController</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">centerY</span> <span class="ActionScriptOperator">+=</span> <span class="ActionScriptDefault_Text">_dy</span><span class="ActionScriptOperator">*</span><span class="ActionScriptDefault_Text">centerEasing</span>;
+                <span class="ActionScriptDefault_Text">_orbitCameraController</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">centerZ</span> <span class="ActionScriptOperator">+=</span> <span class="ActionScriptDefault_Text">_dz</span><span class="ActionScriptOperator">*</span><span class="ActionScriptDefault_Text">centerEasing</span>;
+            <span class="ActionScriptBracket/Brace">}</span>
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptComment">// Update spherical.
+</span>        <span class="ActionScriptReserved">if</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">_sphericalDirty</span><span class="ActionScriptBracket/Brace">)</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptDefault_Text">_dx</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">_targetSphericalCoordinates</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">x</span> <span class="ActionScriptOperator">-</span> <span class="ActionScriptDefault_Text">_orbitCameraController</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">azimuth</span>;
+            <span class="ActionScriptDefault_Text">_dy</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">_targetSphericalCoordinates</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">y</span> <span class="ActionScriptOperator">-</span> <span class="ActionScriptDefault_Text">_orbitCameraController</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">elevation</span>;
+            <span class="ActionScriptDefault_Text">_dz</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">_targetSphericalCoordinates</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">z</span> <span class="ActionScriptOperator">-</span> <span class="ActionScriptDefault_Text">_orbitCameraController</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">radius</span>;
+            <span class="ActionScriptDefault_Text">_dsq</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">_dx</span><span class="ActionScriptOperator">*</span><span class="ActionScriptDefault_Text">_dx</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">_dy</span><span class="ActionScriptOperator">*</span><span class="ActionScriptDefault_Text">_dy</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">_dz</span><span class="ActionScriptOperator">*</span><span class="ActionScriptDefault_Text">_dz</span>;
+            <span class="ActionScriptReserved">if</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">_dsq</span> <span class="ActionScriptOperator">&lt;</span> <span class="ActionScriptDefault_Text">_dirtyTolerance</span><span class="ActionScriptBracket/Brace">)</span>
+            <span class="ActionScriptBracket/Brace">{</span>
+                <span class="ActionScriptDefault_Text">_sphericalDirty</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptReserved">false</span>;
+                <span class="ActionScriptDefault_Text">_orbitCameraController</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">azimuth</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">_targetSphericalCoordinates</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">x</span>;
+                <span class="ActionScriptDefault_Text">_orbitCameraController</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">elevation</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">_targetSphericalCoordinates</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">y</span>;
+                <span class="ActionScriptDefault_Text">_orbitCameraController</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">radius</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">_targetSphericalCoordinates</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">z</span>;
+            <span class="ActionScriptBracket/Brace">}</span>
+            <span class="ActionScriptReserved">else</span>
+            <span class="ActionScriptBracket/Brace">{</span>
+                <span class="ActionScriptDefault_Text">_orbitCameraController</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">azimuth</span> <span class="ActionScriptOperator">+=</span> <span class="ActionScriptDefault_Text">_dx</span><span class="ActionScriptOperator">*</span><span class="ActionScriptDefault_Text">orbitEasing</span>;
+                <span class="ActionScriptDefault_Text">_orbitCameraController</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">elevation</span> <span class="ActionScriptOperator">+=</span> <span class="ActionScriptDefault_Text">_dy</span><span class="ActionScriptOperator">*</span><span class="ActionScriptDefault_Text">orbitEasing</span>;
+                <span class="ActionScriptDefault_Text">_orbitCameraController</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">radius</span> <span class="ActionScriptOperator">+=</span> <span class="ActionScriptDefault_Text">_dz</span><span class="ActionScriptOperator">*</span><span class="ActionScriptDefault_Text">orbitEasing</span>;
+            <span class="ActionScriptBracket/Brace">}</span>
+        <span class="ActionScriptBracket/Brace">}</span>
+    <span class="ActionScriptBracket/Brace">}</span>
+
+    <span class="ActionScriptComment">// --------------------
+</span>    <span class="ActionScriptComment">// Position change.
+</span>    <span class="ActionScriptComment">// --------------------
+</span>
+    <span class="ActionScriptComment">// Azimuth.
+</span>    <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptReserved">set</span> <span class="ActionScriptDefault_Text">azimuth</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">value</span>:<span class="ActionScriptDefault_Text">Number</span><span class="ActionScriptBracket/Brace">)</span>:<span class="ActionScriptReserved">void</span>
+    <span class="ActionScriptBracket/Brace">{</span>
+        <span class="ActionScriptReserved">if</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">_orbitCameraController</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">useAzimuthLimit</span><span class="ActionScriptBracket/Brace">)</span>
+            <span class="ActionScriptDefault_Text">_targetSphericalCoordinates</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">x</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">containValue</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">value</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">_orbitCameraController</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">minAzimuth</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">_orbitCameraController</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">maxAzimuth</span><span class="ActionScriptBracket/Brace">)</span>;
+        <span class="ActionScriptReserved">else</span>
+            <span class="ActionScriptDefault_Text">_targetSphericalCoordinates</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">x</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">value</span>;
+
+        <span class="ActionScriptDefault_Text">_sphericalDirty</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptReserved">true</span>;
+        <span class="ActionScriptDefault_Text">update</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+    <span class="ActionScriptBracket/Brace">}</span>
+    <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptReserved">get</span> <span class="ActionScriptDefault_Text">azimuth</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>:<span class="ActionScriptDefault_Text">Number</span>
+    <span class="ActionScriptBracket/Brace">{</span>
+        <span class="ActionScriptReserved">return</span> <span class="ActionScriptDefault_Text">_targetSphericalCoordinates</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">x</span>;
+    <span class="ActionScriptBracket/Brace">}</span>
+
+    <span class="ActionScriptComment">// Elevation.
+</span>    <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptReserved">set</span> <span class="ActionScriptDefault_Text">elevation</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">value</span>:<span class="ActionScriptDefault_Text">Number</span><span class="ActionScriptBracket/Brace">)</span>:<span class="ActionScriptReserved">void</span>
+    <span class="ActionScriptBracket/Brace">{</span>
+        <span class="ActionScriptDefault_Text">_targetSphericalCoordinates</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">y</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">containValue</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">value</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">_orbitCameraController</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">minElevation</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">_orbitCameraController</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">maxElevation</span><span class="ActionScriptBracket/Brace">)</span>;
+        <span class="ActionScriptDefault_Text">_sphericalDirty</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptReserved">true</span>;
+        <span class="ActionScriptDefault_Text">update</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+    <span class="ActionScriptBracket/Brace">}</span>
+    <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptReserved">get</span> <span class="ActionScriptDefault_Text">elevation</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>:<span class="ActionScriptDefault_Text">Number</span>
+    <span class="ActionScriptBracket/Brace">{</span>
+        <span class="ActionScriptReserved">return</span> <span class="ActionScriptDefault_Text">_targetSphericalCoordinates</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">y</span>;
+    <span class="ActionScriptBracket/Brace">}</span>
+
+    <span class="ActionScriptComment">// Radius.
+</span>    <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptReserved">set</span> <span class="ActionScriptDefault_Text">radius</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">value</span>:<span class="ActionScriptDefault_Text">Number</span><span class="ActionScriptBracket/Brace">)</span>:<span class="ActionScriptReserved">void</span>
+    <span class="ActionScriptBracket/Brace">{</span>
+        <span class="ActionScriptDefault_Text">_targetSphericalCoordinates</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">z</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">containValue</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">value</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">_orbitCameraController</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">minRadius</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">_orbitCameraController</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">maxRadius</span><span class="ActionScriptBracket/Brace">)</span>;
+        <span class="ActionScriptDefault_Text">_sphericalDirty</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptReserved">true</span>;
+        <span class="ActionScriptDefault_Text">update</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+    <span class="ActionScriptBracket/Brace">}</span>
+    <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptReserved">get</span> <span class="ActionScriptDefault_Text">radius</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>:<span class="ActionScriptDefault_Text">Number</span>
+    <span class="ActionScriptBracket/Brace">{</span>
+        <span class="ActionScriptReserved">return</span> <span class="ActionScriptDefault_Text">_targetSphericalCoordinates</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">z</span>;
+    <span class="ActionScriptBracket/Brace">}</span>
+
+    <span class="ActionScriptComment">// --------------------
+</span>    <span class="ActionScriptComment">// Target (look at) position change.
+</span>    <span class="ActionScriptComment">// --------------------
+</span>
+    <span class="ActionScriptComment">// X.
+</span>    <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptReserved">set</span> <span class="ActionScriptDefault_Text">centerX</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">value</span>:<span class="ActionScriptDefault_Text">Number</span><span class="ActionScriptBracket/Brace">)</span>:<span class="ActionScriptReserved">void</span>
+    <span class="ActionScriptBracket/Brace">{</span>
+        <span class="ActionScriptDefault_Text">_targetCenter</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">x</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">value</span>;
+        <span class="ActionScriptDefault_Text">_targetDirty</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptReserved">true</span>;
+        <span class="ActionScriptDefault_Text">update</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+    <span class="ActionScriptBracket/Brace">}</span>
+    <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptReserved">get</span> <span class="ActionScriptDefault_Text">centerX</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>:<span class="ActionScriptDefault_Text">Number</span>
+    <span class="ActionScriptBracket/Brace">{</span>
+        <span class="ActionScriptReserved">return</span> <span class="ActionScriptDefault_Text">_targetCenter</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">x</span>;
+    <span class="ActionScriptBracket/Brace">}</span>
+
+    <span class="ActionScriptComment">// Y.
+</span>    <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptReserved">set</span> <span class="ActionScriptDefault_Text">centerY</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">value</span>:<span class="ActionScriptDefault_Text">Number</span><span class="ActionScriptBracket/Brace">)</span>:<span class="ActionScriptReserved">void</span>
+    <span class="ActionScriptBracket/Brace">{</span>
+        <span class="ActionScriptDefault_Text">_targetCenter</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">y</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">value</span>;
+        <span class="ActionScriptDefault_Text">_targetDirty</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptReserved">true</span>;
+        <span class="ActionScriptDefault_Text">update</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+    <span class="ActionScriptBracket/Brace">}</span>
+    <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptReserved">get</span> <span class="ActionScriptDefault_Text">centerY</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>:<span class="ActionScriptDefault_Text">Number</span>
+    <span class="ActionScriptBracket/Brace">{</span>
+        <span class="ActionScriptReserved">return</span> <span class="ActionScriptDefault_Text">_targetCenter</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">y</span>;
+    <span class="ActionScriptBracket/Brace">}</span>
+
+    <span class="ActionScriptComment">// Z.
+</span>    <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptReserved">set</span> <span class="ActionScriptDefault_Text">centerZ</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">value</span>:<span class="ActionScriptDefault_Text">Number</span><span class="ActionScriptBracket/Brace">)</span>:<span class="ActionScriptReserved">void</span>
+    <span class="ActionScriptBracket/Brace">{</span>
+        <span class="ActionScriptDefault_Text">_targetCenter</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">z</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">value</span>;
+        <span class="ActionScriptDefault_Text">_targetDirty</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptReserved">true</span>;
+        <span class="ActionScriptDefault_Text">update</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+    <span class="ActionScriptBracket/Brace">}</span>
+    <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptReserved">get</span> <span class="ActionScriptDefault_Text">centerZ</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>:<span class="ActionScriptDefault_Text">Number</span>
+    <span class="ActionScriptBracket/Brace">{</span>
+        <span class="ActionScriptReserved">return</span> <span class="ActionScriptDefault_Text">_targetCenter</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">z</span>;
+    <span class="ActionScriptBracket/Brace">}</span>
+
+    <span class="ActionScriptComment">// --------------------
+</span>    <span class="ActionScriptComment">// Private.
+</span>    <span class="ActionScriptComment">// --------------------
+</span>
+    <span class="ActionScriptComment">// Contains a value between a min and a max.
+</span>    <span class="ActionScriptReserved">private</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">containValue</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">value</span>:<span class="ActionScriptDefault_Text">Number</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">min</span>:<span class="ActionScriptDefault_Text">Number</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">max</span>:<span class="ActionScriptDefault_Text">Number</span><span class="ActionScriptBracket/Brace">)</span>:<span class="ActionScriptDefault_Text">Number</span>
+    <span class="ActionScriptBracket/Brace">{</span>
+        <span class="ActionScriptReserved">if</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">value</span> <span class="ActionScriptOperator">&lt;</span> <span class="ActionScriptDefault_Text">min</span><span class="ActionScriptBracket/Brace">)</span>
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptDefault_Text">min</span>;
+        <span class="ActionScriptReserved">else</span> <span class="ActionScriptReserved">if</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">value</span> <span class="ActionScriptOperator">&gt;</span> <span class="ActionScriptDefault_Text">max</span><span class="ActionScriptBracket/Brace">)</span>
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptDefault_Text">max</span>;
+        <span class="ActionScriptReserved">else</span>
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptDefault_Text">value</span>;
+    <span class="ActionScriptBracket/Brace">}</span>
+<span class="ActionScriptBracket/Brace">}</span>
+<span class="ActionScriptBracket/Brace">}</span>
+</pre></body>
+</html>

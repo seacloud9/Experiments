@@ -1,0 +1,355 @@
+<!-- saved from url=(0014)about:internet -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>BasicSpecularMethod.as</title>
+<link rel="stylesheet" type="text/css" href="../../../../../SourceStyles.css"/>
+</head>
+
+<body><pre><span class="ActionScriptpackage">package</span> <span class="ActionScriptDefault_Text">away3d</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">materials</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">methods</span>
+<span class="ActionScriptBracket/Brace">{</span>
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">away3d</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">arcane</span>;
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">away3d</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">core</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">managers</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">Texture3DProxy</span>;
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">away3d</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">materials</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">utils</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">AGAL</span>;
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">away3d</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">materials</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">utils</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">ShaderRegisterCache</span>;
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">away3d</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">materials</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">utils</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">ShaderRegisterElement</span>;
+
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">flash</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">display</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">BitmapData</span>;
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">flash</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">display3D</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">Context3D</span>;
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">flash</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">display3D</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">Context3DProgramType</span>;
+
+    <span class="ActionScriptReserved">use</span> <span class="ActionScriptReserved">namespace</span> <span class="ActionScriptDefault_Text">arcane</span>;
+
+    <span class="ActionScriptASDoc">/**
+     * BasicSpecularMethod provides the default shading method for Blinn-Phong specular highlights.
+     */</span>
+    <span class="ActionScriptReserved">public</span> <span class="ActionScriptclass">class</span> <span class="ActionScriptDefault_Text">BasicSpecularMethod</span> <span class="ActionScriptReserved">extends</span> <span class="ActionScriptDefault_Text">LightingMethodBase</span>
+    <span class="ActionScriptBracket/Brace">{</span>
+        <span class="ActionScriptReserved">protected</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_useTexture</span> : <span class="ActionScriptDefault_Text">Boolean</span>;
+        <span class="ActionScriptReserved">protected</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_totalLightColorReg</span> : <span class="ActionScriptDefault_Text">ShaderRegisterElement</span>;
+        <span class="ActionScriptReserved">protected</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_specularTextureRegister</span> : <span class="ActionScriptDefault_Text">ShaderRegisterElement</span>;
+        <span class="ActionScriptReserved">protected</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_specularTexData</span> : <span class="ActionScriptDefault_Text">ShaderRegisterElement</span>;
+        <span class="ActionScriptReserved">protected</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_specularTexIndex</span> : <span class="ActionScriptDefault_Text">uint</span>;
+        <span class="ActionScriptReserved">protected</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_specularDataRegister</span> : <span class="ActionScriptDefault_Text">ShaderRegisterElement</span>;
+        <span class="ActionScriptReserved">protected</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_specularDataIndex</span> : <span class="ActionScriptDefault_Text">uint</span>;
+
+        <span class="ActionScriptReserved">protected</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_mipmapBitmap</span> : <span class="ActionScriptDefault_Text">BitmapData</span>;
+        <span class="ActionScriptReserved">private</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_texture</span> : <span class="ActionScriptDefault_Text">Texture3DProxy</span>;
+
+        <span class="ActionScriptReserved">protected</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_specularData</span> : <span class="ActionScriptDefault_Text">Vector</span><span class="ActionScriptBracket/Brace">.&lt;</span><span class="ActionScriptDefault_Text">Number</span><span class="ActionScriptBracket/Brace">&gt;</span>;
+        <span class="ActionScriptReserved">private</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_specular</span> : <span class="ActionScriptDefault_Text">Number</span> <span class="ActionScriptOperator">=</span> 1;
+        <span class="ActionScriptReserved">private</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_specularColor</span> : <span class="ActionScriptDefault_Text">uint</span> <span class="ActionScriptOperator">=</span> 0xffffff;
+        <span class="ActionScriptDefault_Text">arcane</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_specularR</span> : <span class="ActionScriptDefault_Text">Number</span> <span class="ActionScriptOperator">=</span> 1<span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">_specularG</span> : <span class="ActionScriptDefault_Text">Number</span> <span class="ActionScriptOperator">=</span> 1<span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">_specularB</span> : <span class="ActionScriptDefault_Text">Number</span> <span class="ActionScriptOperator">=</span> 1;
+        <span class="ActionScriptReserved">private</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_shadowRegister</span> : <span class="ActionScriptDefault_Text">ShaderRegisterElement</span>;
+
+        <span class="ActionScriptASDoc">/**
+         * Creates a new BasicSpecularMethod object.
+         */</span>
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">BasicSpecularMethod</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">super</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptReserved">true</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptReserved">false</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptReserved">false</span><span class="ActionScriptBracket/Brace">)</span>;
+            <span class="ActionScriptDefault_Text">_specularData</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">Vector</span><span class="ActionScriptBracket/Brace">.&lt;</span><span class="ActionScriptDefault_Text">Number</span><span class="ActionScriptBracket/Brace">&gt;</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">[</span>1<span class="ActionScriptOperator">,</span> 1<span class="ActionScriptOperator">,</span> 1<span class="ActionScriptOperator">,</span> 50<span class="ActionScriptBracket/Brace">]</span><span class="ActionScriptBracket/Brace">)</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptASDoc">/**
+         * The sharpness of the specular highlight.
+         */</span>
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptReserved">get</span> <span class="ActionScriptDefault_Text">gloss</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">Number</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptDefault_Text">_specularData</span><span class="ActionScriptBracket/Brace">[</span><span class="ActionScriptDefault_Text">uint</span><span class="ActionScriptBracket/Brace">(</span>3<span class="ActionScriptBracket/Brace">)</span><span class="ActionScriptBracket/Brace">]</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptReserved">set</span> <span class="ActionScriptDefault_Text">gloss</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">value</span> : <span class="ActionScriptDefault_Text">Number</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptReserved">void</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptDefault_Text">_specularData</span><span class="ActionScriptBracket/Brace">[</span><span class="ActionScriptDefault_Text">uint</span><span class="ActionScriptBracket/Brace">(</span>3<span class="ActionScriptBracket/Brace">)</span><span class="ActionScriptBracket/Brace">]</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">value</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptASDoc">/**
+         * The overall strength of the specular highlights.
+         */</span>
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptReserved">get</span> <span class="ActionScriptDefault_Text">specular</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">Number</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptDefault_Text">_specular</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptReserved">set</span> <span class="ActionScriptDefault_Text">specular</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">value</span> : <span class="ActionScriptDefault_Text">Number</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptReserved">void</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">value</span> <span class="ActionScriptOperator">==</span> <span class="ActionScriptDefault_Text">_specular</span><span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptReserved">return</span>;
+
+            <span class="ActionScriptComment">// specular is now either disabled or enabled
+</span>            <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">_specular</span> <span class="ActionScriptOperator">==</span> 0 <span class="ActionScriptOperator">||</span> <span class="ActionScriptDefault_Text">value</span> <span class="ActionScriptOperator">==</span> 0<span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptDefault_Text">invalidateShaderProgram</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+
+            <span class="ActionScriptDefault_Text">_specular</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">value</span>;
+            <span class="ActionScriptDefault_Text">updateSpecular</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptASDoc">/**
+         * The colour of the specular reflection of the surface.
+         */</span>
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptReserved">get</span> <span class="ActionScriptDefault_Text">specularColor</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">uint</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptDefault_Text">_specularColor</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptReserved">set</span> <span class="ActionScriptDefault_Text">specularColor</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">value</span> : <span class="ActionScriptDefault_Text">uint</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptReserved">void</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">_specularColor</span> <span class="ActionScriptOperator">==</span> <span class="ActionScriptDefault_Text">value</span><span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptReserved">return</span>;
+
+            <span class="ActionScriptComment">// specular is now either enabled or disabled
+</span>            <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">_specularColor</span> <span class="ActionScriptOperator">==</span> 0 <span class="ActionScriptOperator">||</span> <span class="ActionScriptDefault_Text">value</span> <span class="ActionScriptOperator">==</span> 0<span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptDefault_Text">invalidateShaderProgram</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+            <span class="ActionScriptDefault_Text">_specularColor</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">value</span>;
+            <span class="ActionScriptDefault_Text">updateSpecular</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptASDoc">/**
+         * The bitmapData that encodes the specular highlight strength per texel in the red channel, and the sharpness
+         * in the green channel.
+         */</span>
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptReserved">get</span> <span class="ActionScriptDefault_Text">bitmapData</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">BitmapData</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptDefault_Text">_texture</span><span class="ActionScriptOperator">?</span> <span class="ActionScriptDefault_Text">_texture</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">bitmapData</span> : <span class="ActionScriptReserved">null</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptReserved">set</span> <span class="ActionScriptDefault_Text">bitmapData</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">value</span> : <span class="ActionScriptDefault_Text">BitmapData</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptReserved">void</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptOperator">!</span><span class="ActionScriptDefault_Text">value</span> <span class="ActionScriptOperator">||</span> <span class="ActionScriptOperator">!</span><span class="ActionScriptDefault_Text">_useTexture</span><span class="ActionScriptBracket/Brace">)</span>
+                <span class="ActionScriptDefault_Text">invalidateShaderProgram</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+
+            <span class="ActionScriptDefault_Text">_useTexture</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">Boolean</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">value</span><span class="ActionScriptBracket/Brace">)</span>;
+
+            <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">_useTexture</span><span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptBracket/Brace">{</span>
+                <span class="ActionScriptDefault_Text">_texture</span> <span class="ActionScriptOperator">||=</span> <span class="ActionScriptReserved">new</span> <span class="ActionScriptDefault_Text">Texture3DProxy</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">_mipmapBitmap</span><span class="ActionScriptBracket/Brace">)</span>;
+                <span class="ActionScriptDefault_Text">_texture</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">bitmapData</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">value</span>;
+            <span class="ActionScriptBracket/Brace">}</span>
+            <span class="ActionScriptReserved">else</span> <span class="ActionScriptBracket/Brace">{</span>
+                <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">_texture</span><span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptBracket/Brace">{</span>
+                    <span class="ActionScriptDefault_Text">_texture</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">dispose</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptReserved">false</span><span class="ActionScriptBracket/Brace">)</span>;
+                    <span class="ActionScriptDefault_Text">_texture</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptReserved">null</span>;
+                <span class="ActionScriptBracket/Brace">}</span>
+            <span class="ActionScriptBracket/Brace">}</span>
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptASDoc">/**
+         * Marks the texture for update next on the next render.
+         */</span>
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">invalidateBitmapData</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptReserved">void</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptDefault_Text">_texture</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">invalidateContent</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptASDoc">/**
+         * Copies the state from a BasicSpecularMethod object into the current object.
+         */</span>
+        <span class="ActionScriptReserved">override</span> <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">copyFrom</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">method</span> : <span class="ActionScriptDefault_Text">ShadingMethodBase</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptReserved">void</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">spec</span> : <span class="ActionScriptDefault_Text">BasicSpecularMethod</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">BasicSpecularMethod</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">method</span><span class="ActionScriptBracket/Brace">)</span>;
+            <span class="ActionScriptDefault_Text">smooth</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">spec</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">smooth</span>;
+            <span class="ActionScriptDefault_Text">repeat</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">spec</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">repeat</span>;
+            <span class="ActionScriptDefault_Text">mipmap</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">spec</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">mipmap</span>;
+            <span class="ActionScriptDefault_Text">numLights</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">spec</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">numLights</span>;
+            <span class="ActionScriptDefault_Text">bitmapData</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">spec</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">bitmapData</span>;
+            <span class="ActionScriptDefault_Text">specular</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">spec</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">specular</span>;
+            <span class="ActionScriptDefault_Text">specularColor</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">spec</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">specularColor</span>;
+            <span class="ActionScriptDefault_Text">gloss</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">spec</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">gloss</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptASDoc">/**
+         * @inheritDoc
+         */</span>
+        <span class="ActionScriptReserved">override</span> <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">dispose</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">deep</span> : <span class="ActionScriptDefault_Text">Boolean</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptReserved">void</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">_texture</span><span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptDefault_Text">_texture</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">dispose</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">deep</span><span class="ActionScriptBracket/Brace">)</span>;
+            <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">_mipmapBitmap</span><span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptDefault_Text">_mipmapBitmap</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">dispose</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptASDoc">/**
+         * @inheritDoc
+         */</span>
+        <span class="ActionScriptReserved">override</span> <span class="ActionScriptDefault_Text">arcane</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptReserved">set</span> <span class="ActionScriptDefault_Text">numLights</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">value</span> : <span class="ActionScriptDefault_Text">int</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptReserved">void</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptDefault_Text">_needsNormals</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">value</span> <span class="ActionScriptOperator">&gt;</span> 0;
+            <span class="ActionScriptReserved">super</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">numLights</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">value</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptASDoc">/**
+         * @inheritDoc
+         */</span>
+        <span class="ActionScriptReserved">override</span> <span class="ActionScriptDefault_Text">arcane</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptReserved">get</span> <span class="ActionScriptDefault_Text">needsView</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">Boolean</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptReserved">true</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptASDoc">/**
+         * @inheritDoc
+         */</span>
+        <span class="ActionScriptReserved">override</span> <span class="ActionScriptDefault_Text">arcane</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptReserved">get</span> <span class="ActionScriptDefault_Text">needsUV</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">Boolean</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptDefault_Text">_useTexture</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptASDoc">/**
+         * @inheritDoc
+         */</span>
+        <span class="ActionScriptDefault_Text">arcane</span> <span class="ActionScriptReserved">override</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">reset</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptReserved">void</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">super</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">reset</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+            <span class="ActionScriptDefault_Text">_shadowRegister</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptReserved">null</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptASDoc">/**
+         * @inheritDoc
+         */</span>
+        <span class="ActionScriptReserved">override</span> <span class="ActionScriptDefault_Text">arcane</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">getFragmentAGALPreLightingCode</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">regCache</span> : <span class="ActionScriptDefault_Text">ShaderRegisterCache</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">String</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">code</span> : <span class="ActionScriptDefault_Text">String</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptString">""</span>;
+
+            <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">_numLights</span> <span class="ActionScriptOperator">&gt;</span> 0<span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptBracket/Brace">{</span>
+                <span class="ActionScriptDefault_Text">_specularDataRegister</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">regCache</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">getFreeFragmentConstant</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+                <span class="ActionScriptDefault_Text">_specularDataIndex</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">_specularDataRegister</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">index</span>;
+
+                <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">_useTexture</span><span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptBracket/Brace">{</span>
+                    <span class="ActionScriptDefault_Text">_specularTexData</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">regCache</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">getFreeFragmentVectorTemp</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+                    <span class="ActionScriptDefault_Text">regCache</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">addFragmentTempUsages</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">_specularTexData</span><span class="ActionScriptOperator">,</span> 1<span class="ActionScriptBracket/Brace">)</span>;
+                    <span class="ActionScriptDefault_Text">_specularTextureRegister</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">regCache</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">getFreeTextureReg</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+                    <span class="ActionScriptDefault_Text">_specularTexIndex</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">_specularTextureRegister</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">index</span>;
+                    <span class="ActionScriptDefault_Text">code</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">getTexSampleCode</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">_specularTexData</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">_specularTextureRegister</span><span class="ActionScriptBracket/Brace">)</span>;
+                <span class="ActionScriptBracket/Brace">}</span>
+                <span class="ActionScriptReserved">else</span>
+                    <span class="ActionScriptDefault_Text">_specularTextureRegister</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptReserved">null</span>;
+
+                <span class="ActionScriptDefault_Text">_totalLightColorReg</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">regCache</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">getFreeFragmentVectorTemp</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+                <span class="ActionScriptDefault_Text">regCache</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">addFragmentTempUsages</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">_totalLightColorReg</span><span class="ActionScriptOperator">,</span> 1<span class="ActionScriptBracket/Brace">)</span>;
+            <span class="ActionScriptBracket/Brace">}</span>
+            <span class="ActionScriptReserved">else</span> <span class="ActionScriptBracket/Brace">{</span>
+                <span class="ActionScriptDefault_Text">_specularDataRegister</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptReserved">null</span>;
+                <span class="ActionScriptDefault_Text">_specularTextureRegister</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptReserved">null</span>;
+            <span class="ActionScriptBracket/Brace">}</span>
+
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptDefault_Text">code</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptASDoc">/**
+         * @inheritDoc
+         */</span>
+        <span class="ActionScriptReserved">override</span> <span class="ActionScriptDefault_Text">arcane</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">getFragmentCodePerLight</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">lightIndex</span> : <span class="ActionScriptDefault_Text">int</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">lightDirReg</span> : <span class="ActionScriptDefault_Text">ShaderRegisterElement</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">lightColReg</span> : <span class="ActionScriptDefault_Text">ShaderRegisterElement</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">regCache</span> : <span class="ActionScriptDefault_Text">ShaderRegisterCache</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">String</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">code</span> : <span class="ActionScriptDefault_Text">String</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptString">""</span>;
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">t</span> : <span class="ActionScriptDefault_Text">ShaderRegisterElement</span>;
+
+            <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">lightIndex</span> <span class="ActionScriptOperator">&gt;</span> 0<span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptBracket/Brace">{</span>
+                <span class="ActionScriptDefault_Text">t</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">regCache</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">getFreeFragmentVectorTemp</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+                <span class="ActionScriptDefault_Text">regCache</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">addFragmentTempUsages</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">t</span><span class="ActionScriptOperator">,</span> 1<span class="ActionScriptBracket/Brace">)</span>;
+            <span class="ActionScriptBracket/Brace">}</span>
+            <span class="ActionScriptReserved">else</span> <span class="ActionScriptDefault_Text">t</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">_totalLightColorReg</span>;
+
+            <span class="ActionScriptComment">// half vector
+</span>            <span class="ActionScriptDefault_Text">code</span> <span class="ActionScriptOperator">+=</span> <span class="ActionScriptDefault_Text">AGAL</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">add</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">t</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">".xyz"</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">lightDirReg</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">".xyz"</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">_viewDirFragmentReg</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">".xyz"</span><span class="ActionScriptBracket/Brace">)</span>;
+            <span class="ActionScriptDefault_Text">code</span> <span class="ActionScriptOperator">+=</span> <span class="ActionScriptDefault_Text">AGAL</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">normalize</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">t</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">".xyz"</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">t</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">".xyz"</span><span class="ActionScriptBracket/Brace">)</span>;
+            <span class="ActionScriptDefault_Text">code</span> <span class="ActionScriptOperator">+=</span> <span class="ActionScriptDefault_Text">AGAL</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">dp3</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">t</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">".w"</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">_normalFragmentReg</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">".xyz"</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">t</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">".xyz"</span><span class="ActionScriptBracket/Brace">)</span>;
+            <span class="ActionScriptDefault_Text">code</span> <span class="ActionScriptOperator">+=</span> <span class="ActionScriptDefault_Text">AGAL</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">sat</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">t</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">".w"</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">t</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">".w"</span><span class="ActionScriptBracket/Brace">)</span>;
+
+            <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">_useTexture</span><span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptBracket/Brace">{</span>
+                <span class="ActionScriptDefault_Text">code</span> <span class="ActionScriptOperator">+=</span> <span class="ActionScriptDefault_Text">AGAL</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">mul</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">_specularTexData</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">".w"</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">_specularTexData</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">".y"</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">_specularDataRegister</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">".w"</span><span class="ActionScriptBracket/Brace">)</span>;
+                <span class="ActionScriptDefault_Text">code</span> <span class="ActionScriptOperator">+=</span> <span class="ActionScriptDefault_Text">AGAL</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">pow</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">t</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">".w"</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">t</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">".w"</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">_specularTexData</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">".w"</span><span class="ActionScriptBracket/Brace">)</span>;
+            <span class="ActionScriptBracket/Brace">}</span>
+            <span class="ActionScriptReserved">else</span>
+                <span class="ActionScriptDefault_Text">code</span> <span class="ActionScriptOperator">+=</span> <span class="ActionScriptDefault_Text">AGAL</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">pow</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">t</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">".w"</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">t</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">".w"</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">_specularDataRegister</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">".w"</span><span class="ActionScriptBracket/Brace">)</span>;
+
+            <span class="ActionScriptComment">// attenuate
+</span>            <span class="ActionScriptDefault_Text">code</span> <span class="ActionScriptOperator">+=</span> <span class="ActionScriptDefault_Text">AGAL</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">mul</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">t</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">".w"</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">t</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">".w"</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">lightDirReg</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">".w"</span><span class="ActionScriptBracket/Brace">)</span>;
+
+            <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">_modulateMethod</span> <span class="ActionScriptOperator">!=</span> <span class="ActionScriptReserved">null</span><span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptDefault_Text">code</span> <span class="ActionScriptOperator">+=</span> <span class="ActionScriptDefault_Text">_modulateMethod</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">t</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">regCache</span><span class="ActionScriptBracket/Brace">)</span>;
+
+            <span class="ActionScriptDefault_Text">code</span> <span class="ActionScriptOperator">+=</span> <span class="ActionScriptDefault_Text">AGAL</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">mul</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">t</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">".xyz"</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">lightColReg</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">".xyz"</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">t</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">".w"</span><span class="ActionScriptBracket/Brace">)</span>;
+
+            <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">lightIndex</span> <span class="ActionScriptOperator">&gt;</span> 0<span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptBracket/Brace">{</span>
+                <span class="ActionScriptDefault_Text">code</span> <span class="ActionScriptOperator">+=</span> <span class="ActionScriptDefault_Text">AGAL</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">add</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">_totalLightColorReg</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">".xyz"</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">_totalLightColorReg</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">".xyz"</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">t</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">".xyz"</span><span class="ActionScriptBracket/Brace">)</span>;
+                <span class="ActionScriptDefault_Text">regCache</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">removeFragmentTempUsage</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">t</span><span class="ActionScriptBracket/Brace">)</span>;
+            <span class="ActionScriptBracket/Brace">}</span>
+
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptDefault_Text">code</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptASDoc">/**
+         * @inheritDoc
+         */</span>
+        <span class="ActionScriptReserved">override</span> <span class="ActionScriptDefault_Text">arcane</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">getFragmentPostLightingCode</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">regCache</span> : <span class="ActionScriptDefault_Text">ShaderRegisterCache</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">targetReg</span> : <span class="ActionScriptDefault_Text">ShaderRegisterElement</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">String</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">code</span> : <span class="ActionScriptDefault_Text">String</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptString">""</span>;
+
+            <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">_numLights</span> <span class="ActionScriptOperator">==</span> 0<span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptBracket/Brace">{</span>
+                <span class="ActionScriptDefault_Text">_specularTextureRegister</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptReserved">null</span>;
+                <span class="ActionScriptReserved">return</span> <span class="ActionScriptString">""</span>;
+            <span class="ActionScriptBracket/Brace">}</span>
+
+            <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">_shadowRegister</span><span class="ActionScriptBracket/Brace">)</span>
+                <span class="ActionScriptDefault_Text">code</span> <span class="ActionScriptOperator">+=</span> <span class="ActionScriptDefault_Text">AGAL</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">mul</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">_totalLightColorReg</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">".xyz"</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">_totalLightColorReg</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">".xyz"</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">_shadowRegister</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">".w"</span><span class="ActionScriptBracket/Brace">)</span>;
+
+            <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">_useTexture</span><span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptBracket/Brace">{</span>
+                <span class="ActionScriptDefault_Text">code</span> <span class="ActionScriptOperator">+=</span> <span class="ActionScriptDefault_Text">AGAL</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">mul</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">_totalLightColorReg</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">".xyz"</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">_totalLightColorReg</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">".xyz"</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">_specularTexData</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">".x"</span><span class="ActionScriptBracket/Brace">)</span>;
+                <span class="ActionScriptDefault_Text">regCache</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">removeFragmentTempUsage</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">_specularTexData</span><span class="ActionScriptBracket/Brace">)</span>;
+            <span class="ActionScriptBracket/Brace">}</span>
+
+            <span class="ActionScriptDefault_Text">code</span> <span class="ActionScriptOperator">+=</span> <span class="ActionScriptDefault_Text">AGAL</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">mul</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">_totalLightColorReg</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">".xyz"</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">_totalLightColorReg</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">".xyz"</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">_specularDataRegister</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">".xyz"</span><span class="ActionScriptBracket/Brace">)</span>;
+            <span class="ActionScriptDefault_Text">code</span> <span class="ActionScriptOperator">+=</span> <span class="ActionScriptDefault_Text">AGAL</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">add</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">targetReg</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">".xyz"</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">targetReg</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">".xyz"</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">_totalLightColorReg</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">".xyz"</span><span class="ActionScriptBracket/Brace">)</span>;
+            <span class="ActionScriptDefault_Text">regCache</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">removeFragmentTempUsage</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">_totalLightColorReg</span><span class="ActionScriptBracket/Brace">)</span>;
+
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptDefault_Text">code</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptASDoc">/**
+         * The register element containing the specular data.
+         *
+         * @private
+         */</span>
+        <span class="ActionScriptDefault_Text">arcane</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptReserved">get</span> <span class="ActionScriptDefault_Text">specularDataRegister</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">ShaderRegisterElement</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptDefault_Text">_specularDataRegister</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptASDoc">/**
+         * The register element containing the specular map data.
+         *
+         * @private
+         */</span>
+        <span class="ActionScriptDefault_Text">arcane</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptReserved">get</span> <span class="ActionScriptDefault_Text">specularTextureRegister</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">ShaderRegisterElement</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptDefault_Text">_specularTextureRegister</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptASDoc">/**
+         * @inheritDoc
+         */</span>
+        <span class="ActionScriptDefault_Text">arcane</span> <span class="ActionScriptReserved">override</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">activate</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">context</span> : <span class="ActionScriptDefault_Text">Context3D</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">contextIndex</span> : <span class="ActionScriptDefault_Text">uint</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptReserved">void</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">super</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">activate</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">context</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">contextIndex</span><span class="ActionScriptBracket/Brace">)</span>;
+            <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">_numLights</span> <span class="ActionScriptOperator">==</span> 0<span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptReserved">return</span>;
+
+            <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">_useTexture</span><span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptDefault_Text">context</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">setTextureAt</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">_specularTexIndex</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">_texture</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">getTextureForContext</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">context</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">contextIndex</span><span class="ActionScriptBracket/Brace">)</span><span class="ActionScriptBracket/Brace">)</span>;
+            <span class="ActionScriptDefault_Text">context</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">setProgramConstantsFromVector</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">Context3DProgramType</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">FRAGMENT</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">_specularDataIndex</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">_specularData</span><span class="ActionScriptOperator">,</span> 1<span class="ActionScriptBracket/Brace">)</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptDefault_Text">arcane</span> <span class="ActionScriptReserved">override</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">deactivate</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">context</span> : <span class="ActionScriptDefault_Text">Context3D</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptReserved">void</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">_useTexture</span><span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptDefault_Text">context</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">setTextureAt</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">_specularTexIndex</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptReserved">null</span><span class="ActionScriptBracket/Brace">)</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptASDoc">/**
+         * Updates the specular color data used by the render state.
+         */</span>
+        <span class="ActionScriptReserved">private</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">updateSpecular</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptReserved">void</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptDefault_Text">_specularData</span><span class="ActionScriptBracket/Brace">[</span>0<span class="ActionScriptBracket/Brace">]</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">_specularR</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">_specularColor</span> <span class="ActionScriptOperator">&gt;&gt;</span> 16<span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptOperator">&amp;</span> 0xff<span class="ActionScriptBracket/Brace">)</span><span class="ActionScriptOperator">/</span>0xff<span class="ActionScriptOperator">*</span><span class="ActionScriptDefault_Text">_specular</span>;
+            <span class="ActionScriptDefault_Text">_specularData</span><span class="ActionScriptBracket/Brace">[</span>1<span class="ActionScriptBracket/Brace">]</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">_specularG</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">_specularColor</span> <span class="ActionScriptOperator">&gt;&gt;</span> 8<span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptOperator">&amp;</span> 0xff<span class="ActionScriptBracket/Brace">)</span><span class="ActionScriptOperator">/</span>0xff<span class="ActionScriptOperator">*</span><span class="ActionScriptDefault_Text">_specular</span>;
+            <span class="ActionScriptDefault_Text">_specularData</span><span class="ActionScriptBracket/Brace">[</span>2<span class="ActionScriptBracket/Brace">]</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">_specularB</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">_specularColor</span> <span class="ActionScriptOperator">&amp;</span> 0xff<span class="ActionScriptBracket/Brace">)</span><span class="ActionScriptOperator">/</span>0xff<span class="ActionScriptOperator">*</span><span class="ActionScriptDefault_Text">_specular</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptReserved">set</span> <span class="ActionScriptDefault_Text">shadowRegister</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">shadowReg</span> : <span class="ActionScriptDefault_Text">ShaderRegisterElement</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptReserved">void</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptDefault_Text">_shadowRegister</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">shadowReg</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+    <span class="ActionScriptBracket/Brace">}</span>
+<span class="ActionScriptBracket/Brace">}</span>
+</pre></body>
+</html>

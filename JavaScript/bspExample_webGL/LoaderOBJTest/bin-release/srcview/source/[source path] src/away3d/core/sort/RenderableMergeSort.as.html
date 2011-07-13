@@ -1,0 +1,158 @@
+<!-- saved from url=(0014)about:internet -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>RenderableMergeSort.as</title>
+<link rel="stylesheet" type="text/css" href="../../../../../SourceStyles.css"/>
+</head>
+
+<body><pre><span class="ActionScriptpackage">package</span> <span class="ActionScriptDefault_Text">away3d</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">core</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">sort</span>
+<span class="ActionScriptBracket/Brace">{</span>
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">away3d</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">arcane</span>;
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">away3d</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">core</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">base</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">IRenderable</span>;
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">away3d</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">core</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">data</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">RenderableListItem</span>;
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">away3d</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">core</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">traverse</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">EntityCollector</span>;
+
+    <span class="ActionScriptReserved">use</span> <span class="ActionScriptReserved">namespace</span> <span class="ActionScriptDefault_Text">arcane</span>;
+
+    <span class="ActionScriptASDoc">/**
+     * RenderableSorter sorts the potentially visible IRenderable objects collected by EntityCollector for optimal
+     * rendering performance. Objects are sorted first by material, then by distance to the camera. Opaque objects
+     * are sorted front to back, while objects that require blending are sorted back to front, to ensure correct
+     * blending.
+     */</span>
+    <span class="ActionScriptReserved">public</span> <span class="ActionScriptclass">class</span> <span class="ActionScriptDefault_Text">RenderableMergeSort</span> <span class="ActionScriptReserved">extends</span> <span class="ActionScriptDefault_Text">EntitySorterBase</span>
+    <span class="ActionScriptBracket/Brace">{</span>
+        <span class="ActionScriptASDoc">/**
+         * Creates a RenderableSorter objects
+         */</span>
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">RenderableMergeSort</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptASDoc">/**
+         * @inheritDoc
+         */</span>
+        <span class="ActionScriptReserved">override</span> <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">sort</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">collector</span> : <span class="ActionScriptDefault_Text">EntityCollector</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptReserved">void</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptDefault_Text">collector</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">opaqueRenderableHead</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">mergeSort</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">collector</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">opaqueRenderableHead</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptReserved">true</span><span class="ActionScriptBracket/Brace">)</span>;
+            <span class="ActionScriptDefault_Text">collector</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">blendedRenderableHead</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">mergeSort</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">collector</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">blendedRenderableHead</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptReserved">false</span><span class="ActionScriptBracket/Brace">)</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptReserved">private</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">mergeSort</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">head</span> : <span class="ActionScriptDefault_Text">RenderableListItem</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">useMaterial</span> : <span class="ActionScriptDefault_Text">Boolean</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">RenderableListItem</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">headB</span> : <span class="ActionScriptDefault_Text">RenderableListItem</span>;
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">fast</span> : <span class="ActionScriptDefault_Text">RenderableListItem</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">slow</span> : <span class="ActionScriptDefault_Text">RenderableListItem</span>;
+
+            <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptOperator">!</span><span class="ActionScriptDefault_Text">head</span> <span class="ActionScriptOperator">||</span> <span class="ActionScriptOperator">!</span><span class="ActionScriptDefault_Text">head</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">next</span><span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptReserved">return</span> <span class="ActionScriptDefault_Text">head</span>;
+
+            <span class="ActionScriptComment">// split in two sublists
+</span>            <span class="ActionScriptDefault_Text">slow</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">head</span>;
+            <span class="ActionScriptDefault_Text">fast</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">head</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">next</span>;
+
+            <span class="ActionScriptReserved">while</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">fast</span><span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptBracket/Brace">{</span>
+                <span class="ActionScriptDefault_Text">fast</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">fast</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">next</span>;
+                <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">fast</span><span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptBracket/Brace">{</span>
+                    <span class="ActionScriptDefault_Text">slow</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">slow</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">next</span>;
+                    <span class="ActionScriptDefault_Text">fast</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">fast</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">next</span>;
+                <span class="ActionScriptBracket/Brace">}</span>
+            <span class="ActionScriptBracket/Brace">}</span>
+
+            <span class="ActionScriptDefault_Text">headB</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">slow</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">next</span>;
+            <span class="ActionScriptDefault_Text">slow</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">next</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptReserved">null</span>;
+
+            <span class="ActionScriptComment">// recurse
+</span>            <span class="ActionScriptDefault_Text">head</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">mergeSort</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">head</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">useMaterial</span><span class="ActionScriptBracket/Brace">)</span>;
+            <span class="ActionScriptDefault_Text">headB</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">mergeSort</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">headB</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">useMaterial</span><span class="ActionScriptBracket/Brace">)</span>;
+
+            <span class="ActionScriptComment">// merge sublists while respecting order
+</span>            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">result</span> : <span class="ActionScriptDefault_Text">RenderableListItem</span>;
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">curr</span> : <span class="ActionScriptDefault_Text">RenderableListItem</span>;
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">l</span> : <span class="ActionScriptDefault_Text">RenderableListItem</span>;
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">cmp</span> : <span class="ActionScriptDefault_Text">int</span>;
+
+            <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptOperator">!</span><span class="ActionScriptDefault_Text">head</span><span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptReserved">return</span> <span class="ActionScriptDefault_Text">headB</span>;
+            <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptOperator">!</span><span class="ActionScriptDefault_Text">headB</span><span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptReserved">return</span> <span class="ActionScriptDefault_Text">head</span>;
+
+            <span class="ActionScriptReserved">while</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">head</span> <span class="ActionScriptOperator">&amp;&amp;</span> <span class="ActionScriptDefault_Text">headB</span><span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptBracket/Brace">{</span>
+
+                <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">useMaterial</span><span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptBracket/Brace">{</span>
+                    <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">aid</span> : <span class="ActionScriptDefault_Text">uint</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">head</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">materialId</span>;
+                    <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">bid</span> : <span class="ActionScriptDefault_Text">uint</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">headB</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">materialId</span>;
+
+                    <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">aid</span> <span class="ActionScriptOperator">==</span> <span class="ActionScriptDefault_Text">bid</span><span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptBracket/Brace">{</span>
+                        <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">head</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">zIndex</span> <span class="ActionScriptOperator">&lt;</span> <span class="ActionScriptDefault_Text">headB</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">zIndex</span><span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptDefault_Text">cmp</span> <span class="ActionScriptOperator">=</span> 1;
+                        <span class="ActionScriptReserved">else</span> <span class="ActionScriptDefault_Text">cmp</span> <span class="ActionScriptOperator">=</span> -1;
+                    <span class="ActionScriptBracket/Brace">}</span>
+                    <span class="ActionScriptReserved">else</span> <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">aid</span> <span class="ActionScriptOperator">&gt;</span> <span class="ActionScriptDefault_Text">bid</span><span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptDefault_Text">cmp</span> <span class="ActionScriptOperator">=</span> 1;
+                    <span class="ActionScriptReserved">else</span> <span class="ActionScriptDefault_Text">cmp</span> <span class="ActionScriptOperator">=</span> -1;
+                <span class="ActionScriptBracket/Brace">}</span>
+                <span class="ActionScriptReserved">else</span> <span class="ActionScriptBracket/Brace">{</span>
+                    <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">head</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">zIndex</span> <span class="ActionScriptOperator">&lt;</span> <span class="ActionScriptDefault_Text">headB</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">zIndex</span><span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptDefault_Text">cmp</span> <span class="ActionScriptOperator">=</span> -1;
+                    <span class="ActionScriptReserved">else</span> <span class="ActionScriptDefault_Text">cmp</span> <span class="ActionScriptOperator">=</span> 1;
+                <span class="ActionScriptBracket/Brace">}</span>
+
+                <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">cmp</span> <span class="ActionScriptOperator">&lt;</span> 0<span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptBracket/Brace">{</span>
+                    <span class="ActionScriptDefault_Text">l</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">head</span>;
+                    <span class="ActionScriptDefault_Text">head</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">head</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">next</span>;
+                <span class="ActionScriptBracket/Brace">}</span>
+                <span class="ActionScriptReserved">else</span> <span class="ActionScriptBracket/Brace">{</span>
+                    <span class="ActionScriptDefault_Text">l</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">headB</span>;
+                    <span class="ActionScriptDefault_Text">headB</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">headB</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">next</span>;
+                <span class="ActionScriptBracket/Brace">}</span>
+
+                <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptOperator">!</span><span class="ActionScriptDefault_Text">result</span><span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptBracket/Brace">{</span>
+                    <span class="ActionScriptDefault_Text">result</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">l</span>;
+                    <span class="ActionScriptDefault_Text">curr</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">l</span>;
+                <span class="ActionScriptBracket/Brace">}</span>
+                <span class="ActionScriptReserved">else</span> <span class="ActionScriptBracket/Brace">{</span>
+                    <span class="ActionScriptDefault_Text">curr</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">next</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">l</span>;
+                    <span class="ActionScriptDefault_Text">curr</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">l</span>;
+                <span class="ActionScriptBracket/Brace">}</span>
+            <span class="ActionScriptBracket/Brace">}</span>
+
+            <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">head</span><span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptDefault_Text">curr</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">next</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">head</span>;
+            <span class="ActionScriptReserved">else</span> <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">headB</span><span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptDefault_Text">curr</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">next</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">headB</span>;
+
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptDefault_Text">result</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+
+        <span class="ActionScriptASDoc">/**
+         * Sorts per material, then per zIndex, front to back, for opaques
+         *
+         * is inlined
+         */</span>
+        <span class="ActionScriptComment">/*private function opaqueSortFunction(a : IRenderable, b : IRenderable) : int
+        {
+            var aid : uint = a.material.uniqueId;
+            var bid : uint = b.material.uniqueId;
+
+            if (aid == bid) {
+                var za : Number = a.zIndex;
+                var zb : Number = b.zIndex;
+                if (za == zb) return 0;
+                else if (za &lt; zb) return 1;
+                else return -1;
+            }
+            else if (aid &gt; bid) return 1;
+            else return -1;
+        }*/</span>
+
+        <span class="ActionScriptASDoc">/**
+         * Sorts per material, but back to front, for materials that require blending
+         *
+         * is inlined
+         */</span>
+        <span class="ActionScriptComment">/*private function blendedSortFunction(a : IRenderable, b : IRenderable) : int
+        {
+            var za : Number = a.zIndex;
+            var zb : Number = b.zIndex;
+            if (za == zb) return 0;
+            else if (za &lt; zb) return -1;
+            else return 1;
+        }*/</span>
+    <span class="ActionScriptBracket/Brace">}</span>
+<span class="ActionScriptBracket/Brace">}</span></pre></body>
+</html>

@@ -1,0 +1,157 @@
+<!-- saved from url=(0014)about:internet -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>Segment.as</title>
+<link rel="stylesheet" type="text/css" href="../../../../../SourceStyles.css"/>
+</head>
+
+<body><pre><span class="ActionScriptpackage">package</span> <span class="ActionScriptDefault_Text">away3d</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">primitives</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">data</span>
+<span class="ActionScriptBracket/Brace">{</span>
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">away3d</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">arcane</span>;
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">away3d</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">entities</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">SegmentSet</span>;
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">flash</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">geom</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">Vector3D</span>;
+    
+    <span class="ActionScriptReserved">use</span> <span class="ActionScriptReserved">namespace</span> <span class="ActionScriptDefault_Text">arcane</span>;
+    
+    <span class="ActionScriptReserved">public</span> <span class="ActionScriptclass">class</span> <span class="ActionScriptDefault_Text">Segment</span>
+    <span class="ActionScriptBracket/Brace">{</span>
+        <span class="ActionScriptDefault_Text">arcane</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_segmentsBase</span>:<span class="ActionScriptDefault_Text">SegmentSet</span>;
+        <span class="ActionScriptDefault_Text">arcane</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_thickness</span>:<span class="ActionScriptDefault_Text">Number</span>;
+        <span class="ActionScriptReserved">private</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_index</span>:<span class="ActionScriptDefault_Text">uint</span>;
+        <span class="ActionScriptDefault_Text">arcane</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_start</span> : <span class="ActionScriptDefault_Text">Vector3D</span>;
+        <span class="ActionScriptDefault_Text">arcane</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_end</span> : <span class="ActionScriptDefault_Text">Vector3D</span>;
+        <span class="ActionScriptReserved">private</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_startColor</span> : <span class="ActionScriptDefault_Text">uint</span>;
+        <span class="ActionScriptReserved">private</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_endColor</span> : <span class="ActionScriptDefault_Text">uint</span>;
+        <span class="ActionScriptDefault_Text">arcane</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_startR</span> : <span class="ActionScriptDefault_Text">Number</span>;
+        <span class="ActionScriptDefault_Text">arcane</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_startG</span> : <span class="ActionScriptDefault_Text">Number</span>;
+        <span class="ActionScriptDefault_Text">arcane</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_startB</span> : <span class="ActionScriptDefault_Text">Number</span>;
+        <span class="ActionScriptDefault_Text">arcane</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_endR</span> : <span class="ActionScriptDefault_Text">Number</span>;
+        <span class="ActionScriptDefault_Text">arcane</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_endG</span> : <span class="ActionScriptDefault_Text">Number</span>;
+        <span class="ActionScriptDefault_Text">arcane</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_endB</span> : <span class="ActionScriptDefault_Text">Number</span>;
+
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">Segment</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">start</span>:<span class="ActionScriptDefault_Text">Vector3D</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">end</span>:<span class="ActionScriptDefault_Text">Vector3D</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">anchor</span>:<span class="ActionScriptDefault_Text">Vector3D</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">color0</span>:<span class="ActionScriptDefault_Text">uint</span> <span class="ActionScriptOperator">=</span> 0x333333<span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">color1</span>:<span class="ActionScriptDefault_Text">uint</span> <span class="ActionScriptOperator">=</span> 0x333333<span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">thickness</span>:<span class="ActionScriptDefault_Text">Number</span> <span class="ActionScriptOperator">=</span> 1<span class="ActionScriptBracket/Brace">)</span>:<span class="ActionScriptReserved">void</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptDefault_Text">_thickness</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">thickness</span> <span class="ActionScriptOperator">*</span>.5;
+            <span class="ActionScriptComment">// TODO: add support for curve using anchor v1
+</span>            <span class="ActionScriptComment">// Prefer removing v1 from this, and make Curve a separate class extending Segment? (- David)
+</span>            <span class="ActionScriptDefault_Text">_start</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">start</span>;
+            <span class="ActionScriptDefault_Text">_end</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">end</span>;
+            <span class="ActionScriptDefault_Text">startColor</span>     <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">color0</span>;
+            <span class="ActionScriptDefault_Text">endColor</span>     <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">color1</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">updateSegment</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">start</span>:<span class="ActionScriptDefault_Text">Vector3D</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">end</span>:<span class="ActionScriptDefault_Text">Vector3D</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">anchor</span>:<span class="ActionScriptDefault_Text">Vector3D</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">startColor</span>:<span class="ActionScriptDefault_Text">uint</span> <span class="ActionScriptOperator">=</span> 0x333333<span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">endColor</span>:<span class="ActionScriptDefault_Text">uint</span> <span class="ActionScriptOperator">=</span> 0x333333<span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">thickness</span>:<span class="ActionScriptDefault_Text">Number</span> <span class="ActionScriptOperator">=</span> 1<span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptReserved">void</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptDefault_Text">_start</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">start</span>;
+            <span class="ActionScriptDefault_Text">_end</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">end</span>;
+            <span class="ActionScriptDefault_Text">_startColor</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">startColor</span>;
+            <span class="ActionScriptDefault_Text">_endColor</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">endColor</span>;
+            <span class="ActionScriptDefault_Text">_thickness</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">thickness</span>;
+            <span class="ActionScriptDefault_Text">update</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptASDoc">/**
+         * Defines the starting vertex.
+         */</span>
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptReserved">get</span> <span class="ActionScriptDefault_Text">start</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>:<span class="ActionScriptDefault_Text">Vector3D</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptDefault_Text">_start</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptReserved">set</span> <span class="ActionScriptDefault_Text">start</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">value</span>:<span class="ActionScriptDefault_Text">Vector3D</span><span class="ActionScriptBracket/Brace">)</span>:<span class="ActionScriptReserved">void</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptDefault_Text">_start</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">value</span>;
+
+            <span class="ActionScriptDefault_Text">update</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+        
+        <span class="ActionScriptASDoc">/**
+         * Defines the ending vertex.
+         */</span>
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptReserved">get</span> <span class="ActionScriptDefault_Text">end</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>:<span class="ActionScriptDefault_Text">Vector3D</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptDefault_Text">_end</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+        
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptReserved">set</span> <span class="ActionScriptDefault_Text">end</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">value</span>:<span class="ActionScriptDefault_Text">Vector3D</span><span class="ActionScriptBracket/Brace">)</span>:<span class="ActionScriptReserved">void</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+             <span class="ActionScriptDefault_Text">_end</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">value</span>;
+
+            <span class="ActionScriptDefault_Text">update</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+        
+        <span class="ActionScriptASDoc">/**
+         * Defines the ending vertex.
+         */</span>
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptReserved">get</span> <span class="ActionScriptDefault_Text">thickness</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>:<span class="ActionScriptDefault_Text">Number</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptDefault_Text">_thickness</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+        
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptReserved">set</span> <span class="ActionScriptDefault_Text">thickness</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">value</span>:<span class="ActionScriptDefault_Text">Number</span><span class="ActionScriptBracket/Brace">)</span>:<span class="ActionScriptReserved">void</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+             <span class="ActionScriptDefault_Text">_thickness</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">value</span><span class="ActionScriptOperator">*</span>.5;
+
+            <span class="ActionScriptDefault_Text">update</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+        <span class="ActionScriptASDoc">/**
+         * Defines the startColor
+         */</span>
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptReserved">get</span> <span class="ActionScriptDefault_Text">startColor</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>:<span class="ActionScriptDefault_Text">uint</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">return</span>  <span class="ActionScriptDefault_Text">_startColor</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+        
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptReserved">set</span> <span class="ActionScriptDefault_Text">startColor</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">color</span>:<span class="ActionScriptDefault_Text">uint</span><span class="ActionScriptBracket/Brace">)</span>:<span class="ActionScriptReserved">void</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+             <span class="ActionScriptDefault_Text">_startR</span> <span class="ActionScriptOperator">=</span>  <span class="ActionScriptBracket/Brace">(</span> <span class="ActionScriptBracket/Brace">(</span> <span class="ActionScriptDefault_Text">color</span> <span class="ActionScriptOperator">&gt;&gt;</span> 16 <span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptOperator">&amp;</span> 0xff <span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptOperator">/</span> 255;
+            <span class="ActionScriptDefault_Text">_startG</span> <span class="ActionScriptOperator">=</span>  <span class="ActionScriptBracket/Brace">(</span> <span class="ActionScriptBracket/Brace">(</span> <span class="ActionScriptDefault_Text">color</span> <span class="ActionScriptOperator">&gt;&gt;</span> 8 <span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptOperator">&amp;</span> 0xff <span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptOperator">/</span> 255;
+            <span class="ActionScriptDefault_Text">_startB</span> <span class="ActionScriptOperator">=</span>  <span class="ActionScriptBracket/Brace">(</span> <span class="ActionScriptDefault_Text">color</span> <span class="ActionScriptOperator">&amp;</span> 0xff <span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptOperator">/</span> 255;
+
+            <span class="ActionScriptDefault_Text">update</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+        
+        <span class="ActionScriptASDoc">/**
+         * Defines the endColor
+         */</span>
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptReserved">get</span> <span class="ActionScriptDefault_Text">endColor</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>:<span class="ActionScriptDefault_Text">uint</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+             <span class="ActionScriptReserved">return</span>  <span class="ActionScriptDefault_Text">_endColor</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+        
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptReserved">set</span> <span class="ActionScriptDefault_Text">endColor</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">color</span>:<span class="ActionScriptDefault_Text">uint</span><span class="ActionScriptBracket/Brace">)</span>:<span class="ActionScriptReserved">void</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+             <span class="ActionScriptDefault_Text">_endR</span> <span class="ActionScriptOperator">=</span>  <span class="ActionScriptBracket/Brace">(</span> <span class="ActionScriptBracket/Brace">(</span> <span class="ActionScriptDefault_Text">color</span> <span class="ActionScriptOperator">&gt;&gt;</span> 16 <span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptOperator">&amp;</span> 0xff <span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptOperator">/</span> 255;
+            <span class="ActionScriptDefault_Text">_endG</span> <span class="ActionScriptOperator">=</span>  <span class="ActionScriptBracket/Brace">(</span> <span class="ActionScriptBracket/Brace">(</span> <span class="ActionScriptDefault_Text">color</span> <span class="ActionScriptOperator">&gt;&gt;</span> 8 <span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptOperator">&amp;</span> 0xff <span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptOperator">/</span> 255;
+            <span class="ActionScriptDefault_Text">_endB</span> <span class="ActionScriptOperator">=</span>  <span class="ActionScriptBracket/Brace">(</span> <span class="ActionScriptDefault_Text">color</span> <span class="ActionScriptOperator">&amp;</span> 0xff <span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptOperator">/</span> 255;
+
+            <span class="ActionScriptDefault_Text">update</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+        
+        <span class="ActionScriptDefault_Text">arcane</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptReserved">get</span> <span class="ActionScriptDefault_Text">index</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>:<span class="ActionScriptDefault_Text">uint</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptDefault_Text">_index</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+        
+        <span class="ActionScriptDefault_Text">arcane</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptReserved">set</span> <span class="ActionScriptDefault_Text">index</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">ind</span>:<span class="ActionScriptDefault_Text">uint</span><span class="ActionScriptBracket/Brace">)</span>:<span class="ActionScriptReserved">void</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptDefault_Text">_index</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">ind</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+        
+        <span class="ActionScriptDefault_Text">arcane</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptReserved">set</span> <span class="ActionScriptDefault_Text">segmentsBase</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">segBase</span>:<span class="ActionScriptDefault_Text">SegmentSet</span><span class="ActionScriptBracket/Brace">)</span>:<span class="ActionScriptReserved">void</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptDefault_Text">_segmentsBase</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">segBase</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptReserved">private</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">update</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>:<span class="ActionScriptReserved">void</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">if</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptOperator">!</span><span class="ActionScriptDefault_Text">_segmentsBase</span><span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptReserved">return</span>;
+            <span class="ActionScriptDefault_Text">_segmentsBase</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">updateSegment</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptReserved">this</span><span class="ActionScriptBracket/Brace">)</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+    <span class="ActionScriptBracket/Brace">}</span>
+<span class="ActionScriptBracket/Brace">}</span>
+</pre></body>
+</html>

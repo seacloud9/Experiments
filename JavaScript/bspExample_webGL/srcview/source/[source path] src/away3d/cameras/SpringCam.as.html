@@ -1,0 +1,142 @@
+<!-- saved from url=(0014)about:internet -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>SpringCam.as</title>
+<link rel="stylesheet" type="text/css" href="../../../../SourceStyles.css"/>
+</head>
+
+<body><pre><span class="ActionScriptpackage">package</span> <span class="ActionScriptDefault_Text">away3d</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">cameras</span>
+<span class="ActionScriptBracket/Brace">{</span>
+  <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">away3d</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">cameras</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">Camera3D</span>;
+  <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">away3d</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">cameras</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">lenses</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">LensBase</span>;
+  <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">away3d</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">core</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">base</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">Object3D</span>;
+  <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">flash</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">geom</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">Matrix3D</span>;
+  <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">flash</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">geom</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">Vector3D</span>;
+  
+    <span class="ActionScriptASDoc">/**  
+   * v1 - 2009-01-21 b at turbulent dot ca - http://agit8.turbulent.ca
+   * v2 - 2011-03-06 Ringo - http://www.ringo.nl/en/
+   **/</span>
+   
+  <span class="ActionScriptASDoc">/**
+   * A 1st and 3d person camera(depending on positionOffset!), hooked on a physical spring on an optional target.
+   */</span>
+  <span class="ActionScriptReserved">public</span> <span class="ActionScriptclass">class</span> <span class="ActionScriptDefault_Text">SpringCam</span> <span class="ActionScriptReserved">extends</span> <span class="ActionScriptDefault_Text">Camera3D</span>
+  <span class="ActionScriptBracket/Brace">{</span>
+    <span class="ActionScriptASDoc">/**
+     * [optional] Target object3d that camera should follow. If target is null, camera behaves just like a normal Camera3D.
+     */</span>
+    <span class="ActionScriptReserved">public</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">target</span>:<span class="ActionScriptDefault_Text">Object3D</span>;
+    
+    <span class="ActionScriptComment">//spring stiffness
+</span>    <span class="ActionScriptASDoc">/**
+     * Stiffness of the spring, how hard is it to extend. The higher it is, the more "fixed" the cam will be.
+     * A number between 1 and 20 is recommended.
+     */</span>
+    <span class="ActionScriptReserved">public</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">stiffness</span>:<span class="ActionScriptDefault_Text">Number</span> <span class="ActionScriptOperator">=</span> 1;
+    
+    <span class="ActionScriptASDoc">/**
+     * Damping is the spring internal friction, or how much it resists the "boinggggg" effect. Too high and you'll lose it!
+     * A number between 1 and 20 is recommended.
+     */</span>
+    <span class="ActionScriptReserved">public</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">damping</span>:<span class="ActionScriptDefault_Text">Number</span> <span class="ActionScriptOperator">=</span> 4;
+    
+    <span class="ActionScriptASDoc">/**
+     * Mass of the camera, if over 120 and it'll be very heavy to move.
+     */</span>
+    <span class="ActionScriptReserved">public</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">mass</span>:<span class="ActionScriptDefault_Text">Number</span> <span class="ActionScriptOperator">=</span> 40;
+    
+    <span class="ActionScriptASDoc">/**
+     * Offset of spring center from target in target object space, ie: Where the camera should ideally be in the target object space.
+     */</span>
+    <span class="ActionScriptReserved">public</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">positionOffset</span>:<span class="ActionScriptDefault_Text">Vector3D</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptReserved">new</span> <span class="ActionScriptDefault_Text">Vector3D</span><span class="ActionScriptBracket/Brace">(</span>0<span class="ActionScriptOperator">,</span>5<span class="ActionScriptOperator">,</span><span class="ActionScriptOperator">-</span>50<span class="ActionScriptBracket/Brace">)</span>;
+    
+    <span class="ActionScriptASDoc">/**
+     * offset of facing in target object space, ie: where in the target object space should the camera look.
+     */</span>
+    <span class="ActionScriptReserved">public</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">lookOffset</span>:<span class="ActionScriptDefault_Text">Vector3D</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptReserved">new</span> <span class="ActionScriptDefault_Text">Vector3D</span><span class="ActionScriptBracket/Brace">(</span>0<span class="ActionScriptOperator">,</span>2<span class="ActionScriptOperator">,</span>10<span class="ActionScriptBracket/Brace">)</span>;
+    
+    <span class="ActionScriptComment">//zrot to apply to the cam
+</span>    <span class="ActionScriptReserved">private</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_zrot</span>:<span class="ActionScriptDefault_Text">Number</span> <span class="ActionScriptOperator">=</span> 0;
+    
+    <span class="ActionScriptComment">//private physics members
+</span>    <span class="ActionScriptReserved">private</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_velocity</span>:<span class="ActionScriptDefault_Text">Vector3D</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptReserved">new</span> <span class="ActionScriptDefault_Text">Vector3D</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+    <span class="ActionScriptReserved">private</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_dv</span>:<span class="ActionScriptDefault_Text">Vector3D</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptReserved">new</span> <span class="ActionScriptDefault_Text">Vector3D</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+    <span class="ActionScriptReserved">private</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_stretch</span>:<span class="ActionScriptDefault_Text">Vector3D</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptReserved">new</span> <span class="ActionScriptDefault_Text">Vector3D</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+    <span class="ActionScriptReserved">private</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_force</span>:<span class="ActionScriptDefault_Text">Vector3D</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptReserved">new</span> <span class="ActionScriptDefault_Text">Vector3D</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+    <span class="ActionScriptReserved">private</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_acceleration</span>:<span class="ActionScriptDefault_Text">Vector3D</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptReserved">new</span> <span class="ActionScriptDefault_Text">Vector3D</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+    
+    <span class="ActionScriptComment">//private target members
+</span>    <span class="ActionScriptReserved">private</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_desiredPosition</span>:<span class="ActionScriptDefault_Text">Vector3D</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptReserved">new</span> <span class="ActionScriptDefault_Text">Vector3D</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+    <span class="ActionScriptReserved">private</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_lookAtPosition</span>:<span class="ActionScriptDefault_Text">Vector3D</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptReserved">new</span> <span class="ActionScriptDefault_Text">Vector3D</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+    
+    <span class="ActionScriptComment">//private transformed members
+</span>    <span class="ActionScriptReserved">private</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_xPositionOffset</span>:<span class="ActionScriptDefault_Text">Vector3D</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptReserved">new</span> <span class="ActionScriptDefault_Text">Vector3D</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+    <span class="ActionScriptReserved">private</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_xLookOffset</span>:<span class="ActionScriptDefault_Text">Vector3D</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptReserved">new</span> <span class="ActionScriptDefault_Text">Vector3D</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+    <span class="ActionScriptReserved">private</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_xPosition</span>:<span class="ActionScriptDefault_Text">Vector3D</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptReserved">new</span> <span class="ActionScriptDefault_Text">Vector3D</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+ 
+     <span class="ActionScriptReserved">private</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_viewProjection</span> : <span class="ActionScriptDefault_Text">Matrix3D</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptReserved">new</span> <span class="ActionScriptDefault_Text">Matrix3D</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+    
+    <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">SpringCam</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">lens</span> : <span class="ActionScriptDefault_Text">LensBase</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptReserved">null</span><span class="ActionScriptBracket/Brace">)</span>
+    <span class="ActionScriptBracket/Brace">{</span>
+        <span class="ActionScriptReserved">super</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">lens</span><span class="ActionScriptBracket/Brace">)</span>;
+    <span class="ActionScriptBracket/Brace">}</span>
+    
+    <span class="ActionScriptASDoc">/**
+     * Rotation in degrees along the camera Z vector to apply to the camera after it turns towards the target .
+     */</span>
+    <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptReserved">set</span> <span class="ActionScriptDefault_Text">zrot</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">n</span>:<span class="ActionScriptDefault_Text">Number</span><span class="ActionScriptBracket/Brace">)</span>:<span class="ActionScriptReserved">void</span>
+    <span class="ActionScriptBracket/Brace">{</span>
+      <span class="ActionScriptDefault_Text">_zrot</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">n</span>;
+      <span class="ActionScriptReserved">if</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">_zrot</span> <span class="ActionScriptOperator">&lt;</span> 0.001<span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptDefault_Text">n</span> <span class="ActionScriptOperator">=</span> 0;
+    <span class="ActionScriptBracket/Brace">}</span>
+    <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptReserved">get</span> <span class="ActionScriptDefault_Text">zrot</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>:<span class="ActionScriptDefault_Text">Number</span>
+    <span class="ActionScriptBracket/Brace">{</span>
+      <span class="ActionScriptReserved">return</span> <span class="ActionScriptDefault_Text">_zrot</span>;
+    <span class="ActionScriptBracket/Brace">}</span>
+    
+    
+    <span class="ActionScriptReserved">public</span> <span class="ActionScriptReserved">override</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptReserved">get</span> <span class="ActionScriptDefault_Text">viewProjection</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>:<span class="ActionScriptDefault_Text">Matrix3D</span>
+    <span class="ActionScriptBracket/Brace">{</span>
+      <span class="ActionScriptReserved">if</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">target</span> <span class="ActionScriptOperator">!=</span> <span class="ActionScriptReserved">null</span><span class="ActionScriptBracket/Brace">)</span>
+      <span class="ActionScriptBracket/Brace">{</span>
+          
+          <span class="ActionScriptDefault_Text">_xPositionOffset</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">target</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">transform</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">deltaTransformVector</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">positionOffset</span><span class="ActionScriptBracket/Brace">)</span>;
+          <span class="ActionScriptDefault_Text">_xLookOffset</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">target</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">transform</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">deltaTransformVector</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">lookOffset</span><span class="ActionScriptBracket/Brace">)</span>;
+          
+          <span class="ActionScriptDefault_Text">_desiredPosition</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">target</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">position</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">add</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">_xPositionOffset</span><span class="ActionScriptBracket/Brace">)</span>;
+          <span class="ActionScriptDefault_Text">_lookAtPosition</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">target</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">position</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">add</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">_xLookOffset</span><span class="ActionScriptBracket/Brace">)</span>;
+          
+          <span class="ActionScriptDefault_Text">_stretch</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptReserved">this</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">position</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">subtract</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">_desiredPosition</span><span class="ActionScriptBracket/Brace">)</span>;
+          <span class="ActionScriptDefault_Text">_stretch</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">scaleBy</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptOperator">-</span><span class="ActionScriptDefault_Text">stiffness</span><span class="ActionScriptBracket/Brace">)</span>;
+          <span class="ActionScriptDefault_Text">_dv</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">_velocity</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">clone</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+          <span class="ActionScriptDefault_Text">_dv</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">scaleBy</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">damping</span><span class="ActionScriptBracket/Brace">)</span>;
+          <span class="ActionScriptDefault_Text">_force</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">_stretch</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">subtract</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">_dv</span><span class="ActionScriptBracket/Brace">)</span>;
+          
+          <span class="ActionScriptDefault_Text">_acceleration</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">_force</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">clone</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+          <span class="ActionScriptDefault_Text">_acceleration</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">scaleBy</span><span class="ActionScriptBracket/Brace">(</span>1<span class="ActionScriptOperator">/</span><span class="ActionScriptDefault_Text">mass</span><span class="ActionScriptBracket/Brace">)</span>;
+          <span class="ActionScriptDefault_Text">_velocity</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">_velocity</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">add</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">_acceleration</span><span class="ActionScriptBracket/Brace">)</span>;
+          
+          <span class="ActionScriptDefault_Text">_xPosition</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">position</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">add</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">_velocity</span><span class="ActionScriptBracket/Brace">)</span>;
+          <span class="ActionScriptDefault_Text">x</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">_xPosition</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">x</span>;
+          <span class="ActionScriptDefault_Text">y</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">_xPosition</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">y</span>;
+          <span class="ActionScriptDefault_Text">z</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">_xPosition</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">z</span>;
+          
+          <span class="ActionScriptDefault_Text">lookAt</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">_lookAtPosition</span><span class="ActionScriptBracket/Brace">)</span>;
+          
+          <span class="ActionScriptReserved">if</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">Math</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">abs</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">_zrot</span><span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptOperator">&gt;</span> 0<span class="ActionScriptBracket/Brace">)</span>
+            <span class="ActionScriptDefault_Text">rotate</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">Vector3D</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">Z_AXIS</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">_zrot</span><span class="ActionScriptBracket/Brace">)</span>;
+            
+        <span class="ActionScriptDefault_Text">_viewProjection</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">copyFrom</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">inverseSceneTransform</span><span class="ActionScriptBracket/Brace">)</span>;
+        <span class="ActionScriptDefault_Text">_viewProjection</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">append</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptReserved">this</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">lens</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">matrix</span><span class="ActionScriptBracket/Brace">)</span>;
+                
+      <span class="ActionScriptBracket/Brace">}</span>
+      
+      <span class="ActionScriptReserved">return</span> <span class="ActionScriptReserved">this</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">_viewProjection</span>;
+    <span class="ActionScriptBracket/Brace">}</span>
+    
+  <span class="ActionScriptBracket/Brace">}</span>
+<span class="ActionScriptBracket/Brace">}</span></pre></body>
+</html>

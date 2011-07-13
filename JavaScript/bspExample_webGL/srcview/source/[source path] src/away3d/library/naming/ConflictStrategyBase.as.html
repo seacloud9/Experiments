@@ -1,0 +1,85 @@
+<!-- saved from url=(0014)about:internet -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>ConflictStrategyBase.as</title>
+<link rel="stylesheet" type="text/css" href="../../../../../SourceStyles.css"/>
+</head>
+
+<body><pre><span class="ActionScriptpackage">package</span> <span class="ActionScriptDefault_Text">away3d</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">library</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">naming</span>
+<span class="ActionScriptBracket/Brace">{</span>
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">away3d</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">errors</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">AbstractMethodError</span>;
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">away3d</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">events</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">AssetEvent</span>;
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">away3d</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">library</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">assets</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">IAsset</span>;
+
+    
+    <span class="ActionScriptASDoc">/**
+     * Abstract base class for naming conflict resolution classes. Extend this to create a
+     * strategy class which the asset library can use to resolve asset naming conflicts, or
+     * use one of the bundled concrete strategy classes:
+     * 
+     * &lt;ul&gt;
+     *   &lt;li&gt;IgnoreConflictStrategy (ConflictStrategy.IGNORE)&lt;/li&gt;
+     *   &lt;li&gt;ErrorConflictStrategy (ConflictStrategy.THROW_ERROR)&lt;/li&gt;
+     *   &lt;li&gt;NumSuffixConflictStrategy (ConflictStrategy.APPEND_NUM_SUFFIX)&lt;/li&gt;
+     * &lt;/ul&gt;
+     * 
+     * @see away3d.library.AssetLibrary.conflictStrategy
+     * @see away3d.library.naming.ConflictStrategy
+     * @see away3d.library.naming.IgnoreConflictStrategy
+     * @see away3d.library.naming.ErrorConflictStrategy
+     * @see away3d.library.naming.NumSuffixConflictStrategy
+    */</span>
+    <span class="ActionScriptReserved">public</span> <span class="ActionScriptclass">class</span> <span class="ActionScriptDefault_Text">ConflictStrategyBase</span>
+    <span class="ActionScriptBracket/Brace">{</span>
+        
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">ConflictStrategyBase</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+        <span class="ActionScriptBracket/Brace">}</span>
+        
+        
+        <span class="ActionScriptASDoc">/**
+         * Resolve a naming conflict between two assets. Must be implemented by concrete strategy 
+         * classes.
+        */</span>
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">resolveConflict</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">changedAsset</span> : <span class="ActionScriptDefault_Text">IAsset</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">oldAsset</span> : <span class="ActionScriptDefault_Text">IAsset</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">assetsDictionary</span> : <span class="ActionScriptDefault_Text">Object</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">precedence</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptReserved">void</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">throw</span> <span class="ActionScriptReserved">new</span> <span class="ActionScriptDefault_Text">AbstractMethodError</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+        
+        
+        <span class="ActionScriptASDoc">/**
+         * Create instance of this conflict strategy. Used internally by the AssetLibrary to
+         * make sure the same strategy instance is not used in all AssetLibrary instances, which
+         * would break any state caching that happens inside the strategy class.
+        */</span>
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">create</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">ConflictStrategyBase</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">throw</span> <span class="ActionScriptReserved">new</span> <span class="ActionScriptDefault_Text">AbstractMethodError</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+        
+        
+        <span class="ActionScriptASDoc">/**
+         * Provided as a convenience method for all conflict strategy classes, as a way to finalize
+         * the conflict resolution by applying the new names and dispatching the correct events.
+        */</span>
+        <span class="ActionScriptReserved">protected</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">updateNames</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">ns</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">nonConflictingName</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">oldAsset</span> : <span class="ActionScriptDefault_Text">IAsset</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">newAsset</span> : <span class="ActionScriptDefault_Text">IAsset</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">assetsDictionary</span> : <span class="ActionScriptDefault_Text">Object</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">precedence</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptReserved">void</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">loser_prev_name</span> : <span class="ActionScriptDefault_Text">String</span>;
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">winner</span> : <span class="ActionScriptDefault_Text">IAsset</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">loser</span> : <span class="ActionScriptDefault_Text">IAsset</span>;
+            
+            <span class="ActionScriptDefault_Text">winner</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">precedence</span><span class="ActionScriptOperator">==</span><span class="ActionScriptDefault_Text">ConflictPrecedence</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">FAVOR_NEW</span><span class="ActionScriptBracket/Brace">)</span><span class="ActionScriptOperator">?</span> <span class="ActionScriptDefault_Text">newAsset</span> : <span class="ActionScriptDefault_Text">oldAsset</span>;
+            <span class="ActionScriptDefault_Text">loser</span> <span class="ActionScriptOperator">=</span>  <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">precedence</span><span class="ActionScriptOperator">==</span><span class="ActionScriptDefault_Text">ConflictPrecedence</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">FAVOR_NEW</span><span class="ActionScriptBracket/Brace">)</span><span class="ActionScriptOperator">?</span> <span class="ActionScriptDefault_Text">oldAsset</span> : <span class="ActionScriptDefault_Text">newAsset</span>;
+            
+            <span class="ActionScriptDefault_Text">loser_prev_name</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">loser</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">name</span>;
+            
+            <span class="ActionScriptDefault_Text">assetsDictionary</span><span class="ActionScriptBracket/Brace">[</span><span class="ActionScriptDefault_Text">winner</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">name</span><span class="ActionScriptBracket/Brace">]</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">winner</span>
+            <span class="ActionScriptDefault_Text">assetsDictionary</span><span class="ActionScriptBracket/Brace">[</span><span class="ActionScriptDefault_Text">nonConflictingName</span><span class="ActionScriptBracket/Brace">]</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">loser</span>;
+            <span class="ActionScriptDefault_Text">loser</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">resetAssetPath</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">nonConflictingName</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">ns</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptReserved">false</span><span class="ActionScriptBracket/Brace">)</span>;
+            
+            <span class="ActionScriptDefault_Text">loser</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">dispatchEvent</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptReserved">new</span> <span class="ActionScriptDefault_Text">AssetEvent</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">AssetEvent</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">ASSET_CONFLICT_RESOLVED</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">loser</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">loser_prev_name</span><span class="ActionScriptBracket/Brace">)</span><span class="ActionScriptBracket/Brace">)</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+    <span class="ActionScriptBracket/Brace">}</span>
+<span class="ActionScriptBracket/Brace">}</span></pre></body>
+</html>

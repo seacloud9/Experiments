@@ -1,0 +1,49 @@
+<!-- saved from url=(0014)about:internet -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>ConflictStrategy.as</title>
+<link rel="stylesheet" type="text/css" href="../../../../../SourceStyles.css"/>
+</head>
+
+<body><pre><span class="ActionScriptpackage">package</span> <span class="ActionScriptDefault_Text">away3d</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">library</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">naming</span>
+<span class="ActionScriptBracket/Brace">{</span>
+    <span class="ActionScriptASDoc">/**
+     * Enumeration class for bundled conflict strategies. Set one of these values (or an
+     * instance of a self-defined sub-class of ConflictStrategyBase) to the conflictStrategy
+     * property on an AssetLibrary to define how that library resolves naming conflicts.
+     * 
+     * The value of the &lt;code&gt;AssetLibrary.conflictPrecedence&lt;/code&gt; property defines which 
+     * of the conflicting assets will get to keep it's name, and which is renamed (if any.)
+     * 
+     * @see away3d.library.AssetLibrary.conflictStrategy
+     * @see away3d.library.naming.ConflictStrategyBase
+    */</span>
+    <span class="ActionScriptReserved">public</span> <span class="ActionScriptclass">class</span> <span class="ActionScriptDefault_Text">ConflictStrategy</span>
+    <span class="ActionScriptBracket/Brace">{</span>
+        <span class="ActionScriptASDoc">/**
+         * Specifies that in case of a naming conflict, one of the assets will be renamed and
+         * a numeric suffix appended to the base name. 
+        */</span>
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptReserved">static</span> <span class="ActionScriptReserved">const</span> <span class="ActionScriptDefault_Text">APPEND_NUM_SUFFIX</span> : <span class="ActionScriptDefault_Text">ConflictStrategyBase</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptReserved">new</span> <span class="ActionScriptDefault_Text">NumSuffixConflictStrategy</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+        
+        
+        <span class="ActionScriptASDoc">/**
+         * Specifies that naming conflicts should be ignored. This is not recommended in most
+         * cases, unless it can be 100% guaranteed that the application does not cause naming
+         * conflicts in the library (i.e. when an app-level system is in place to prevent this.)
+        */</span>
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptReserved">static</span> <span class="ActionScriptReserved">const</span> <span class="ActionScriptDefault_Text">IGNORE</span> : <span class="ActionScriptDefault_Text">ConflictStrategyBase</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptReserved">new</span> <span class="ActionScriptDefault_Text">IgnoreConflictStrategy</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+        
+        
+        <span class="ActionScriptASDoc">/**
+         * Specifies that an error should be thrown if a naming conflict is discovered. Use this
+         * to be 100% sure that naming conflicts never occur unnoticed, and when it's undesirable
+         * to have the library automatically rename assets to avoid such conflicts.
+        */</span>
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptReserved">static</span> <span class="ActionScriptReserved">const</span> <span class="ActionScriptDefault_Text">THROW_ERROR</span> : <span class="ActionScriptDefault_Text">ConflictStrategyBase</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptReserved">new</span> <span class="ActionScriptDefault_Text">ErrorConflictStrategy</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+        
+    <span class="ActionScriptBracket/Brace">}</span>
+<span class="ActionScriptBracket/Brace">}</span></pre></body>
+</html>

@@ -1,0 +1,106 @@
+<!-- saved from url=(0014)about:internet -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>AGALProgram3DAssembler.as</title>
+<link rel="stylesheet" type="text/css" href="../../../../../SourceStyles.css"/>
+</head>
+
+<body><pre><span class="ActionScriptpackage">package</span> <span class="ActionScriptDefault_Text">away3d</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">core</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">managers</span>
+<span class="ActionScriptBracket/Brace">{</span>
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">away3d</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">arcane</span>;
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">away3d</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">animators</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">data</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">AnimationBase</span>;
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">away3d</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">debug</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">Debug</span>;
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">away3d</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">materials</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">passes</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">MaterialPassBase</span>;
+
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">com</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">adobe</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">utils</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">AGALMiniAssembler</span>;
+
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">flash</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">display3D</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">Context3D</span>;
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">flash</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">display3D</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">Context3DProgramType</span>;
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">flash</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">display3D</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">Program3D</span>;
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">flash</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">utils</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">ByteArray</span>;
+
+    <span class="ActionScriptReserved">use</span> <span class="ActionScriptReserved">namespace</span> <span class="ActionScriptDefault_Text">arcane</span>;
+
+    <span class="ActionScriptASDoc">/**
+     * AGALProgram3DAssembler provides a singleton class that assembles the AGAL code provided by the animation and the
+     * material into a single Program3D instance, adding projection code.
+     */</span>
+    <span class="ActionScriptReserved">public</span> <span class="ActionScriptclass">class</span> <span class="ActionScriptDefault_Text">AGALProgram3DAssembler</span> <span class="ActionScriptReserved">extends</span> <span class="ActionScriptDefault_Text">Program3DAssemblerBase</span>
+    <span class="ActionScriptBracket/Brace">{</span>
+        <span class="ActionScriptReserved">private</span> <span class="ActionScriptReserved">static</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_instance</span> : <span class="ActionScriptDefault_Text">AGALProgram3DAssembler</span>;
+
+        <span class="ActionScriptASDoc">/**
+         * Creates a new AGALProgram3DAssembler object. Should not be used directly.
+         * @private
+         */</span>
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">AGALProgram3DAssembler</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">se</span> : <span class="ActionScriptDefault_Text">SE</span><span class="ActionScriptBracket/Brace">)</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptASDoc">/**
+         * Gets the instance for the AGALProgram3DAssembler.
+         */</span>
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptReserved">static</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptReserved">get</span> <span class="ActionScriptDefault_Text">instance</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">AGALProgram3DAssembler</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptDefault_Text">_instance</span> <span class="ActionScriptOperator">||=</span> <span class="ActionScriptReserved">new</span> <span class="ActionScriptDefault_Text">AGALProgram3DAssembler</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptReserved">new</span> <span class="ActionScriptDefault_Text">SE</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span><span class="ActionScriptBracket/Brace">)</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptASDoc">/**
+         * @inheritDoc
+         */</span>
+        <span class="ActionScriptReserved">override</span> <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">assemble</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">context</span> : <span class="ActionScriptDefault_Text">Context3D</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">pass</span> : <span class="ActionScriptDefault_Text">MaterialPassBase</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">animation</span> : <span class="ActionScriptDefault_Text">AnimationBase</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">program</span> : <span class="ActionScriptDefault_Text">Program3D</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">polyOffsetReg</span> : <span class="ActionScriptDefault_Text">String</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptReserved">null</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptReserved">void</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">targetRegisters</span> : <span class="ActionScriptDefault_Text">Array</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">pass</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">getAnimationTargetRegisters</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">animationVertexCode</span> : <span class="ActionScriptDefault_Text">String</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">animation</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">getAGALVertexCode</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">pass</span><span class="ActionScriptBracket/Brace">)</span>;
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">materialVertexCode</span> : <span class="ActionScriptDefault_Text">String</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">pass</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">getVertexCode</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">materialFragmentCode</span> : <span class="ActionScriptDefault_Text">String</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">pass</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">getFragmentCode</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">projectionVertexCode</span> : <span class="ActionScriptDefault_Text">String</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">getProjectionCode</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">targetRegisters</span><span class="ActionScriptBracket/Brace">[</span><span class="ActionScriptDefault_Text">uint</span><span class="ActionScriptBracket/Brace">(</span>0<span class="ActionScriptBracket/Brace">)</span><span class="ActionScriptBracket/Brace">]</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">pass</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">getProjectedTargetRegister</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">polyOffsetReg</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">targetRegisters</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">length</span> <span class="ActionScriptOperator">&gt;</span> 1<span class="ActionScriptOperator">?</span> <span class="ActionScriptDefault_Text">targetRegisters</span><span class="ActionScriptBracket/Brace">[</span>1<span class="ActionScriptBracket/Brace">]</span> : <span class="ActionScriptReserved">null</span><span class="ActionScriptBracket/Brace">)</span>;
+
+<span class="ActionScriptComment">//            trace (animationVertexCode+projectionVertexCode+materialVertexCode);
+</span><span class="ActionScriptComment">//            trace ("---");
+</span><span class="ActionScriptComment">//            trace (materialFragmentCode);
+</span><span class="ActionScriptComment">//            trace ("---");
+</span>            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">vertexCode</span> : <span class="ActionScriptDefault_Text">ByteArray</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptReserved">new</span> <span class="ActionScriptDefault_Text">AGALMiniAssembler</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">Debug</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">active</span><span class="ActionScriptBracket/Brace">)</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">assemble</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">Context3DProgramType</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">VERTEX</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">animationVertexCode</span><span class="ActionScriptOperator">+</span><span class="ActionScriptDefault_Text">projectionVertexCode</span><span class="ActionScriptOperator">+</span><span class="ActionScriptDefault_Text">materialVertexCode</span><span class="ActionScriptBracket/Brace">)</span>;
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">fragmentCode</span> : <span class="ActionScriptDefault_Text">ByteArray</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptReserved">new</span> <span class="ActionScriptDefault_Text">AGALMiniAssembler</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">Debug</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">active</span><span class="ActionScriptBracket/Brace">)</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">assemble</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">Context3DProgramType</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">FRAGMENT</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">materialFragmentCode</span><span class="ActionScriptBracket/Brace">)</span>;
+            <span class="ActionScriptDefault_Text">program</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">upload</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">vertexCode</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">fragmentCode</span><span class="ActionScriptBracket/Brace">)</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptASDoc">/**
+         * Gets the projection code which will multiply the requested vertex registers by the MVP matrix.
+         * @param positionRegister The source register to be transformed.
+         * @param projectionRegister The register which will contain the projected position.
+         * @param polyOffsetReg The name of an optional offset register, containing a vector by which will cause the geometry to be "inflated" along the normal. This is typically used when rendering single object depth maps.
+         * @param normalRegister The name of the normal register which will be used as the normal to inflate against.
+         * @return
+         */</span>
+        <span class="ActionScriptReserved">private</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">getProjectionCode</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">positionRegister</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">projectionRegister</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">polyOffsetReg</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">normalRegister</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">String</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">code</span> : <span class="ActionScriptDefault_Text">String</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptString">""</span>;
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">pos</span> : <span class="ActionScriptDefault_Text">String</span>;
+
+            <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">polyOffsetReg</span> <span class="ActionScriptOperator">&amp;&amp;</span> <span class="ActionScriptDefault_Text">normalRegister</span><span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptBracket/Brace">{</span>
+                <span class="ActionScriptDefault_Text">pos</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptString">"vt7"</span>;
+                <span class="ActionScriptDefault_Text">code</span> <span class="ActionScriptOperator">+=</span> <span class="ActionScriptString">"mul vt7, "</span><span class="ActionScriptOperator">+</span><span class="ActionScriptDefault_Text">normalRegister</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">", "</span><span class="ActionScriptOperator">+</span><span class="ActionScriptDefault_Text">polyOffsetReg</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">"\n"</span>;
+                <span class="ActionScriptDefault_Text">code</span> <span class="ActionScriptOperator">+=</span> <span class="ActionScriptString">"add vt7, vt7, "</span><span class="ActionScriptOperator">+</span><span class="ActionScriptDefault_Text">positionRegister</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">"\n"</span>;
+                <span class="ActionScriptDefault_Text">code</span> <span class="ActionScriptOperator">+=</span> <span class="ActionScriptString">"mov vt7.w, "</span><span class="ActionScriptOperator">+</span><span class="ActionScriptDefault_Text">positionRegister</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">".w\n"</span>;
+            <span class="ActionScriptBracket/Brace">}</span>
+            <span class="ActionScriptReserved">else</span> <span class="ActionScriptBracket/Brace">{</span>
+                <span class="ActionScriptDefault_Text">pos</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">positionRegister</span>;
+            <span class="ActionScriptBracket/Brace">}</span>
+
+            <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">projectionRegister</span><span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptBracket/Brace">{</span>
+                <span class="ActionScriptDefault_Text">code</span> <span class="ActionScriptOperator">+=</span> <span class="ActionScriptString">"m44 "</span><span class="ActionScriptOperator">+</span><span class="ActionScriptDefault_Text">projectionRegister</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">", "</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">pos</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptString">", vc0        \n"</span>;
+                <span class="ActionScriptDefault_Text">code</span> <span class="ActionScriptOperator">+=</span> <span class="ActionScriptString">"mov op, "</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">projectionRegister</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptString">"\n"</span>;
+            <span class="ActionScriptBracket/Brace">}</span>
+            <span class="ActionScriptReserved">else</span> <span class="ActionScriptBracket/Brace">{</span>
+                <span class="ActionScriptDefault_Text">code</span> <span class="ActionScriptOperator">+=</span> <span class="ActionScriptString">"m44 op, "</span><span class="ActionScriptOperator">+</span><span class="ActionScriptDefault_Text">pos</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">", vc0        \n"</span>;    <span class="ActionScriptComment">// 4x4 matrix transform from stream 0 to output clipspace
+</span>            <span class="ActionScriptBracket/Brace">}</span>
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptDefault_Text">code</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+    <span class="ActionScriptBracket/Brace">}</span>
+<span class="ActionScriptBracket/Brace">}</span>
+
+<span class="ActionScriptclass">class</span> <span class="ActionScriptDefault_Text">SE</span> {}</pre></body>
+</html>

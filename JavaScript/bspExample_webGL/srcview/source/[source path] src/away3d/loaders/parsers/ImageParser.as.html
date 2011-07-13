@@ -1,0 +1,212 @@
+<!-- saved from url=(0014)about:internet -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>ImageParser.as</title>
+<link rel="stylesheet" type="text/css" href="../../../../../SourceStyles.css"/>
+</head>
+
+<body><pre><span class="ActionScriptpackage">package</span> <span class="ActionScriptDefault_Text">away3d</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">loaders</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">parsers</span>
+
+<span class="ActionScriptBracket/Brace">{</span>
+
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">away3d</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">library</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">assets</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">BitmapDataAsset</span>;
+
+    
+
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">flash</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">display</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">Bitmap</span>;
+
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">flash</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">display</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">Loader</span>;
+
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">flash</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">events</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">Event</span>;
+
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">flash</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">utils</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">ByteArray</span>;
+    
+
+    <span class="ActionScriptASDoc">/**
+
+     * ImageParser provides a "parser" for natively supported image types (jpg, png). While it simply loads bytes into
+
+     * a loader object, it wraps it in a BitmapDataResource so resource management can happen consistently without
+
+     * exception cases.
+
+     */</span>
+
+    <span class="ActionScriptReserved">public</span> <span class="ActionScriptclass">class</span> <span class="ActionScriptDefault_Text">ImageParser</span> <span class="ActionScriptReserved">extends</span> <span class="ActionScriptDefault_Text">ParserBase</span>
+
+    <span class="ActionScriptBracket/Brace">{</span>
+
+        <span class="ActionScriptReserved">private</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_startedParsing</span> : <span class="ActionScriptDefault_Text">Boolean</span>;
+
+        <span class="ActionScriptReserved">private</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_doneParsing</span> : <span class="ActionScriptDefault_Text">Boolean</span>;
+
+        <span class="ActionScriptReserved">private</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_loader</span> : <span class="ActionScriptDefault_Text">Loader</span>;
+
+        
+
+        <span class="ActionScriptASDoc">/**
+
+         * Creates a new ImageParser object.
+
+         * @param uri The url or id of the data or file to be parsed.
+
+         * @param extra The holder for extra contextual data that the parser might need.
+
+         */</span>
+
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">ImageParser</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>
+
+        <span class="ActionScriptBracket/Brace">{</span>
+
+            <span class="ActionScriptReserved">super</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">ParserDataFormat</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">BINARY</span><span class="ActionScriptBracket/Brace">)</span>;
+
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        
+
+        <span class="ActionScriptASDoc">/**
+
+         * Indicates whether or not a given file extension is supported by the parser.
+
+         * @param extension The file extension of a potential file to be parsed.
+
+         * @return Whether or not the given file type is supported.
+
+         */</span>
+
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptReserved">static</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">supportsType</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">extension</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">Boolean</span>
+
+        <span class="ActionScriptBracket/Brace">{</span>
+
+            <span class="ActionScriptDefault_Text">extension</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">extension</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">toLowerCase</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptDefault_Text">extension</span> <span class="ActionScriptOperator">==</span> <span class="ActionScriptString">"jpg"</span> <span class="ActionScriptOperator">||</span> <span class="ActionScriptDefault_Text">extension</span> <span class="ActionScriptOperator">==</span> <span class="ActionScriptString">"jpeg"</span> <span class="ActionScriptOperator">||</span> <span class="ActionScriptDefault_Text">extension</span> <span class="ActionScriptOperator">==</span> <span class="ActionScriptString">"png"</span> <span class="ActionScriptOperator">||</span> <span class="ActionScriptDefault_Text">extension</span> <span class="ActionScriptOperator">==</span> <span class="ActionScriptString">"gif"</span> <span class="ActionScriptOperator">||</span> <span class="ActionScriptDefault_Text">extension</span> <span class="ActionScriptOperator">==</span> <span class="ActionScriptString">"bmp"</span>;
+
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        
+
+        <span class="ActionScriptASDoc">/**
+
+         * Tests whether a data block can be parsed by the parser.
+
+         * @param data The data block to potentially be parsed.
+
+         * @return Whether or not the given data is supported.
+
+         */</span>
+
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptReserved">static</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">supportsData</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">data</span> : <span class="ActionScriptOperator">*</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">Boolean</span>
+
+        <span class="ActionScriptBracket/Brace">{</span>
+
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">ba</span> : <span class="ActionScriptDefault_Text">ByteArray</span>;
+
+            
+
+            <span class="ActionScriptDefault_Text">ba</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">ByteArray</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">data</span><span class="ActionScriptBracket/Brace">)</span>;
+
+            
+
+            <span class="ActionScriptDefault_Text">ba</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">position</span> <span class="ActionScriptOperator">=</span> 0;
+
+            <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">ba</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">readUnsignedShort</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptOperator">==</span> 0xffd8<span class="ActionScriptBracket/Brace">)</span>
+
+                <span class="ActionScriptReserved">return</span> <span class="ActionScriptReserved">true</span>; <span class="ActionScriptComment">// JPEG, maybe check for "JFIF" as well?
+</span>
+            
+
+            <span class="ActionScriptDefault_Text">ba</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">position</span> <span class="ActionScriptOperator">=</span> 0;
+
+            <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">ba</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">readShort</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptOperator">==</span> 0x424D<span class="ActionScriptBracket/Brace">)</span>
+
+                <span class="ActionScriptReserved">return</span> <span class="ActionScriptReserved">true</span>; <span class="ActionScriptComment">// BMP 
+</span>
+            
+
+            <span class="ActionScriptDefault_Text">ba</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">position</span> <span class="ActionScriptOperator">=</span> 1;
+
+            <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">ba</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">readUTFBytes</span><span class="ActionScriptBracket/Brace">(</span>3<span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptOperator">==</span> <span class="ActionScriptString">'PNG'</span><span class="ActionScriptBracket/Brace">)</span>
+
+                <span class="ActionScriptReserved">return</span> <span class="ActionScriptReserved">true</span>;
+
+            
+
+            <span class="ActionScriptDefault_Text">ba</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">position</span> <span class="ActionScriptOperator">=</span> 0;
+
+            <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">ba</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">readUTFBytes</span><span class="ActionScriptBracket/Brace">(</span>3<span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptOperator">==</span> <span class="ActionScriptString">'GIF'</span> <span class="ActionScriptOperator">&amp;&amp;</span> <span class="ActionScriptDefault_Text">ba</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">readShort</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptOperator">==</span> 0x3839 <span class="ActionScriptOperator">&amp;&amp;</span> <span class="ActionScriptDefault_Text">ba</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">readByte</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptOperator">==</span> 0x61<span class="ActionScriptBracket/Brace">)</span>
+
+                <span class="ActionScriptReserved">return</span> <span class="ActionScriptReserved">true</span>;
+
+            
+
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptReserved">false</span>;
+
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        
+
+        
+
+        <span class="ActionScriptASDoc">/**
+
+         * @inheritDoc
+
+         */</span>
+
+        <span class="ActionScriptReserved">protected</span> <span class="ActionScriptReserved">override</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">proceedParsing</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">Boolean</span>
+
+        <span class="ActionScriptBracket/Brace">{</span>
+
+            <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptOperator">!</span><span class="ActionScriptDefault_Text">_startedParsing</span><span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptBracket/Brace">{</span>
+
+                <span class="ActionScriptDefault_Text">_loader</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptReserved">new</span> <span class="ActionScriptDefault_Text">Loader</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+
+                <span class="ActionScriptDefault_Text">_loader</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">contentLoaderInfo</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">addEventListener</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">Event</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">COMPLETE</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">onLoadComplete</span><span class="ActionScriptBracket/Brace">)</span>;
+
+                <span class="ActionScriptDefault_Text">_loader</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">loadBytes</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">_byteData</span><span class="ActionScriptBracket/Brace">)</span>;
+
+                <span class="ActionScriptDefault_Text">_startedParsing</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptReserved">true</span>;
+
+            <span class="ActionScriptBracket/Brace">}</span>
+
+            
+
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptDefault_Text">_doneParsing</span>;
+
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        
+
+        <span class="ActionScriptASDoc">/**
+
+         * Called when "loading" is complete.
+
+         */</span>
+
+        <span class="ActionScriptReserved">private</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">onLoadComplete</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">event</span> : <span class="ActionScriptDefault_Text">Event</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptReserved">void</span>
+
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">asset</span> : <span class="ActionScriptDefault_Text">BitmapDataAsset</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptReserved">new</span> <span class="ActionScriptDefault_Text">BitmapDataAsset</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">Bitmap</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">_loader</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">content</span><span class="ActionScriptBracket/Brace">)</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">bitmapData</span><span class="ActionScriptBracket/Brace">)</span>;
+
+            <span class="ActionScriptDefault_Text">_loader</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">contentLoaderInfo</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">removeEventListener</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">Event</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">COMPLETE</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">onLoadComplete</span><span class="ActionScriptBracket/Brace">)</span>;
+
+            <span class="ActionScriptDefault_Text">_doneParsing</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptReserved">true</span>;
+
+            
+
+            <span class="ActionScriptDefault_Text">finalizeAsset</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">asset</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptString">'bitmap'</span><span class="ActionScriptBracket/Brace">)</span>;
+
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        
+
+    <span class="ActionScriptBracket/Brace">}</span>
+
+<span class="ActionScriptBracket/Brace">}</span>
+
+
+</pre></body>
+</html>

@@ -1,0 +1,71 @@
+<!-- saved from url=(0014)about:internet -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>Parsers.as</title>
+<link rel="stylesheet" type="text/css" href="../../../../../SourceStyles.css"/>
+</head>
+
+<body><pre><span class="ActionScriptpackage">package</span> <span class="ActionScriptDefault_Text">away3d</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">loaders</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">parsers</span>
+<span class="ActionScriptBracket/Brace">{</span>
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">away3d</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">loaders</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">misc</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">SingleFileLoader</span>;
+
+    <span class="ActionScriptReserved">public</span> <span class="ActionScriptclass">class</span> <span class="ActionScriptDefault_Text">Parsers</span>
+    <span class="ActionScriptBracket/Brace">{</span>
+        <span class="ActionScriptASDoc">/**
+         * A list of all parsers that come bundled with Away3D. Use this to quickly
+         * enable support for all bundled parsers to the file format auto-detection
+         * feature, using any of the enableParsers() methods on loaders, e.g.:
+         * 
+         * &lt;code&gt;AssetLibrary.enableParsers(Parsers.ALL_BUNDLED);&lt;/code&gt;
+         * 
+         * Beware however that this requires all parser classes to be included in the
+         * SWF file, which will add 50-100 kb to the file. When only a limited set of
+         * file formats are used, SWF file size can be saved by adding the parsers
+         * individually using AssetLibrary.enableParser()
+         * 
+         * A third way is to specify a parser for each loaded file, thereby bypassing
+         * the auto-detection mechanisms altogether, while at the same time allowing
+         * any properties that are unique to that parser to be set for that load.
+         * 
+         * @see away3d.loading.AssetLibrary.enableParser()
+         * 
+         * The bundled parsers are:
+         * 
+         * &lt;ul&gt;
+         * &lt;li&gt;Away Data version 1 ASCII and version 2 binary (.awd). AWD1 BSP unsupported&lt;/li&gt;
+         * &lt;li&gt;AC3D (.ac)&lt;/li&gt;
+         * &lt;li&gt;Collada (.dae)&lt;/li&gt;
+         * &lt;li&gt;Quake 2 MD2 models (.md2)&lt;/li&gt;
+         * &lt;li&gt;Doom 3 MD5 meshes (.md5mesh)&lt;/li&gt;
+         * &lt;li&gt;Doom 3 MD5 animation clips (.md5anim)&lt;/li&gt;
+         * &lt;li&gt;Wavefront OBJ (.obj)&lt;/li&gt;
+         * &lt;li&gt;3DMax (.3ds)&lt;/li&gt;
+         * &lt;li&gt;Images (.jpg, .png)&lt;/li&gt;
+         * &lt;/ul&gt;
+        */</span>
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptReserved">static</span> <span class="ActionScriptReserved">const</span> <span class="ActionScriptDefault_Text">ALL_BUNDLED</span> : <span class="ActionScriptDefault_Text">Vector</span><span class="ActionScriptBracket/Brace">.&lt;</span><span class="ActionScriptDefault_Text">Class</span><span class="ActionScriptBracket/Brace">&gt;</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">Vector</span><span class="ActionScriptBracket/Brace">.&lt;</span><span class="ActionScriptDefault_Text">Class</span><span class="ActionScriptBracket/Brace">&gt;</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">[</span>
+            <span class="ActionScriptDefault_Text">AC3DParser</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">AWDParser</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">Max3DSParser</span><span class="ActionScriptOperator">,</span>
+            <span class="ActionScriptDefault_Text">MD2Parser</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">MD5AnimParser</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">MD5MeshParser</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">OBJParser</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">JSONOBJParser</span>
+        <span class="ActionScriptBracket/Brace">]</span><span class="ActionScriptBracket/Brace">)</span>;
+        
+        
+        <span class="ActionScriptASDoc">/**
+         * Short-hand function to enable all bundled parsers for auto-detection. In practice,
+         * this is the same as invoking enableParsers(Parsers.ALL_BUNDLED) on any of the
+         * loader classes SingleFileLoader, AssetLoader, AssetLibrary or Loader3D. 
+         * 
+         * See notes about file size in the documentation for the ALL_BUNDLED constant.
+         * 
+         * @see away3d.loaders.parsers.Parsers.ALL_BUNDLED
+        */</span>
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptReserved">static</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">enableAllBundled</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptReserved">void</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptDefault_Text">SingleFileLoader</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">enableParsers</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">ALL_BUNDLED</span><span class="ActionScriptBracket/Brace">)</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+    <span class="ActionScriptBracket/Brace">}</span>
+<span class="ActionScriptBracket/Brace">}</span>
+
+</pre></body>
+</html>

@@ -1,0 +1,296 @@
+<!-- saved from url=(0014)about:internet -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>BoundingSphere.as</title>
+<link rel="stylesheet" type="text/css" href="../../../../SourceStyles.css"/>
+</head>
+
+<body><pre><span class="ActionScriptpackage">package</span> <span class="ActionScriptDefault_Text">away3d</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">bounds</span>
+<span class="ActionScriptBracket/Brace">{</span>
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">away3d</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">arcane</span>;
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">away3d</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">core</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">math</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">Matrix3DUtils</span>;
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">away3d</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">primitives</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">WireframePrimitiveBase</span>;
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">away3d</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">primitives</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">WireframeSphere</span>;
+
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">flash</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">geom</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">Matrix3D</span>;
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">flash</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">geom</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">Vector3D</span>;
+
+    <span class="ActionScriptReserved">use</span> <span class="ActionScriptReserved">namespace</span> <span class="ActionScriptDefault_Text">arcane</span>;
+
+    <span class="ActionScriptASDoc">/**
+     * BoundingSphere represents a spherical bounding volume defined by a center point and a radius?
+     * This bounding volume is useful for point lights.
+     */</span>
+    <span class="ActionScriptReserved">public</span> <span class="ActionScriptclass">class</span> <span class="ActionScriptDefault_Text">BoundingSphere</span> <span class="ActionScriptReserved">extends</span> <span class="ActionScriptDefault_Text">BoundingVolumeBase</span>
+    <span class="ActionScriptBracket/Brace">{</span>
+        <span class="ActionScriptReserved">private</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_radius</span> : <span class="ActionScriptDefault_Text">Number</span> <span class="ActionScriptOperator">=</span> 0;
+        <span class="ActionScriptReserved">private</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_centerX</span> : <span class="ActionScriptDefault_Text">Number</span> <span class="ActionScriptOperator">=</span> 0;
+        <span class="ActionScriptReserved">private</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_centerY</span> : <span class="ActionScriptDefault_Text">Number</span> <span class="ActionScriptOperator">=</span> 0;
+        <span class="ActionScriptReserved">private</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_centerZ</span> : <span class="ActionScriptDefault_Text">Number</span> <span class="ActionScriptOperator">=</span> 0;
+
+        <span class="ActionScriptASDoc">/**
+         * Creates a new BoundingSphere object
+         */</span>
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">BoundingSphere</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptReserved">override</span> <span class="ActionScriptReserved">protected</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">updateBoundingRenderable</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptReserved">void</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">sc</span> : <span class="ActionScriptDefault_Text">Number</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">_radius</span>;
+            <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">sc</span> <span class="ActionScriptOperator">==</span> 0<span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptDefault_Text">sc</span> <span class="ActionScriptOperator">=</span> 0.001;
+            <span class="ActionScriptDefault_Text">_boundingRenderable</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">scaleX</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">sc</span>;
+            <span class="ActionScriptDefault_Text">_boundingRenderable</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">scaleY</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">sc</span>;
+            <span class="ActionScriptDefault_Text">_boundingRenderable</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">scaleZ</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">sc</span>;
+            <span class="ActionScriptDefault_Text">_boundingRenderable</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">x</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">_centerX</span>;
+            <span class="ActionScriptDefault_Text">_boundingRenderable</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">y</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">_centerY</span>;
+            <span class="ActionScriptDefault_Text">_boundingRenderable</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">z</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">_centerZ</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptReserved">override</span> <span class="ActionScriptReserved">protected</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">createBoundingRenderable</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">WireframePrimitiveBase</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptReserved">new</span> <span class="ActionScriptDefault_Text">WireframeSphere</span><span class="ActionScriptBracket/Brace">(</span>1<span class="ActionScriptBracket/Brace">)</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptASDoc">/**
+         * @inheritDoc
+         */</span>
+        <span class="ActionScriptReserved">override</span> <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">nullify</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptReserved">void</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">super</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">nullify</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+            <span class="ActionScriptDefault_Text">_centerX</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">_centerY</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">_centerZ</span> <span class="ActionScriptOperator">=</span> 0;
+            <span class="ActionScriptDefault_Text">_radius</span> <span class="ActionScriptOperator">=</span> 0;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptASDoc">/**
+         * todo: pass planes?
+         * @inheritDoc
+         */</span>
+        <span class="ActionScriptComment">/*override public function isInFrustum(mvpMatrix : Matrix3D) : Boolean
+         {
+         var raw : Vector.&lt;Number&gt; = Matrix3DUtils.RAW_DATA_CONTAINER;
+         mvpMatrix.copyRawDataTo(raw);
+         var c11 : Number = raw[uint(0)], c12 : Number = raw[uint(4)], c13 : Number = raw[uint(8)], c14 : Number = raw[uint(12)];
+         var c21 : Number = raw[uint(1)], c22 : Number = raw[uint(5)], c23 : Number = raw[uint(9)], c24 : Number = raw[uint(13)];
+         var c31 : Number = raw[uint(2)], c32 : Number = raw[uint(6)], c33 : Number = raw[uint(10)], c34 : Number = raw[uint(14)];
+         var c41 : Number = raw[uint(3)], c42 : Number = raw[uint(7)], c43 : Number = raw[uint(11)], c44 : Number = raw[uint(15)];
+         var a : Number, b : Number, c : Number, d : Number;
+         var dd : Number, rr : Number = _radius;
+
+         // todo: this can be (much) faster: http://www.racer.nl/reference/vfc_markmorley.htm
+
+         // left plane
+         a = c41 + c11;
+         b = c42 + c12;
+         c = c43 + c13;
+         d = c44 + c14;
+         dd = a * _centerX + b * _centerY + c * _centerZ;
+         if (a &lt; 0) a = -a;
+         if (b &lt; 0) b = -b;
+         if (c &lt; 0) c = -c;
+         rr = (a + b + c) * _radius;
+         if (dd + rr &lt; -d) return false;
+         // right plane
+         a = c41 - c11;
+         b = c42 - c12;
+         c = c43 - c13;
+         d = c44 - c14;
+         dd = a * _centerX + b * _centerY + c * _centerZ;
+         if (a &lt; 0) a = -a;
+         if (b &lt; 0) b = -b;
+         if (c &lt; 0) c = -c;
+         rr = (a + b + c) * _radius;
+         if (dd + rr &lt; -d) return false;
+         // bottom plane
+         a = c41 + c21;
+         b = c42 + c22;
+         c = c43 + c23;
+         d = c44 + c24;
+         dd = a * _centerX + b * _centerY + c * _centerZ;
+         if (a &lt; 0) a = -a;
+         if (b &lt; 0) b = -b;
+         if (c &lt; 0) c = -c;
+         rr = (a + b + c) * _radius;
+         if (dd + rr &lt; -d) return false;
+         // top plane
+         a = c41 - c21;
+         b = c42 - c22;
+         c = c43 - c23;
+         d = c44 - c24;
+         dd = a * _centerX + b * _centerY + c * _centerZ;
+         if (a &lt; 0) a = -a;
+         if (b &lt; 0) b = -b;
+         if (c &lt; 0) c = -c;
+         rr = (a + b + c) * _radius;
+         if (dd + rr &lt; -d) return false;
+         // near plane
+         a = c31;
+         b = c32;
+         c = c33;
+         d = c34;
+         dd = a * _centerX + b * _centerY + c * _centerZ;
+         if (a &lt; 0) a = -a;
+         if (b &lt; 0) b = -b;
+         if (c &lt; 0) c = -c;
+         rr = (a + b + c) * _radius;
+         if (dd + rr &lt; -d) return false;
+         // far plane
+         a = c41 - c31;
+         b = c42 - c32;
+         c = c43 - c33;
+         d = c44 - c34;
+         dd = a * _centerX + b * _centerY + c * _centerZ;
+         if (a &lt; 0) a = -a;
+         if (b &lt; 0) b = -b;
+         if (c &lt; 0) c = -c;
+         rr = (a + b + c) * _radius;
+         if (dd + rr &lt; -d) return false;
+
+         return true;
+         }  */</span>
+
+
+        <span class="ActionScriptReserved">override</span> <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">isInFrustum</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">mvpMatrix</span> : <span class="ActionScriptDefault_Text">Matrix3D</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">Boolean</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">raw</span> : <span class="ActionScriptDefault_Text">Vector</span><span class="ActionScriptBracket/Brace">.&lt;</span><span class="ActionScriptDefault_Text">Number</span><span class="ActionScriptBracket/Brace">&gt;</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">Matrix3DUtils</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">RAW_DATA_CONTAINER</span>;
+            <span class="ActionScriptDefault_Text">mvpMatrix</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">copyRawDataTo</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">raw</span><span class="ActionScriptBracket/Brace">)</span>;
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">c11</span> : <span class="ActionScriptDefault_Text">Number</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">raw</span><span class="ActionScriptBracket/Brace">[</span><span class="ActionScriptDefault_Text">uint</span><span class="ActionScriptBracket/Brace">(</span>0<span class="ActionScriptBracket/Brace">)</span><span class="ActionScriptBracket/Brace">]</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">c12</span> : <span class="ActionScriptDefault_Text">Number</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">raw</span><span class="ActionScriptBracket/Brace">[</span><span class="ActionScriptDefault_Text">uint</span><span class="ActionScriptBracket/Brace">(</span>4<span class="ActionScriptBracket/Brace">)</span><span class="ActionScriptBracket/Brace">]</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">c13</span> : <span class="ActionScriptDefault_Text">Number</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">raw</span><span class="ActionScriptBracket/Brace">[</span><span class="ActionScriptDefault_Text">uint</span><span class="ActionScriptBracket/Brace">(</span>8<span class="ActionScriptBracket/Brace">)</span><span class="ActionScriptBracket/Brace">]</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">c14</span> : <span class="ActionScriptDefault_Text">Number</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">raw</span><span class="ActionScriptBracket/Brace">[</span><span class="ActionScriptDefault_Text">uint</span><span class="ActionScriptBracket/Brace">(</span>12<span class="ActionScriptBracket/Brace">)</span><span class="ActionScriptBracket/Brace">]</span>;
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">c21</span> : <span class="ActionScriptDefault_Text">Number</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">raw</span><span class="ActionScriptBracket/Brace">[</span><span class="ActionScriptDefault_Text">uint</span><span class="ActionScriptBracket/Brace">(</span>1<span class="ActionScriptBracket/Brace">)</span><span class="ActionScriptBracket/Brace">]</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">c22</span> : <span class="ActionScriptDefault_Text">Number</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">raw</span><span class="ActionScriptBracket/Brace">[</span><span class="ActionScriptDefault_Text">uint</span><span class="ActionScriptBracket/Brace">(</span>5<span class="ActionScriptBracket/Brace">)</span><span class="ActionScriptBracket/Brace">]</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">c23</span> : <span class="ActionScriptDefault_Text">Number</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">raw</span><span class="ActionScriptBracket/Brace">[</span><span class="ActionScriptDefault_Text">uint</span><span class="ActionScriptBracket/Brace">(</span>9<span class="ActionScriptBracket/Brace">)</span><span class="ActionScriptBracket/Brace">]</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">c24</span> : <span class="ActionScriptDefault_Text">Number</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">raw</span><span class="ActionScriptBracket/Brace">[</span><span class="ActionScriptDefault_Text">uint</span><span class="ActionScriptBracket/Brace">(</span>13<span class="ActionScriptBracket/Brace">)</span><span class="ActionScriptBracket/Brace">]</span>;
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">c31</span> : <span class="ActionScriptDefault_Text">Number</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">raw</span><span class="ActionScriptBracket/Brace">[</span><span class="ActionScriptDefault_Text">uint</span><span class="ActionScriptBracket/Brace">(</span>2<span class="ActionScriptBracket/Brace">)</span><span class="ActionScriptBracket/Brace">]</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">c32</span> : <span class="ActionScriptDefault_Text">Number</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">raw</span><span class="ActionScriptBracket/Brace">[</span><span class="ActionScriptDefault_Text">uint</span><span class="ActionScriptBracket/Brace">(</span>6<span class="ActionScriptBracket/Brace">)</span><span class="ActionScriptBracket/Brace">]</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">c33</span> : <span class="ActionScriptDefault_Text">Number</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">raw</span><span class="ActionScriptBracket/Brace">[</span><span class="ActionScriptDefault_Text">uint</span><span class="ActionScriptBracket/Brace">(</span>10<span class="ActionScriptBracket/Brace">)</span><span class="ActionScriptBracket/Brace">]</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">c34</span> : <span class="ActionScriptDefault_Text">Number</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">raw</span><span class="ActionScriptBracket/Brace">[</span><span class="ActionScriptDefault_Text">uint</span><span class="ActionScriptBracket/Brace">(</span>14<span class="ActionScriptBracket/Brace">)</span><span class="ActionScriptBracket/Brace">]</span>;
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">c41</span> : <span class="ActionScriptDefault_Text">Number</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">raw</span><span class="ActionScriptBracket/Brace">[</span><span class="ActionScriptDefault_Text">uint</span><span class="ActionScriptBracket/Brace">(</span>3<span class="ActionScriptBracket/Brace">)</span><span class="ActionScriptBracket/Brace">]</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">c42</span> : <span class="ActionScriptDefault_Text">Number</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">raw</span><span class="ActionScriptBracket/Brace">[</span><span class="ActionScriptDefault_Text">uint</span><span class="ActionScriptBracket/Brace">(</span>7<span class="ActionScriptBracket/Brace">)</span><span class="ActionScriptBracket/Brace">]</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">c43</span> : <span class="ActionScriptDefault_Text">Number</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">raw</span><span class="ActionScriptBracket/Brace">[</span><span class="ActionScriptDefault_Text">uint</span><span class="ActionScriptBracket/Brace">(</span>11<span class="ActionScriptBracket/Brace">)</span><span class="ActionScriptBracket/Brace">]</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">c44</span> : <span class="ActionScriptDefault_Text">Number</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">raw</span><span class="ActionScriptBracket/Brace">[</span><span class="ActionScriptDefault_Text">uint</span><span class="ActionScriptBracket/Brace">(</span>15<span class="ActionScriptBracket/Brace">)</span><span class="ActionScriptBracket/Brace">]</span>;
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">a</span> : <span class="ActionScriptDefault_Text">Number</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">b</span> : <span class="ActionScriptDefault_Text">Number</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">c</span> : <span class="ActionScriptDefault_Text">Number</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">d</span> : <span class="ActionScriptDefault_Text">Number</span>;
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">negRad</span> : <span class="ActionScriptDefault_Text">Number</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptOperator">-</span><span class="ActionScriptDefault_Text">_radius</span>;
+
+            <span class="ActionScriptComment">// left plane
+</span>            <span class="ActionScriptDefault_Text">a</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">c41</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">c11</span>;
+            <span class="ActionScriptDefault_Text">b</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">c42</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">c12</span>;
+            <span class="ActionScriptDefault_Text">c</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">c43</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">c13</span>;
+            <span class="ActionScriptDefault_Text">d</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">c44</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">c14</span>;
+            <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">a</span> <span class="ActionScriptOperator">*</span> <span class="ActionScriptDefault_Text">_centerX</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">b</span> <span class="ActionScriptOperator">*</span> <span class="ActionScriptDefault_Text">_centerY</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">c</span> <span class="ActionScriptOperator">*</span> <span class="ActionScriptDefault_Text">_centerZ</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">d</span> <span class="ActionScriptOperator">&lt;=</span> <span class="ActionScriptDefault_Text">negRad</span><span class="ActionScriptBracket/Brace">)</span>
+                <span class="ActionScriptReserved">return</span> <span class="ActionScriptReserved">false</span>;
+
+            <span class="ActionScriptComment">// right plane
+</span>            <span class="ActionScriptDefault_Text">a</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">c41</span> <span class="ActionScriptOperator">-</span> <span class="ActionScriptDefault_Text">c11</span>;
+            <span class="ActionScriptDefault_Text">b</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">c42</span> <span class="ActionScriptOperator">-</span> <span class="ActionScriptDefault_Text">c12</span>;
+            <span class="ActionScriptDefault_Text">c</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">c43</span> <span class="ActionScriptOperator">-</span> <span class="ActionScriptDefault_Text">c13</span>;
+            <span class="ActionScriptDefault_Text">d</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">c44</span> <span class="ActionScriptOperator">-</span> <span class="ActionScriptDefault_Text">c14</span>;
+            <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">a</span> <span class="ActionScriptOperator">*</span> <span class="ActionScriptDefault_Text">_centerX</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">b</span> <span class="ActionScriptOperator">*</span> <span class="ActionScriptDefault_Text">_centerY</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">c</span> <span class="ActionScriptOperator">*</span> <span class="ActionScriptDefault_Text">_centerZ</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">d</span> <span class="ActionScriptOperator">&lt;=</span> <span class="ActionScriptDefault_Text">negRad</span><span class="ActionScriptBracket/Brace">)</span>
+                <span class="ActionScriptReserved">return</span> <span class="ActionScriptReserved">false</span>;
+
+            <span class="ActionScriptComment">// bottom plane
+</span>            <span class="ActionScriptDefault_Text">a</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">c41</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">c21</span>;
+            <span class="ActionScriptDefault_Text">b</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">c42</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">c22</span>;
+            <span class="ActionScriptDefault_Text">c</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">c43</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">c23</span>;
+            <span class="ActionScriptDefault_Text">d</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">c44</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">c24</span>;
+            <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">a</span> <span class="ActionScriptOperator">*</span> <span class="ActionScriptDefault_Text">_centerX</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">b</span> <span class="ActionScriptOperator">*</span> <span class="ActionScriptDefault_Text">_centerY</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">c</span> <span class="ActionScriptOperator">*</span> <span class="ActionScriptDefault_Text">_centerZ</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">d</span> <span class="ActionScriptOperator">&lt;=</span> <span class="ActionScriptDefault_Text">negRad</span><span class="ActionScriptBracket/Brace">)</span>
+                <span class="ActionScriptReserved">return</span> <span class="ActionScriptReserved">false</span>;
+
+            <span class="ActionScriptComment">// top plane
+</span>            <span class="ActionScriptDefault_Text">a</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">c41</span> <span class="ActionScriptOperator">-</span> <span class="ActionScriptDefault_Text">c21</span>;
+            <span class="ActionScriptDefault_Text">b</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">c42</span> <span class="ActionScriptOperator">-</span> <span class="ActionScriptDefault_Text">c22</span>;
+            <span class="ActionScriptDefault_Text">c</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">c43</span> <span class="ActionScriptOperator">-</span> <span class="ActionScriptDefault_Text">c23</span>;
+            <span class="ActionScriptDefault_Text">d</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">c44</span> <span class="ActionScriptOperator">-</span> <span class="ActionScriptDefault_Text">c24</span>;
+            <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">a</span> <span class="ActionScriptOperator">*</span> <span class="ActionScriptDefault_Text">_centerX</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">b</span> <span class="ActionScriptOperator">*</span> <span class="ActionScriptDefault_Text">_centerY</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">c</span> <span class="ActionScriptOperator">*</span> <span class="ActionScriptDefault_Text">_centerZ</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">d</span> <span class="ActionScriptOperator">&lt;=</span> <span class="ActionScriptDefault_Text">negRad</span><span class="ActionScriptBracket/Brace">)</span>
+                <span class="ActionScriptReserved">return</span> <span class="ActionScriptReserved">false</span>;
+
+            <span class="ActionScriptComment">// near plane
+</span>            <span class="ActionScriptDefault_Text">a</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">c31</span>;
+            <span class="ActionScriptDefault_Text">b</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">c32</span>;
+            <span class="ActionScriptDefault_Text">c</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">c33</span>;
+            <span class="ActionScriptDefault_Text">d</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">c34</span>;
+            <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">a</span> <span class="ActionScriptOperator">*</span> <span class="ActionScriptDefault_Text">_centerX</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">b</span> <span class="ActionScriptOperator">*</span> <span class="ActionScriptDefault_Text">_centerY</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">c</span> <span class="ActionScriptOperator">*</span> <span class="ActionScriptDefault_Text">_centerZ</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">d</span> <span class="ActionScriptOperator">&lt;=</span> <span class="ActionScriptDefault_Text">negRad</span><span class="ActionScriptBracket/Brace">)</span>
+                <span class="ActionScriptReserved">return</span> <span class="ActionScriptReserved">false</span>;
+
+            <span class="ActionScriptComment">// far plane
+</span>            <span class="ActionScriptDefault_Text">a</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">c41</span> <span class="ActionScriptOperator">-</span> <span class="ActionScriptDefault_Text">c31</span>;
+            <span class="ActionScriptDefault_Text">b</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">c42</span> <span class="ActionScriptOperator">-</span> <span class="ActionScriptDefault_Text">c32</span>;
+            <span class="ActionScriptDefault_Text">c</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">c43</span> <span class="ActionScriptOperator">-</span> <span class="ActionScriptDefault_Text">c33</span>;
+            <span class="ActionScriptDefault_Text">d</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">c44</span> <span class="ActionScriptOperator">-</span> <span class="ActionScriptDefault_Text">c34</span>;
+            <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">a</span> <span class="ActionScriptOperator">*</span> <span class="ActionScriptDefault_Text">_centerX</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">b</span> <span class="ActionScriptOperator">*</span> <span class="ActionScriptDefault_Text">_centerY</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">c</span> <span class="ActionScriptOperator">*</span> <span class="ActionScriptDefault_Text">_centerZ</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">d</span> <span class="ActionScriptOperator">&lt;=</span> <span class="ActionScriptDefault_Text">negRad</span><span class="ActionScriptBracket/Brace">)</span>
+                <span class="ActionScriptReserved">return</span> <span class="ActionScriptReserved">false</span>;
+
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptReserved">true</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptASDoc">/**
+         * @inheritDoc
+         */</span>
+        <span class="ActionScriptReserved">override</span> <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">fromSphere</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">center</span> : <span class="ActionScriptDefault_Text">Vector3D</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">radius</span> : <span class="ActionScriptDefault_Text">Number</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptReserved">void</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptDefault_Text">_centerX</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">center</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">x</span>;
+            <span class="ActionScriptDefault_Text">_centerY</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">center</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">y</span>;
+            <span class="ActionScriptDefault_Text">_centerZ</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">center</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">z</span>;
+            <span class="ActionScriptDefault_Text">_radius</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">radius</span>;
+            <span class="ActionScriptDefault_Text">_max</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">x</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">_centerX</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">radius</span>;
+            <span class="ActionScriptDefault_Text">_max</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">y</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">_centerY</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">radius</span>;
+            <span class="ActionScriptDefault_Text">_max</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">z</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">_centerZ</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">radius</span>;
+            <span class="ActionScriptDefault_Text">_min</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">x</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">_centerX</span> <span class="ActionScriptOperator">-</span> <span class="ActionScriptDefault_Text">radius</span>;
+            <span class="ActionScriptDefault_Text">_min</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">y</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">_centerY</span> <span class="ActionScriptOperator">-</span> <span class="ActionScriptDefault_Text">radius</span>;
+            <span class="ActionScriptDefault_Text">_min</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">z</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">_centerZ</span> <span class="ActionScriptOperator">-</span> <span class="ActionScriptDefault_Text">radius</span>;
+            <span class="ActionScriptDefault_Text">_aabbPointsDirty</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptReserved">true</span>;
+            <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">_boundingRenderable</span><span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptDefault_Text">updateBoundingRenderable</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptComment">// todo: fromGeometry can probably be updated a lot
+</span>        <span class="ActionScriptComment">// find center from extremes, but radius from actual furthest distance from center
+</span>
+        <span class="ActionScriptASDoc">/**
+         * @inheritDoc
+         */</span>
+        <span class="ActionScriptReserved">override</span> <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">fromExtremes</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">minX</span> : <span class="ActionScriptDefault_Text">Number</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">minY</span> : <span class="ActionScriptDefault_Text">Number</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">minZ</span> : <span class="ActionScriptDefault_Text">Number</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">maxX</span> : <span class="ActionScriptDefault_Text">Number</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">maxY</span> : <span class="ActionScriptDefault_Text">Number</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">maxZ</span> : <span class="ActionScriptDefault_Text">Number</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptReserved">void</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptDefault_Text">_centerX</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">maxX</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">minX</span><span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptOperator">*</span> .5;
+            <span class="ActionScriptDefault_Text">_centerY</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">maxY</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">minY</span><span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptOperator">*</span> .5;
+            <span class="ActionScriptDefault_Text">_centerZ</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">maxZ</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">minZ</span><span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptOperator">*</span> .5;
+
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">d</span> : <span class="ActionScriptDefault_Text">Number</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">maxX</span> <span class="ActionScriptOperator">-</span> <span class="ActionScriptDefault_Text">minX</span>;
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">y</span> : <span class="ActionScriptDefault_Text">Number</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">maxY</span> <span class="ActionScriptOperator">-</span> <span class="ActionScriptDefault_Text">minY</span>;
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">z</span> : <span class="ActionScriptDefault_Text">Number</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">maxZ</span> <span class="ActionScriptOperator">-</span> <span class="ActionScriptDefault_Text">minZ</span>;
+            <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">y</span> <span class="ActionScriptOperator">&gt;</span> <span class="ActionScriptDefault_Text">d</span><span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptDefault_Text">d</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">y</span>;
+            <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">z</span> <span class="ActionScriptOperator">&gt;</span> <span class="ActionScriptDefault_Text">d</span><span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptDefault_Text">d</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">z</span>;
+
+            <span class="ActionScriptDefault_Text">_radius</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">d</span> <span class="ActionScriptOperator">*</span> <span class="ActionScriptDefault_Text">Math</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">sqrt</span><span class="ActionScriptBracket/Brace">(</span>.5<span class="ActionScriptBracket/Brace">)</span>;
+            <span class="ActionScriptReserved">super</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">fromExtremes</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">minX</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">minY</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">minZ</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">maxX</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">maxY</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">maxZ</span><span class="ActionScriptBracket/Brace">)</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptASDoc">/**
+         * @inheritDoc
+         */</span>
+        <span class="ActionScriptReserved">override</span> <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">clone</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">BoundingVolumeBase</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">clone</span> : <span class="ActionScriptDefault_Text">BoundingSphere</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptReserved">new</span> <span class="ActionScriptDefault_Text">BoundingSphere</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+            <span class="ActionScriptDefault_Text">clone</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">fromSphere</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptReserved">new</span> <span class="ActionScriptDefault_Text">Vector3D</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">_centerX</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">_centerY</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">_centerZ</span><span class="ActionScriptBracket/Brace">)</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">_radius</span><span class="ActionScriptBracket/Brace">)</span>;
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptDefault_Text">clone</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptReserved">override</span> <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">intersectsLine</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">p</span> : <span class="ActionScriptDefault_Text">Vector3D</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">dir</span> : <span class="ActionScriptDefault_Text">Vector3D</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">Boolean</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">cx</span> : <span class="ActionScriptDefault_Text">Number</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">p</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">x</span> <span class="ActionScriptOperator">-</span> <span class="ActionScriptDefault_Text">_centerX</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">cy</span> : <span class="ActionScriptDefault_Text">Number</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">p</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">y</span> <span class="ActionScriptOperator">-</span> <span class="ActionScriptDefault_Text">_centerY</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">cz</span> : <span class="ActionScriptDefault_Text">Number</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">p</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">z</span> <span class="ActionScriptOperator">-</span> <span class="ActionScriptDefault_Text">_centerZ</span>;
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">det</span> : <span class="ActionScriptDefault_Text">Number</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">cx</span> <span class="ActionScriptOperator">*</span> <span class="ActionScriptDefault_Text">cx</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">cy</span> <span class="ActionScriptOperator">*</span> <span class="ActionScriptDefault_Text">cy</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">cz</span> <span class="ActionScriptOperator">*</span> <span class="ActionScriptDefault_Text">cz</span> <span class="ActionScriptOperator">-</span> <span class="ActionScriptDefault_Text">_radius</span> <span class="ActionScriptOperator">*</span> <span class="ActionScriptDefault_Text">_radius</span>;
+
+            <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">det</span> <span class="ActionScriptOperator">&lt;=</span> 0<span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptReserved">return</span> <span class="ActionScriptReserved">true</span>;
+
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">dot</span> : <span class="ActionScriptDefault_Text">Number</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">dir</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">x</span> <span class="ActionScriptOperator">*</span> <span class="ActionScriptDefault_Text">cx</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">dir</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">y</span> <span class="ActionScriptOperator">*</span> <span class="ActionScriptDefault_Text">cy</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">dir</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">z</span> <span class="ActionScriptOperator">*</span> <span class="ActionScriptDefault_Text">cz</span>;
+
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptDefault_Text">dot</span> <span class="ActionScriptOperator">*</span> <span class="ActionScriptDefault_Text">dot</span> <span class="ActionScriptOperator">-</span> <span class="ActionScriptDefault_Text">det</span> <span class="ActionScriptOperator">&gt;=</span> 0;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptReserved">override</span> <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">intersectsRay</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">p</span> : <span class="ActionScriptDefault_Text">Vector3D</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">dir</span> : <span class="ActionScriptDefault_Text">Vector3D</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">Boolean</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">cx</span> : <span class="ActionScriptDefault_Text">Number</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">p</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">x</span> <span class="ActionScriptOperator">-</span> <span class="ActionScriptDefault_Text">_centerX</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">cy</span> : <span class="ActionScriptDefault_Text">Number</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">p</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">y</span> <span class="ActionScriptOperator">-</span> <span class="ActionScriptDefault_Text">_centerY</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">cz</span> : <span class="ActionScriptDefault_Text">Number</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">p</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">z</span> <span class="ActionScriptOperator">-</span> <span class="ActionScriptDefault_Text">_centerZ</span>;
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">det</span> : <span class="ActionScriptDefault_Text">Number</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">cx</span> <span class="ActionScriptOperator">*</span> <span class="ActionScriptDefault_Text">cx</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">cy</span> <span class="ActionScriptOperator">*</span> <span class="ActionScriptDefault_Text">cy</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">cz</span> <span class="ActionScriptOperator">*</span> <span class="ActionScriptDefault_Text">cz</span> <span class="ActionScriptOperator">-</span> <span class="ActionScriptDefault_Text">_radius</span> <span class="ActionScriptOperator">*</span> <span class="ActionScriptDefault_Text">_radius</span>;
+
+            <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">det</span> <span class="ActionScriptOperator">&lt;=</span> 0<span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptReserved">return</span> <span class="ActionScriptReserved">true</span>;
+
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">dot</span> : <span class="ActionScriptDefault_Text">Number</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">dir</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">x</span> <span class="ActionScriptOperator">*</span> <span class="ActionScriptDefault_Text">cx</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">dir</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">y</span> <span class="ActionScriptOperator">*</span> <span class="ActionScriptDefault_Text">cy</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">dir</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">z</span> <span class="ActionScriptOperator">*</span> <span class="ActionScriptDefault_Text">cz</span>;
+
+            <span class="ActionScriptComment">// ray going away from sphere
+</span>            <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">dot</span> <span class="ActionScriptOperator">&gt;=</span> 0<span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptReserved">return</span> <span class="ActionScriptReserved">false</span>;
+
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptDefault_Text">dot</span> <span class="ActionScriptOperator">*</span> <span class="ActionScriptDefault_Text">dot</span> <span class="ActionScriptOperator">-</span> <span class="ActionScriptDefault_Text">det</span> <span class="ActionScriptOperator">&gt;=</span> 0;
+        <span class="ActionScriptBracket/Brace">}</span>
+    <span class="ActionScriptBracket/Brace">}</span>
+<span class="ActionScriptBracket/Brace">}</span></pre></body>
+</html>

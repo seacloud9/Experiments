@@ -1,0 +1,237 @@
+<!-- saved from url=(0014)about:internet -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>AGAL.as</title>
+<link rel="stylesheet" type="text/css" href="../../../../../SourceStyles.css"/>
+</head>
+
+<body><pre><span class="ActionScriptpackage">package</span> <span class="ActionScriptDefault_Text">away3d</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">materials</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">utils</span>
+<span class="ActionScriptBracket/Brace">{</span>
+    <span class="ActionScriptASDoc">/**
+     * The AGAL class provides static helper methods to improve readability when writing AGAL code.
+     */</span>
+    <span class="ActionScriptReserved">public</span> <span class="ActionScriptclass">class</span> <span class="ActionScriptDefault_Text">AGAL</span>
+    <span class="ActionScriptBracket/Brace">{</span>
+
+        <span class="ActionScriptASDoc">/**
+         * Dot product for a 3-component vector
+         */</span>
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptReserved">static</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">dp3</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">tgt</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">src1</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">src2</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">String</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptString">"dp3 "</span><span class="ActionScriptOperator">+</span><span class="ActionScriptDefault_Text">tgt</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">", "</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">src1</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptString">", "</span><span class="ActionScriptOperator">+</span><span class="ActionScriptDefault_Text">src2</span> <span class="ActionScriptOperator">+</span><span class="ActionScriptString">"\n"</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptASDoc">/**
+         * Dot product for a 4-component vector
+         */</span>
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptReserved">static</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">dp4</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">tgt</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">src1</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">src2</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">String</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptString">"dp4 "</span><span class="ActionScriptOperator">+</span><span class="ActionScriptDefault_Text">tgt</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">", "</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">src1</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptString">", "</span><span class="ActionScriptOperator">+</span><span class="ActionScriptDefault_Text">src2</span> <span class="ActionScriptOperator">+</span><span class="ActionScriptString">"\n"</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptASDoc">/**
+         * Saturate; Clamp a value between 0 and 1
+         */</span>
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptReserved">static</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">sat</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">tgt</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">src</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">String</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptString">"sat "</span><span class="ActionScriptOperator">+</span><span class="ActionScriptDefault_Text">tgt</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">", "</span><span class="ActionScriptOperator">+</span><span class="ActionScriptDefault_Text">src</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">"\n"</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptASDoc">/**
+         * Normalize a 3-component vector
+         */</span>
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptReserved">static</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">normalize</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">tgt</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">src</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">String</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptString">"nrm "</span><span class="ActionScriptOperator">+</span><span class="ActionScriptDefault_Text">tgt</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">", "</span><span class="ActionScriptOperator">+</span><span class="ActionScriptDefault_Text">src</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">"\n"</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptASDoc">/**
+         * Multiply
+         */</span>
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptReserved">static</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">mul</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">tgt</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">src1</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">src2</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">String</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptString">"mul "</span><span class="ActionScriptOperator">+</span><span class="ActionScriptDefault_Text">tgt</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">", "</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">src1</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptString">", "</span><span class="ActionScriptOperator">+</span><span class="ActionScriptDefault_Text">src2</span> <span class="ActionScriptOperator">+</span><span class="ActionScriptString">"\n"</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptASDoc">/**
+         * Divide
+         */</span>
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptReserved">static</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">div</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">tgt</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">src1</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">src2</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">String</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptString">"div "</span><span class="ActionScriptOperator">+</span><span class="ActionScriptDefault_Text">tgt</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">", "</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">src1</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptString">", "</span><span class="ActionScriptOperator">+</span><span class="ActionScriptDefault_Text">src2</span> <span class="ActionScriptOperator">+</span><span class="ActionScriptString">"\n"</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptASDoc">/**
+         * Add
+         */</span>
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptReserved">static</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">add</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">tgt</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">src1</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">src2</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">String</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptString">"add "</span><span class="ActionScriptOperator">+</span><span class="ActionScriptDefault_Text">tgt</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">", "</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">src1</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptString">", "</span><span class="ActionScriptOperator">+</span><span class="ActionScriptDefault_Text">src2</span> <span class="ActionScriptOperator">+</span><span class="ActionScriptString">"\n"</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptASDoc">/**
+         * Subtract
+         */</span>
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptReserved">static</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">sub</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">tgt</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">src1</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">src2</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">String</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptString">"sub "</span><span class="ActionScriptOperator">+</span><span class="ActionScriptDefault_Text">tgt</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">", "</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">src1</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptString">", "</span><span class="ActionScriptOperator">+</span><span class="ActionScriptDefault_Text">src2</span> <span class="ActionScriptOperator">+</span><span class="ActionScriptString">"\n"</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptASDoc">/**
+         * Cross product for 3-component vectors
+         */</span>
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptReserved">static</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">cross</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">tgt</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">src1</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">src2</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">String</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptString">"crs "</span><span class="ActionScriptOperator">+</span><span class="ActionScriptDefault_Text">tgt</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">", "</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">src1</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptString">", "</span><span class="ActionScriptOperator">+</span><span class="ActionScriptDefault_Text">src2</span> <span class="ActionScriptOperator">+</span><span class="ActionScriptString">"\n"</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptASDoc">/**
+         * Copy value
+         */</span>
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptReserved">static</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">mov</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">tgt</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">src</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">String</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptString">"mov "</span><span class="ActionScriptOperator">+</span><span class="ActionScriptDefault_Text">tgt</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">", "</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">src</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptString">"\n"</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptASDoc">/**
+         * Power
+         */</span>
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptReserved">static</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">pow</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">tgt</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">src1</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">src2</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">String</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptString">"pow "</span><span class="ActionScriptOperator">+</span><span class="ActionScriptDefault_Text">tgt</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">", "</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">src1</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptString">", "</span><span class="ActionScriptOperator">+</span><span class="ActionScriptDefault_Text">src2</span> <span class="ActionScriptOperator">+</span><span class="ActionScriptString">"\n"</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptASDoc">/**
+         * Sample texture
+         */</span>
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptReserved">static</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">sample</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">tgt</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">coord</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">type</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">fs</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">filter</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">wrap</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">String</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">filtering</span> : <span class="ActionScriptDefault_Text">String</span>;
+
+            <span class="ActionScriptReserved">switch</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">filter</span><span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptBracket/Brace">{</span>
+                <span class="ActionScriptReserved">case</span> <span class="ActionScriptString">"trilinear"</span>:
+                    <span class="ActionScriptDefault_Text">filtering</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptString">"linear,miplinear"</span>;
+                    <span class="ActionScriptReserved">break</span>;
+                <span class="ActionScriptReserved">case</span> <span class="ActionScriptString">"bilinear"</span>:
+                    <span class="ActionScriptDefault_Text">filtering</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptString">"linear"</span>;
+                    <span class="ActionScriptReserved">break</span>;
+                <span class="ActionScriptReserved">case</span> <span class="ActionScriptString">"nearestMip"</span>:
+                    <span class="ActionScriptDefault_Text">filtering</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptString">"nearest,mipnearest"</span>;
+                    <span class="ActionScriptReserved">break</span>;
+                <span class="ActionScriptReserved">case</span> <span class="ActionScriptString">"nearestNoMip"</span>:
+                    <span class="ActionScriptDefault_Text">filtering</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptString">"nearest"</span>;
+                    <span class="ActionScriptReserved">break</span>;
+                <span class="ActionScriptReserved">case</span> <span class="ActionScriptString">"centroid"</span>:
+                    <span class="ActionScriptDefault_Text">filtering</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptString">"centroid"</span>;
+                    <span class="ActionScriptReserved">break</span>;
+            <span class="ActionScriptBracket/Brace">}</span>
+            <span class="ActionScriptReserved">return</span>     <span class="ActionScriptString">"tex "</span><span class="ActionScriptOperator">+</span><span class="ActionScriptDefault_Text">tgt</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">", "</span><span class="ActionScriptOperator">+</span><span class="ActionScriptDefault_Text">coord</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">", "</span><span class="ActionScriptOperator">+</span><span class="ActionScriptDefault_Text">fs</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">" &lt;"</span><span class="ActionScriptOperator">+</span><span class="ActionScriptDefault_Text">type</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">","</span><span class="ActionScriptOperator">+</span><span class="ActionScriptDefault_Text">filtering</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">","</span><span class="ActionScriptOperator">+</span><span class="ActionScriptDefault_Text">wrap</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">"&gt;\n"</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptASDoc">/**
+         * Vector * Matrix3x4 multiplication
+         */</span>
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptReserved">static</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">m34</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">tgt</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">src1</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">src2</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">String</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptString">"m34 "</span><span class="ActionScriptOperator">+</span><span class="ActionScriptDefault_Text">tgt</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">", "</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">src1</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptString">", "</span><span class="ActionScriptOperator">+</span><span class="ActionScriptDefault_Text">src2</span> <span class="ActionScriptOperator">+</span><span class="ActionScriptString">"\n"</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptASDoc">/**
+         * Vector * Matrix3x3 multiplication
+         */</span>
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptReserved">static</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">m33</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">tgt</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">src1</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">src2</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">String</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptString">"m33 "</span><span class="ActionScriptOperator">+</span><span class="ActionScriptDefault_Text">tgt</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">", "</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">src1</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptString">", "</span><span class="ActionScriptOperator">+</span><span class="ActionScriptDefault_Text">src2</span> <span class="ActionScriptOperator">+</span><span class="ActionScriptString">"\n"</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptASDoc">/**
+         * Vector * Matrix4x4 multiplication
+         */</span>
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptReserved">static</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">m44</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">tgt</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">src1</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">src2</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">String</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptString">"m44 "</span><span class="ActionScriptOperator">+</span><span class="ActionScriptDefault_Text">tgt</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">", "</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">src1</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptString">", "</span><span class="ActionScriptOperator">+</span><span class="ActionScriptDefault_Text">src2</span> <span class="ActionScriptOperator">+</span><span class="ActionScriptString">"\n"</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptASDoc">/**
+         * Step: tgt = src1 &gt; src2? 1 : 0
+         */</span>
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptReserved">static</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">step</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">tgt</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">src1</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">src2</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">String</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptString">"sge "</span><span class="ActionScriptOperator">+</span><span class="ActionScriptDefault_Text">tgt</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">", "</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">src1</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptString">", "</span><span class="ActionScriptOperator">+</span><span class="ActionScriptDefault_Text">src2</span> <span class="ActionScriptOperator">+</span><span class="ActionScriptString">"\n"</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptASDoc">/**
+         * Less than: tgt = src1 &lt; src2? 1 : 0
+         */</span>
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptReserved">static</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">lessThan</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">tgt</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">src1</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">src2</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">String</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptString">"slt "</span><span class="ActionScriptOperator">+</span><span class="ActionScriptDefault_Text">tgt</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">", "</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">src1</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptString">", "</span><span class="ActionScriptOperator">+</span><span class="ActionScriptDefault_Text">src2</span> <span class="ActionScriptOperator">+</span><span class="ActionScriptString">"\n"</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptASDoc">/**
+         * Get the fractional part
+         */</span>
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptReserved">static</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">fract</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">tgt</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">src</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">String</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptString">"frc "</span><span class="ActionScriptOperator">+</span><span class="ActionScriptDefault_Text">tgt</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">", "</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">src</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptString">"\n"</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptASDoc">/**
+         * Reciprocal, tgt = 1/src
+         */</span>
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptReserved">static</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">rcp</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">tgt</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">src</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">String</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptString">"rcp "</span><span class="ActionScriptOperator">+</span><span class="ActionScriptDefault_Text">tgt</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">", "</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">src</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptString">"\n"</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptASDoc">/**
+         * Negate, tgt = -src
+         */</span>
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptReserved">static</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">neg</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">tgt</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">src</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">String</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptString">"neg "</span><span class="ActionScriptOperator">+</span><span class="ActionScriptDefault_Text">tgt</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">", "</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">src</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptString">"\n"</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptASDoc">/**
+         * Square root
+         */</span>
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptReserved">static</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">sqrt</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">tgt</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">src</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">String</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptString">"sqt "</span><span class="ActionScriptOperator">+</span><span class="ActionScriptDefault_Text">tgt</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">", "</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">src</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptString">"\n"</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptASDoc">/**
+         * Exponential
+         */</span>
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptReserved">static</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">exp</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">tgt</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">src</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">String</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptString">"exp "</span><span class="ActionScriptOperator">+</span><span class="ActionScriptDefault_Text">tgt</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">", "</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">src</span> <span class="ActionScriptOperator">+</span><span class="ActionScriptString">"\n"</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptASDoc">/**
+         * Greater or equal (identical to step)
+         */</span>
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptReserved">static</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">greaterOrEqualTo</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">tgt</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">src1</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">src2</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">String</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptString">"sge "</span><span class="ActionScriptOperator">+</span><span class="ActionScriptDefault_Text">tgt</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">", "</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">src1</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptString">", "</span><span class="ActionScriptOperator">+</span><span class="ActionScriptDefault_Text">src2</span> <span class="ActionScriptOperator">+</span><span class="ActionScriptString">"\n"</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptReserved">static</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">kill</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">src</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">String</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptString">"kil "</span><span class="ActionScriptOperator">+</span><span class="ActionScriptDefault_Text">src</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">"\n"</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptReserved">static</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">sin</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">tgt</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">src</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">String</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptString">"sin "</span><span class="ActionScriptOperator">+</span><span class="ActionScriptDefault_Text">tgt</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">", "</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">src</span> <span class="ActionScriptOperator">+</span><span class="ActionScriptString">"\n"</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptReserved">static</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">cos</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">tgt</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">src</span> : <span class="ActionScriptDefault_Text">String</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">String</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptString">"cos "</span><span class="ActionScriptOperator">+</span><span class="ActionScriptDefault_Text">tgt</span><span class="ActionScriptOperator">+</span><span class="ActionScriptString">", "</span> <span class="ActionScriptOperator">+</span> <span class="ActionScriptDefault_Text">src</span> <span class="ActionScriptOperator">+</span><span class="ActionScriptString">"\n"</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+    <span class="ActionScriptBracket/Brace">}</span>
+<span class="ActionScriptBracket/Brace">}</span></pre></body>
+</html>

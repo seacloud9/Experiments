@@ -1,0 +1,136 @@
+<!-- saved from url=(0014)about:internet -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>Partition3D.as</title>
+<link rel="stylesheet" type="text/css" href="../../../../../SourceStyles.css"/>
+</head>
+
+<body><pre><span class="ActionScriptpackage">package</span> <span class="ActionScriptDefault_Text">away3d</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">core</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">partition</span>
+<span class="ActionScriptBracket/Brace">{</span>
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">away3d</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">arcane</span>;
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">away3d</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">core</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">traverse</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">PartitionTraverser</span>;
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">away3d</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">entities</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">Entity</span>;
+
+    <span class="ActionScriptReserved">use</span> <span class="ActionScriptReserved">namespace</span> <span class="ActionScriptDefault_Text">arcane</span>;
+
+    <span class="ActionScriptASDoc">/**
+     * Partition3D is the core of a space partition system. The space partition system typically subdivides the 3D scene
+     * hierarchically into a number of non-overlapping subspaces, forming a tree data structure. This is used to more
+     * efficiently perform frustum culling, potential visibility determination and collision detection.
+     */</span>
+    <span class="ActionScriptReserved">public</span> <span class="ActionScriptclass">class</span> <span class="ActionScriptDefault_Text">Partition3D</span>
+    <span class="ActionScriptBracket/Brace">{</span>
+        <span class="ActionScriptReserved">private</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_rootNode</span> : <span class="ActionScriptDefault_Text">NodeBase</span>;
+        <span class="ActionScriptReserved">private</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_updatesMade</span> : <span class="ActionScriptDefault_Text">Boolean</span>;
+        <span class="ActionScriptReserved">private</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_updateQueue</span> : <span class="ActionScriptDefault_Text">EntityNode</span>;
+
+        <span class="ActionScriptASDoc">/**
+         * Creates a new Partition3D object.
+         * @param rootNode The root node of the space partition system. This will indicate which type of data structure will be used.
+         */</span>
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">Partition3D</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">rootNode</span> : <span class="ActionScriptDefault_Text">NodeBase</span><span class="ActionScriptBracket/Brace">)</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptDefault_Text">_rootNode</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">rootNode</span> <span class="ActionScriptOperator">||</span> <span class="ActionScriptReserved">new</span> <span class="ActionScriptDefault_Text">NullNode</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptReserved">get</span> <span class="ActionScriptDefault_Text">showDebugBounds</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptDefault_Text">Boolean</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">return</span> <span class="ActionScriptDefault_Text">_rootNode</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">showDebugBounds</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptReserved">set</span> <span class="ActionScriptDefault_Text">showDebugBounds</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">value</span> : <span class="ActionScriptDefault_Text">Boolean</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptReserved">void</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptASDoc">/**
+         * Sends a traverser through the partition tree.
+         * @param traverser
+         *
+         * @see away3d.core.traverse.PartitionTraverser
+         */</span>
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">traverse</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">traverser</span> : <span class="ActionScriptDefault_Text">PartitionTraverser</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptReserved">void</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">_updatesMade</span><span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptDefault_Text">updateEntities</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+            <span class="ActionScriptDefault_Text">_rootNode</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">acceptTraverser</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">traverser</span><span class="ActionScriptBracket/Brace">)</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptASDoc">/**
+         * Mark a scene graph entity for updating. This will trigger a reassignment within the tree, based on the
+         * object's bounding box, upon the next traversal.
+         * @param entity The entity to be updated in the tree.
+         */</span>
+        <span class="ActionScriptDefault_Text">arcane</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">markForUpdate</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">entity</span> : <span class="ActionScriptDefault_Text">Entity</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptReserved">void</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">node</span> : <span class="ActionScriptDefault_Text">EntityNode</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">entity</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">getEntityPartitionNode</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+            <span class="ActionScriptComment">// already marked to be updated
+</span>            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">t</span> : <span class="ActionScriptDefault_Text">EntityNode</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">_updateQueue</span>;
+
+            <span class="ActionScriptComment">// if already marked for update
+</span>            <span class="ActionScriptReserved">while</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">t</span><span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptBracket/Brace">{</span>
+                <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">node</span> <span class="ActionScriptOperator">==</span> <span class="ActionScriptDefault_Text">t</span><span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptReserved">return</span>;
+                <span class="ActionScriptDefault_Text">t</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">t</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">_updateQueueNext</span>;
+            <span class="ActionScriptBracket/Brace">}</span>
+
+            <span class="ActionScriptDefault_Text">node</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">_updateQueueNext</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">_updateQueue</span>;
+            <span class="ActionScriptDefault_Text">_updateQueue</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">node</span>;
+            <span class="ActionScriptDefault_Text">_updatesMade</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptReserved">true</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptASDoc">/**
+         * Removes an entity from the partition tree.
+         * @param entity The entity to be removed.
+         */</span>
+        <span class="ActionScriptDefault_Text">arcane</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">removeEntity</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">entity</span> : <span class="ActionScriptDefault_Text">Entity</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptReserved">void</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">node</span> : <span class="ActionScriptDefault_Text">EntityNode</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">entity</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">getEntityPartitionNode</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">t</span> : <span class="ActionScriptDefault_Text">EntityNode</span>;
+
+            <span class="ActionScriptDefault_Text">node</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">removeFromParent</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+
+            <span class="ActionScriptComment">// remove from update list if it's in
+</span>            <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">node</span> <span class="ActionScriptOperator">==</span> <span class="ActionScriptDefault_Text">_updateQueue</span><span class="ActionScriptBracket/Brace">)</span>
+                <span class="ActionScriptDefault_Text">_updateQueue</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">node</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">_updateQueueNext</span>;
+            <span class="ActionScriptReserved">else</span> <span class="ActionScriptBracket/Brace">{</span>
+                <span class="ActionScriptDefault_Text">t</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">_updateQueue</span>;
+                <span class="ActionScriptReserved">while</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">t</span> <span class="ActionScriptOperator">&amp;&amp;</span> <span class="ActionScriptDefault_Text">t</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">_updateQueueNext</span> <span class="ActionScriptOperator">!=</span> <span class="ActionScriptDefault_Text">node</span><span class="ActionScriptBracket/Brace">)</span>
+                    <span class="ActionScriptDefault_Text">t</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">t</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">_updateQueueNext</span>;
+                <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">t</span><span class="ActionScriptBracket/Brace">)</span>
+                    <span class="ActionScriptDefault_Text">t</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">_updateQueueNext</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">node</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">_updateQueueNext</span>;
+            <span class="ActionScriptBracket/Brace">}</span>
+
+            <span class="ActionScriptDefault_Text">node</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">_updateQueueNext</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptReserved">null</span>;
+
+            <span class="ActionScriptComment">// any updates have been made undone
+</span>            <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptOperator">!</span><span class="ActionScriptDefault_Text">_updateQueue</span><span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptDefault_Text">_updatesMade</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptReserved">false</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptASDoc">/**
+         * Updates all entities that were marked for update.
+         */</span>
+        <span class="ActionScriptReserved">private</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">updateEntities</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span> : <span class="ActionScriptReserved">void</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">node</span> : <span class="ActionScriptDefault_Text">EntityNode</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">_updateQueue</span>;
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">targetNode</span> : <span class="ActionScriptDefault_Text">NodeBase</span>;
+            <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">t</span> : <span class="ActionScriptDefault_Text">EntityNode</span>;
+
+            <span class="ActionScriptReserved">do</span> <span class="ActionScriptBracket/Brace">{</span>
+                <span class="ActionScriptDefault_Text">targetNode</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">_rootNode</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">findPartitionForEntity</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">node</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">entity</span><span class="ActionScriptBracket/Brace">)</span>;
+
+                <span class="ActionScriptComment">// if changed, find and attach the mesh node to the best suited partition node
+</span>                <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">node</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">parent</span> <span class="ActionScriptOperator">!=</span> <span class="ActionScriptDefault_Text">targetNode</span><span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptBracket/Brace">{</span>
+                    <span class="ActionScriptReserved">if</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">node</span><span class="ActionScriptBracket/Brace">)</span> <span class="ActionScriptDefault_Text">node</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">removeFromParent</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+                    <span class="ActionScriptDefault_Text">targetNode</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">addNode</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">node</span><span class="ActionScriptBracket/Brace">)</span>;
+                <span class="ActionScriptBracket/Brace">}</span>
+                <span class="ActionScriptDefault_Text">t</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">node</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">_updateQueueNext</span>;
+                <span class="ActionScriptDefault_Text">node</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">_updateQueueNext</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptReserved">null</span>;
+            <span class="ActionScriptBracket/Brace">}</span> <span class="ActionScriptReserved">while</span> <span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">node</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">t</span><span class="ActionScriptBracket/Brace">)</span>;
+
+            <span class="ActionScriptDefault_Text">_updateQueue</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptReserved">null</span>;
+            <span class="ActionScriptDefault_Text">_updatesMade</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptReserved">false</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+    <span class="ActionScriptBracket/Brace">}</span>
+<span class="ActionScriptBracket/Brace">}</span></pre></body>
+</html>
