@@ -1,0 +1,291 @@
+<!DOCTYPE HTML>
+<html lang="en">
+	<head>
+		<title>three.js webgl - geometry - dynamic</title>
+		<meta charset="utf-8">
+		<style type="text/css">
+			body {
+				color: #61443e;
+				font-family:Monospace;
+				font-size:13px;
+				text-align:center;
+
+				background-color: #aaccff;
+				margin: 0px;
+				overflow: hidden;
+			}
+
+			#info {
+				color: #ffffff;
+				position: absolute;
+				top: 0px; width: 100%;
+				padding: 5px;
+			}
+
+			a {
+
+				color: yellow;
+			}
+
+			#oldie {
+				background:rgb(0,0,50) !important;
+				color:#fff !important;
+			}
+
+		</style>
+	</head>
+	<body>
+
+		<div id="container"></div>
+		
+
+		<script type="text/javascript" src="build/Three.js"></script>
+
+		<script type="text/javascript" src="js/Detector.js"></script>
+		<script type="text/javascript" src="js/RequestAnimationFrame.js"></script>
+		<script type="text/javascript" src="js/Stats.js"></script>
+        <!--<script type="text/javascript" src="models/ninja.js"></script>-->
+
+		<script type="text/javascript">
+
+			if ( ! Detector.webgl ) {
+
+				Detector.addGetWebGLMessage();
+				document.getElementById( 'container' ).innerHTML = "";
+
+			}
+
+			var container, stats;
+			var genSpheres1, genSpheres2;
+			var ninja;
+			var camera, scene, renderer;
+
+			var mesh, texture,geometry, material;
+
+			var worldWidth = 128, worldDepth = 128,
+			worldHalfWidth = worldWidth / 2, worldHalfDepth = worldDepth / 2;
+
+			init();
+			animate();
+
+			function init() {
+
+				container = document.getElementById( 'container' );
+
+				camera = new THREE.QuakeCamera( { fov: 45, aspect: window.innerWidth / window.innerHeight, near: 1, far: 3000,
+												  movement_speed: 30, look_speed: 0.004, nofly: false, look_vertical: true } );
+
+				camera.target.position.z = - 0;
+
+				scene = new THREE.Scene();
+				scene.fog = new THREE.FogExp2( 0xaaccff, 0.002 );
+
+				//var light = new THREE.PointLight( 0xffffff, 2 );
+				//light.position.y = 500;
+				//scene.addLight( light );
+
+				camera.position.y = 500;
+				camera.target.position.y = camera.position.y;
+
+				geometry = new Plane( 2000, 2000, worldWidth - 1, worldDepth - 1 );
+
+				var i, j, il, jl;
+
+				for ( i = 0, il = geometry.vertices.length; i < il; i ++ ) {
+
+					geometry.vertices[ i ].position.z = 200 * Math.sin( i/2 );
+
+				}
+
+				for( i = 0; i < geometry.uvs.length; i++ ) {
+
+					var uvs = geometry.uvs[ i ];
+					for ( j = 0, jl = uvs.length; j < jl; j++ ) {
+
+						uvs[ j ].u *= 5;
+						uvs[ j ].v *= 5;
+
+					}
+
+				}
+
+
+				//console.log( "triangles: " + geometry.faces.length * 2 + " faces: " + geometry.faces.length + " vertices: " + geometry.vertices.length );
+
+				geometry.computeFaceNormals();
+				geometry.computeVertexNormals();
+
+				var texture = ImageUtils.loadTexture( "textures/water.jpg" );
+				texture.wrap_s = texture.wrap_t = THREE.RepeatWrapping;
+				material = new THREE.MeshBasicMaterial( { color:0x0044ff, opacity:1, map: texture } );
+
+				mesh = new THREE.Mesh( geometry, material );
+				mesh.rotation.x = - 90 * Math.PI / 180;
+				scene.addObject( mesh );
+				try{
+				loader = new THREE.Loader( true );
+				document.body.appendChild( loader.statusDomElement );
+				loader.loadBinary( { model: "models/ninja.js"} );
+				
+				/*ninja = new THREE.Mesh( new Ninja());
+				ninja.position.x = camera.position.x + 10;
+				ninja.position.y = camera.position.y + 10;
+				ninja.position.z = camera.position.z + 10;
+				scene.addObject( ninja );*/
+				}catch(e){
+				console.log(e);	
+				}
+				
+				genSpheres1 = new generateRandomSpheres();
+				genSpheres2 = new generateSpheres();
+				renderer = new THREE.WebGLRenderer( { clearColor:0xaaccff, clearAlpha: 1 } );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+
+				container.innerHTML = "";
+
+				container.appendChild( renderer.domElement );
+
+				stats = new Stats();
+				stats.domElement.style.position = 'absolute';
+				stats.domElement.style.top = '0px';
+				container.appendChild( stats.domElement );
+
+			}
+			
+			function generateRandomSpheres(){
+				var sphere = new Sphere( 100, 32, 16 );
+				sphere.sortFacesByMaterial();
+				var path = "textures/cube/skybox/";
+				var format = '.jpg';
+				var urls = [
+						path + 'px' + format, path + 'nx' + format,
+						path + 'py' + format, path + 'ny' + format,
+						path + 'pz' + format, path + 'nz' + format
+					];
+				
+				var textureCube = ImageUtils.loadTextureCube( urls, new THREE.CubeRefractionMapping() );
+				var material = new THREE.MeshBasicMaterial( { color: 0xffffff, env_map: textureCube, refraction_ratio: 0.95 } );
+				var meshArr = new Array();
+				for ( var i = 0; i < 200; i ++ ) {
+
+					var mesh1 = new THREE.Mesh( sphere, material );
+					mesh1.position.x = Math.random() * 10000 - 5000;
+					mesh1.position.y = Math.random() * 10000 - 5000;
+					mesh1.position.z = Math.random() * 10000 - 5000;
+					mesh1.scale.x = mesh1.scale.y = mesh1.scale.z = Math.random() * 4 + 1;
+					scene.addObject( mesh1 );
+					meshArr.push(mesh1);
+				}	
+				this.MeshArr = meshArr;
+				
+			}
+			
+			
+			function generateSpheres(){
+				var sphere = new Sphere( 100, 32, 16 );
+				sphere.sortFacesByMaterial();
+				var path = "textures/cube/skybox/";
+				var format = '.jpg';
+				var urls = [
+						path + 'px' + format, path + 'nx' + format,
+						path + 'py' + format, path + 'ny' + format,
+						path + 'pz' + format, path + 'nz' + format
+					];
+				
+				var textureCube = ImageUtils.loadTextureCube( urls, new THREE.CubeRefractionMapping() );
+				var material = new THREE.MeshBasicMaterial( { color: 0xffffff, env_map: texture, refraction_ratio: 0.95 } );
+				var randomLocation = Math.random() * 10000 - 10500;
+				//var meshSize = mesh1.scale.z = Math.random() * 4 + 1;
+				var meshArr = new Array();
+				for ( var i = 0; i < 200; i ++ ) {
+					var mesh1 = new THREE.Mesh( sphere, material );
+					mesh1.position.x = randomLocation;
+					mesh1.position.y = randomLocation;
+					mesh1.position.z = randomLocation + i + 16;
+					//mesh1.scale.x = mesh1.scale.z = Math.random() * 4 + 1;
+					scene.addObject( mesh1 );
+					meshArr.push(mesh1);
+				}	
+				this.MeshArr = meshArr;
+			}
+			
+			function enemyAttractor(){
+			for( var i=0; i < genSpheres1.MeshArr.length; i++){
+				if (genSpheres1.MeshArr[i].position.x > camera.position.x){
+					genSpheres1.MeshArr[i].position.x -= 1;
+				}else{
+					genSpheres1.MeshArr[i].position.x += 1;
+				}
+				
+				if (genSpheres1.MeshArr[i].position.z > camera.position.z){
+					genSpheres1.MeshArr[i].position.z -= 1;
+				}else{
+					genSpheres1.MeshArr[i].position.z += 1;
+				}
+				
+				if (genSpheres1.MeshArr[i].position.y > camera.position.y){
+					genSpheres1.MeshArr[i].position.y -= 1;
+				}else{
+					genSpheres1.MeshArr[i].position.y += 1;
+				}
+			}
+			
+			for( var i=0; i < genSpheres2.MeshArr.length; i++){
+				if (genSpheres2.MeshArr[i].position.x > camera.position.x){
+					genSpheres2.MeshArr[i].position.x -= 1;
+				}else{
+					genSpheres2.MeshArr[i].position.x += 1;
+				}
+				
+				if (genSpheres2.MeshArr[i].position.z > camera.position.z){
+					genSpheres2.MeshArr[i].position.z -= 1;
+				}else{
+					genSpheres2.MeshArr[i].position.z += 1;
+				}
+				
+				if (genSpheres2.MeshArr[i].position.y > camera.position.y){
+					genSpheres2.MeshArr[i].position.y -= 1;
+				}else{
+					genSpheres2.MeshArr[i].position.y += 1;
+				}
+			}
+				
+			}
+			//
+
+			function animate() {
+
+				requestAnimationFrame( animate );
+				enemyAttractor();
+				mesh.position.x = camera.position.x;
+				mesh.position.y = camera.position.y - 100;
+				mesh.position.z = camera.position.z;
+				render();
+				stats.update();
+
+			}
+
+			function render() {
+
+				var time = new Date().getTime() * 0.01;
+
+				for ( var i = 0, l = geometry.vertices.length; i < l; i ++ ) {
+
+					geometry.vertices[ i ].position.z = 35 * Math.sin( i/5 + (time + i)/7 );
+
+				}
+
+				//geometry.computeFaceNormals();
+				//geometry.computeVertexNormals();
+
+				mesh.geometry.__dirtyVertices = true;
+				//mesh.geometry.__dirtyNormals = true;
+
+				renderer.render(scene, camera);
+
+			}
+
+		</script>
+
+	</body>
+</html>

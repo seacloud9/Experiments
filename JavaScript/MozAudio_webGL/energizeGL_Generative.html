@@ -1,0 +1,71 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>EnergizeGL Generative</title>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+<script type="text/javascript" src="http://energize.cc/get/Math"></script><script type="text/javascript" src="http://energize.cc/get/EnergizeGL"></script>
+</head>
+<body>
+<canvas id="appcanvas" width="800" height="450"></canvas>
+<div id="applog"></div>
+<script type="text/javascript">
+	var c = 102;
+	var cf = 2900;
+	var af = 0;
+	var colorPool = new Array('#0d2c6b','#0a162f','#136103', '#033a61');
+	
+		function setup() {
+			setBackgroundColor(0, 0);
+			setAmbientColor(0.5);
+			zFar(2000);
+			usePointLight();
+			setPointColor(1);
+			setPointPosition(0, 0, 100);
+			setShininess(10);
+			useAlpha();
+			loadTexture('skin', 'blueTxt.png');
+			star = new starMesh();
+			star1 = new starMesh1();
+			
+		}
+		
+		function starMesh(){
+			startMesh('starMesh', c);
+				for(var i = 0; i < c; i++) {
+					addVertex(random(-200, 200), random(-200, 200), random(-200, 200));
+				}
+			endMesh(); 		
+		}
+		
+		
+		function starMesh1(){
+			startMesh('starMesh1', c);
+					for(var i = 0; i < c; i++) {
+						setColor(random(0.2, 0.5), random(0.8, 1), random(0.5, 0.8));
+						addVertex(random(-50, 50), random(-50, 50), random(-50, 50));
+					}
+    		endMesh();
+			
+		}
+
+		function draw() {
+			setCamera(0, -40, -400, 0, 0, 0, 0, -1, 0);
+		    rotateY(Math.sin(af/50));
+    		rotateZ(Math.sin(af/100));
+			//setColor(Math.sin(frame/100), 0, 255,  random(0.5, 1));
+			star2 = new starMesh1();
+			cube(0, 0, 0, 800, 800, 800);
+			tween('starMesh1', 'starMesh', TRIANGLE_STRIP, 100, EGLEasing.sin(0, 100, 60, af), 'linear');
+			//if(frame == 1000) stop();
+			af++;
+
+		}
+
+		StartEnergizeGL('appcanvas', '', 'applog');
+		
+		// Uncomment for fillscreen with no logs
+		//StartEnergizeGL('appcanvas', 'fillscreen');
+	</script>
+</body>
+</html>

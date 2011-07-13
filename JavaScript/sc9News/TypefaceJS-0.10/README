@@ -1,0 +1,63 @@
+NAME
+    TypefaceJS - Generate fonts for use with typeface.js
+
+SYNOPSIS
+    use TypefaceJS;
+
+    my $typeface = TypefaceJS::new->( input_filename => "truetype_font.ttf",
+    unicode_range_names => ['Basic Latin', 'Latin-1 Supplement'], );
+
+    $typeface->write_file( output_filename => 'font.typeface.js' );
+
+DESCRIPTION
+    TypefaceJS converts truetype fonts to a format that typeface.js can
+    read. typeface.js is a javascript library that uses web browsers' vector
+    drawing capability (<canvas> and VML) to draw text in HTML documents.
+    See http://typeface.neocracy.org.
+
+    Many font vendors specifically prohibit embedding fonts in documents,
+    and this module attempts to honor those restrictions.
+
+METHODS
+    Methods take named parameters.
+
+    new()
+    Takes an "input_filename" which should be a truetype font file, and
+    optional arrayref of "unicode_range_names" to support. If no range names
+    are specified it is assumed we want all that are supported by the font.
+    See Unicode::UCD.
+
+    check_embed_license()
+    Checks to see whether the vendor indicated that this font should be
+    embedable as indicated by the fsType value in the font's OS/2 table.
+    Returns false if any level of restriction is set at all. See page 86 the
+    spec: http://www.microsoft.com/typography/tt/ttf_spec/ttch02.doc
+
+    get_unicode_range_counts()
+    Returns a hashref containing information about which characters and
+    which unicode ranges are supported within this font. See Unicode::UCD.
+
+    get_json_data()
+    Returns the JSON data structure used by typeface.js. This contains glyph
+    outline information as selected font metadata.
+
+    write_file()
+    Writes the font in typeface.js format, using javascript and JSON. Takes
+    an optional "output_filename" parameter which defaults to a reasonable
+    name if not specified.
+
+AUTHOR
+    David Chester | davidchester@gmx.net
+
+COPYRIGHT
+    Copyright (c) 2008, David Chester
+
+    This program is free software; you can redistribute it and/or modify it
+    under the same terms as Perl itself.
+
+    The full text of the license can be found in the LICENSE file included
+    with this module.
+
+SEE ALSO
+    Font::Freetype, Font::TTF::Font, Unicode::UCD
+

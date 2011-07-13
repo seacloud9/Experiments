@@ -1,0 +1,137 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Code Breaker</title>
+<script type="text/javascript" src="http://www.google.com/jsapi?key=ABQIAAAAAH3uzH_QIghBQ-AJ4unJYBSUDX9X7m-5nTGuIYAbTGwtO8D1zhTgHxyp4ndq8VBDGHGzyeo0EpriOg"></script>
+<script type="text/javascript">
+google.load("jquery", "1.4.2");
+</script>
+<script type="text/javascript">
+ 		// constants
+        const numPegs = 5;
+        const numColors = 5;
+        const maxTries = 10;
+        const horizOffset = 30;
+        const vertOffset = 60;
+        const pegSpacing = 30;
+        const rowSpacing = 30;
+       
+        // game play variables
+        var solution = new Array();
+		var solutionButtonArray;
+        var turnNum;
+       
+        // references to display objects
+		var buttonImages = new Array("img/cbBlack.png","img/cbGreen.png","img/cbYellow.png","img/cbPurple.png","img/cbRed.png", "img/cbBlue.png" );
+        var currentRow = new Array();
+        var currentText;
+		var currentButton;
+	    var mainIds = 0;
+		var myButton;
+		function startGame() {
+			for(var i =0;i<numPegs;i++) {
+				// random, from 0 to 4
+				var r = Math.floor(Math.random()*numColors) + 1;
+				solution.push(r);
+			}
+			turnNum = 0;
+			createPegRow();
+		}
+		
+	   function createPegRow(start) {
+		   solutionButtonArray = new Array();
+		   if(start == undefined){
+		   $('#cbMainGame').html("");
+		   }
+		   var cbButton1 = '<div class="divCButton" id="div';
+		   var cbButton2 = '" onclick="clickButton(this)"><img id="img';
+		   var cbButton3 = '" alt="0" src="img/cbBlack.png" /></div>';
+		   var mainWrapper1 = '<div class="mainWrapper">';
+		   var mainWrapper2 = '</div>';
+		   $('#cbMainGame').append(mainWrapper1);
+		   var btnFinished = '<div class="imgButton" id="divButtonFinished';
+		   var btnFinished2= '"><center><div class="mainButton" id="divButtonDone';
+		   var btnFinished3= '" onclick="executeGameQuery(this)"><span id="spnMainButton">Done</span></div></center></div>';
+	   	   currentRow = new Array();
+		   for(i=0;i<numPegs;i++) {
+				$('#cbMainGame').append(cbButton1+mainIds+cbButton2+mainIds+cbButton3);
+				solutionButtonArray.push("img"+mainIds);
+				mainIds++;
+			}
+			$('#cbMainGame').append(btnFinished+mainIds+btnFinished2+mainIds+btnFinished3+mainWrapper2);
+	   }
+	   
+	   function clickButton(clicked){
+		   var myButton = clicked;
+		   var img = $(clicked).find('img');
+		   var imageToChange = img[0].alt.toString();
+		   if(imageToChange == 6){
+			imageToChange = 0;   
+		   }
+		   //console.log(imageToChange);
+		   $("#"+img[0].id).attr("src",buttonImages[parseInt(imageToChange) + 1]);
+		   $("#"+img[0].id).attr("alt", parseInt(imageToChange) + 1);
+	   }
+	   
+	   function executeGameQuery(mainButton){
+		   var buttonClicked = mainButton;
+		   var changeThis = buttonClicked.id;
+		   var currentColorList = new Array();
+		   var colorList = new Array(0,0,0,0,0);
+		   var soltionList = new Array(0,0,0,0,0);
+		   changeThis = $("#"+changeThis).parent().parent();
+		   //console.log(changeThis);
+		   var numberCorrect = 0;
+		   var numberColorsCorrect = 0;
+		   turnNum++;
+		   for(i=0; i<numPegs; i++){
+			   currentColorList.push($("#"+solutionButtonArray[i]).attr("alt"));
+			   $("#"+solutionButtonArray[i]).parent().removeAttr("onclick");
+		   }
+		   for(i=0; i<numPegs; i++){
+			  if(currentColorList[i] == solution[i] ){
+				  numberCorrect++;
+			  }else{
+				  soltionList[solution[i]]++;
+				  colorList[parseInt(currentColorList[i])]++;
+			  }
+		   }
+		   for(i=0; i<numColors; i++){
+			   var test = Math.min(soltionList[i],colorList[i]);
+				numberColorsCorrect = numberColorsCorrect + Math.min(soltionList[i],colorList[i]);
+			}
+		   $("#"+buttonClicked.id).remove();
+		   if(numberCorrect == numPegs){
+		   $(changeThis).html('You Got It!<br/><div class="imgButton"><center><div onclick="startGame()" id="divButtonDone5" class="mainButton"><span id="spnMainButton">Play Again</span></div></center></div>');
+		   }else if(turnNum == maxTries){
+			   $(changeThis).html('I regret to infrom you just lost next time do it quicker! <br/><div class="imgButton"><center><div onclick="startGame()" id="divButtonDone5" class="mainButton"><span id="spnMainButton">Play Again</span></div></center></div>');
+			   
+		   }
+		   else{
+		   $(changeThis).html("Correct Spot: "+numberCorrect+", Correct Color: "+numberColorsCorrect);
+		   var start = true;
+		   createPegRow(start);
+		   }
+	   }
+	   
+</script>
+<style type="text/css">
+#spnMainButton{ font-family:Verdana, Geneva, sans-serif; font-size:16px; font-weight:bold;padding-top:15px;display:block}
+.mainButton{ background:transparent url(img/mainButton.png) no-repeat;width:218px; height:51px; cursor:pointer}
+.divCButton{width:49px; margin-right:20px; float:left; cursor:pointer;}
+.imgButton{width:218px; margin-right:20px; float:left}
+.mainWrapper{float:left; width:100%; margin:10px;}
+</style>
+</head>
+<body>
+<div id="cbMainGame">
+</div>
+<script type="text/javascript">
+var startGameHTML = '<center><h1>Code Breaker</h1><div class="mainButton" onclick="startGame()"><span id="spnMainButton">Start Game</span></div></center>';
+$(document).ready(function() { 
+$('#cbMainGame').append(startGameHTML);						   
+});
+</script>
+</body>
+</html>

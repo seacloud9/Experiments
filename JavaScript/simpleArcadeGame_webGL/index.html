@@ -1,0 +1,856 @@
+<!DOCTYPE HTML>
+<html lang="en">
+	<head>
+		<title>Simple Star Wars Arcade Game</title>
+		<meta charset="utf-8">
+		<style type="text/css">
+			body {
+				color: #61443e;
+				font-family:Monospace;
+				font-size:13px;
+				text-align:center;
+				background-color: #000;
+				margin: 0px;
+				overflow:hidden;
+				/* [disabled]overflow: hidden; */
+			}
+
+			#info {
+				color: #ffffff;
+				position: absolute;
+				top: 0px; width: 100%;
+				padding: 5px;
+			}
+
+			a {
+
+				color: yellow;
+			}
+
+			#oldie {
+				background:rgb(0,0,50) !important;
+				color:#fff !important;
+			}
+			
+			#lifemeter{
+			border-radius: 5px;
+			background: -webkit-gradient(linear, left top, left bottom, from(#70b0e0), to(#a5d4f8));
+			background-image: -moz-linear-gradient(
+				center bottom,
+				rgb(165,212,248) 30%,
+				rgb(112,175,224) 56%,
+				rgb(112,175,224) 61%
+			);
+			width:500px;
+			height:20px;
+			z-index:2;
+			position:absolute;
+			right:40px;
+			top:40px;
+			}
+			
+			#lifemeterRed{
+			border-radius: 5px;
+			background: -webkit-gradient(linear, left top, left bottom, from(#971405), to(#ff1a00));
+			background-image: -moz-linear-gradient(
+				center bottom,
+				rgb(255,26,0) 30%,
+				rgb(151,19,5) 54%,
+				rgb(151,19,5) 83%
+			);
+			width:500px;
+			height:20px;
+			z-index:1;
+			position:absolute;
+			right:40px;
+			top:40px;
+			}
+			
+			#lifemeterHP{
+			color:#003;
+			font-size:12px;
+			width:500px;
+			height:20px;
+			z-index:2;
+			position:absolute;
+			right:30px;
+			top:20px;
+			text-align:left;
+			vertical-align:bottom;
+			}
+			
+			#Points{
+			color:#003;
+			font-size:12px;
+			width:200px;
+			height:20px;
+			z-index:2;
+			position:absolute;
+			right:30px;
+			top:20px;
+			text-align:left;
+			vertical-align:bottom;
+			}
+
+		</style>
+         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+	</head>
+	<body>
+    <div id="startGame">
+    <center>
+    <img id="currentScene" src="images/rebelArcadeSimple.jpg" style="cursor:pointer" />
+    </center>
+    </div>
+	<div id="container"></div>
+    <div id="lifemeterHP">Life:100%</div>
+    <div id="Points">Points:0</div>
+    <div id="lifemeterRed"></div>
+	<div id="lifemeter"></div>
+
+		<script type="text/javascript" src="build/Three.js"></script>
+		<script type="text/javascript" src="js/Detector.js"></script>
+		<script type="text/javascript" src="js/RequestAnimationFrame.js"></script>
+		<script type="text/javascript" src="js/Stats.js"></script>
+
+		<script type="text/javascript">
+			if ( ! Detector.webgl ) {
+				Detector.addGetWebGLMessage();
+				document.getElementById( 'container' ).innerHTML = "";
+			}
+			
+			//global variables
+			var container, stats, firedown, Points = 0, gameOn, enemeyInit=false, pcKilled = false, checkGame;
+			var genSpheres1, genSpheres2, genTiefighters, hitCountTest = 0;
+			var rebel, rebelGeo, tieGeo, tieArr = new Array(), water;
+			var camera, scene, renderer;
+			var ninX, ninY;
+			var zBullet, pBullets = new Array(), eBullets = new Array(), eBulletsOn = 0; startEBullets = 0;
+			var mesh, texture,geometry, material;
+			var worldWidth = 128, worldDepth = 128,
+			worldHalfWidth = worldWidth / 2, worldHalfDepth = worldDepth / 2;
+			var rotType;
+			
+			
+			function startGame(){
+				gameOn = true;
+				//time to make some cool shit happen
+				init();
+				animate();
+			}
+
+			function init() {
+				pcKilled = false;
+				container = document.getElementById( 'container' );
+				camera = new THREE.QuakeCamera( { fov: 45, aspect: window.innerWidth / window.innerHeight, near: 1, far: 3000,
+												  movement_speed: 30, look_speed: 0.004, nofly: false, look_vertical: true } );
+				
+				scene = new THREE.Scene();
+				//fog it helps to hide objects and lower the proceeing power needed
+				scene.fog = new THREE.FogExp2( 0xaaccff, 0.002 );
+				try{
+					camera.target.position.z = - 0;
+					camera.position.y = 500;
+					camera.target.position.y = camera.position.y;
+				}catch(e){
+					console.log('oops some bad shit went down ->'+ e);
+				}
+				geometry = new Plane( 2000, 2000, worldWidth - 1, worldDepth - 1 );
+				var i, j, il, jl;
+				for ( i = 0, il = geometry.vertices.length; i < il; i ++ ) {
+					geometry.vertices[ i ].position.z = 200 * Math.sin( i/2 );
+				}
+				for( i = 0; i < geometry.uvs.length; i++ ) {
+
+					var uvs = geometry.uvs[ i ];
+					for ( j = 0, jl = uvs.length; j < jl; j++ ) {
+
+						uvs[ j ].u *= 5;
+						uvs[ j ].v *= 5;
+
+					}
+
+				}
+				geometry.computeFaceNormals();
+				geometry.computeVertexNormals();
+				var texture = ImageUtils.loadTexture( "textures/water.jpg" );
+				texture.wrap_s = texture.wrap_t = THREE.RepeatWrapping;
+				material = new THREE.MeshBasicMaterial( { color:0x0044ff, opacity:1, map: texture } );
+				water = new THREE.Mesh( geometry, material );
+				water.rotation.x = - 90 * Math.PI / 180;
+				water.rotation.z = - 90 * Math.PI / 180;
+				scene.addObject( water );
+				loader = new THREE.Loader( true );
+				document.body.appendChild( loader.statusDomElement );
+				//load the rebel ship / player character
+				loader.loadAscii( { model: "models/arc-170.js", callback: function(geometry){
+					try{
+					rebelGeo = geometry;
+					var path = "textures/cube/skybox/";
+					var format = '.jpg';
+					var urls = [
+							path + 'px' + format, path + 'nx' + format,
+							path + 'py' + format, path + 'ny' + format,
+							path + 'pz' + format, path + 'nz' + format
+						];
+					
+					var textureCube = ImageUtils.loadTextureCube( urls, new THREE.CubeRefractionMapping() );
+					var material = [ new THREE.MeshFaceMaterial() ,  new THREE.MeshBasicMaterial( { color: 0xffffff, env_map: textureCube, refraction_ratio: 0.95, opacity: 0.4 } )];
+						rebel = SceneUtils.addMesh( scene, geometry, 1, 0, 500, 40, 0, 0, 0, material);
+						rebel.pcType = true;
+					//obviously if the player character is going to die and have a life meter we need to assign it a life variable to know when the game is finished
+					rebel.life = 500;
+					jQuery(loader.statusDomElement).hide();
+					
+					
+					//over writing the normal camera behavior below
+			camera.onMouseMove = function (event) {
+				ninY = event.clientY;
+				ninX = event.clientX;
+				camera.mouseX = event.clientX - camera.windowHalfX;
+				camera.mouseY = event.clientY - camera.windowHalfY;
+		
+			};
+			camera.domElement.addEventListener( 'mousemove', bind( camera, camera.onMouseMove ), false );
+			
+			camera.update = function() {
+				try{
+					camera.target = rebel;
+					if ( camera.moveForward ){  
+					rotType = "forward"; 
+					camera.translateZ( - camera.movement_speed, camera.nofly );
+
+					}
+					if ( camera.moveBackward ){ 
+					rotType = "backward"; 
+					camera.translateZ(   camera.movement_speed, camera.nofly  );
+					};
+					if ( camera.moveLeft ){
+					rotType = "left";
+					camera.translateX( - camera.movement_speed, camera.nofly  );
+					};
+					if ( camera.moveRight ){
+					rotType = "right";
+					camera.translateX(   camera.movement_speed, camera.nofly  );
+					};
+					camera.lon += camera.mouseX * camera.look_speed;
+					if( camera.look_vertical ) camera.lat -= camera.mouseY * camera.look_speed;
+					camera.lat = Math.max( - 85, Math.min( 85, camera.lat ) );
+					camera.phi = ( 90 - camera.lat ) * Math.PI / 180;
+					camera.theta = camera.lon * Math.PI / 45;
+					var target_position = camera.target.position,position = camera.position;
+					camera.supr.update.call( camera );
+				}catch(e){
+					console.log(e);	
+				}
+				};
+					
+					
+					}catch(e){
+					console.log(e);	
+					}
+				} });
+				
+				//load the enemy characters
+				genSpheres1 = new generateRandomSpheres();
+				genTiefighters = new generateTieFighters();
+				
+				//render all the cool stuff
+				renderer = new THREE.WebGLRenderer( { clearColor:0xaaccff, clearAlpha: 1 } );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				container.innerHTML = "";
+				container.appendChild( renderer.domElement );
+				stats = new Stats();
+				stats.domElement.style.position = 'absolute';
+				stats.domElement.style.top = '0px';
+				container.appendChild( stats.domElement );
+
+			}
+			function generateTieFighters(){
+			// enemy chracter model
+			loader.loadAscii( { model: "models/tie-fighter.js", callback: function(geometry){
+					try{
+					tieGeo = geometry;
+					var material = [ new THREE.MeshFaceMaterial() ];
+					    for(var i=0; i< 50; i++){
+						try{
+							var tieFighter = SceneUtils.addMesh( scene, geometry, 1, getRandomPosition(), getRandomPosition(), getRandomPosition(),  camera.rotation.x, camera.rotation.y, camera.rotation.z, material);
+						}catch(e){
+							console.log('oops some bad shit went down ->'+ e);
+						}
+						enemeyInit = true;
+						//may be latter we will add life to our enemys so it takes longer to kill them
+						tieFighter.life = 500;
+						tieFighter.sceneID = scene.children.length - 1;
+						tieFighter.pcType = false;
+						tieFighter.locID = i;
+						tieFighter.locType = 'tie';
+						//I like to keep these objects in an array so I can loop through them
+						tieArr.push(tieFighter);
+						}
+						jQuery(loader.statusDomElement).hide();
+					}catch(e){
+					console.log(e);	
+					}
+				} });
+			
+			}
+			
+			function getRandomPosition(){
+				var randomPos = Math.random() * 10000 - 5000;
+				return randomPos;
+			}
+			
+			function generateRandomSpheres(){
+				var sphere = new Sphere( 100, 32, 16 );
+				sphere.sortFacesByMaterial();
+				var path = "textures/cube/skybox/";
+				var format = '.jpg';
+				var urls = [
+						path + 'px' + format, path + 'nx' + format,
+						path + 'py' + format, path + 'ny' + format,
+						path + 'pz' + format, path + 'nz' + format
+					];
+				
+				var textureCube = ImageUtils.loadTextureCube( urls, new THREE.CubeRefractionMapping() );
+				var material = new THREE.MeshBasicMaterial( { color: 0xffffff, env_map: textureCube, refraction_ratio: 0.95 } );
+				var meshArr = new Array();
+				for ( var i = 0; i < 70; i ++ ) {
+
+					var mesh1 = new THREE.Mesh( sphere, material );
+					try{
+						mesh1.position.x = Math.random() * 10000 - 5000;
+						mesh1.position.y = Math.random() * 10000 - 5000;
+						mesh1.position.z = Math.random() * 10000 - 5000;
+						mesh1.scale.x = mesh1.scale.y = mesh1.scale.z = Math.random() * 4 + 1;
+						mesh1.sceneID = scene.children.length - 1;
+						mesh1.pcType = false;
+						mesh1.locType ='sphere';
+						mesh1.locID = i;
+					}catch(e){
+						
+					}
+					scene.addObject( mesh1 );
+					meshArr.push(mesh1);
+				}	
+				this.MeshArr = meshArr;
+			}
+			
+			
+			function generateSpheres(){
+				var sphere = new Sphere( 100, 32, 16 );
+				sphere.sortFacesByMaterial();
+				var path = "textures/cube/skybox/";
+				var format = '.jpg';
+				var urls = [
+						path + 'px' + format, path + 'nx' + format,
+						path + 'py' + format, path + 'ny' + format,
+						path + 'pz' + format, path + 'nz' + format
+					];
+				var textureCube = ImageUtils.loadTextureCube( urls, new THREE.CubeRefractionMapping() );
+				var material = new THREE.MeshBasicMaterial( { color: 0xffffff, env_map: texture, refraction_ratio: 0.95 } );
+				var randomLocation = Math.random() * 10000 - 10500;
+				var meshArr = new Array();
+				for ( var i = 0; i < 100; i ++ ) {
+					var mesh1 = new THREE.Mesh( sphere, material );
+					try{
+						mesh1.position.x = randomLocation;
+						mesh1.position.y = randomLocation;
+						mesh1.position.z = randomLocation + i + 16;
+						mesh1.locType ='sphere';
+						mesh1.locID = i;
+					}catch(e){
+						console.log('oops some bad shit went down ->'+ e);
+					}
+					scene.addObject( mesh1 );
+					meshArr.push(mesh1);
+				}	
+				this.MeshArr = meshArr;
+			}			
+			//make the objects move towards the player chracter and check for hits
+			function gameLogic(){
+			for( var i=0; i < tieArr.length; i++){
+				try{
+				var type = 'tie';
+					if (tieArr[i].position.x > camera.position.x){
+						tieArr[i].position.x -= 5;
+					}else{
+						tieArr[i].position.x += 5;
+					}
+					
+					if (tieArr[i].position.z > camera.position.z){
+						tieArr[i].position.z -= 5;
+					}else{
+						tieArr[i].position.z += 5;
+					}
+					
+					if (tieArr[i].position.y > camera.position.y){
+						tieArr[i].position.y -= 5;
+					}else{
+						tieArr[i].position.y += 5;
+					}
+					
+					if((tieArr[i].position.x >= camera.position.x && tieArr[i].position.x <= camera.position.x + 50) && (tieArr[i].position.y >= camera.position.y && tieArr[i].position.y <= camera.position.y+ 50) && (tieArr[i].position.z >= camera.position.z && tieArr[i].position.z <= camera.position.z+50)){
+						tieArr[i].visible = false;
+						hitCount(i, type);
+					}
+				}catch(e){
+					//console.log('oops some bad shit went down ->'+ e);
+				}
+			}
+			for( var i=0; i < genSpheres1.MeshArr.length; i++){
+				try{
+					var type = 'sphere';
+					if (genSpheres1.MeshArr[i].position.x > camera.position.x){
+						genSpheres1.MeshArr[i].position.x -= 1;
+					}else{
+						genSpheres1.MeshArr[i].position.x += 1;
+					}
+					
+					if (genSpheres1.MeshArr[i].position.z > camera.position.z){
+						genSpheres1.MeshArr[i].position.z -= 1;
+					}else{
+						genSpheres1.MeshArr[i].position.z += 1;
+					}
+					
+					if (genSpheres1.MeshArr[i].position.y > camera.position.y){
+						genSpheres1.MeshArr[i].position.y -= 1;
+					}else{
+						genSpheres1.MeshArr[i].position.y += 1;
+					}
+					
+					if((genSpheres1.MeshArr[i].position.x >= camera.position.x && genSpheres1.MeshArr[i].position.x <= camera.position.x + 50) && (genSpheres1.MeshArr[i].position.y >= camera.position.y && genSpheres1.MeshArr[i].position.y <= camera.position.y+ 50) && (genSpheres1.MeshArr[i].position.z >= camera.position.z && genSpheres1.MeshArr[i].position.z <= camera.position.z+50)){
+						genSpheres1.MeshArr[i].visible = false;
+						hitCount(i,type);
+					}
+				}catch(e){
+					console.log('oops some bad shit went down ->'+ e);
+				}
+			}
+			
+			
+			// check player character bullets for enemy hits
+			for( var i=0; i < pBullets.length; i++){
+				try{
+				var type = 'bullet';
+				for( var s=0; s < genSpheres1.MeshArr.length; s++){
+					if((pBullets[i].position.x >= genSpheres1.MeshArr[s].position.x && pBullets[i].position.x <= genSpheres1.MeshArr[s].position.x + 50) && (pBullets[i].position.y >= genSpheres1.MeshArr[s].position.y && pBullets[i].position.y <= genSpheres1.MeshArr[s].position.y+ 50) && (pBullets[i].position.z >= genSpheres1.MeshArr[s].position.z && pBullets[i].position.z <= genSpheres1.MeshArr[s].position.z+50)){
+						genSpheres1.MeshArr[s].type='kill';
+						var id = genSpheres1.MeshArr[s].sceneID;
+						scene.objects[id].visible = false;
+						objGarbageCollection(genSpheres1.MeshArr[s]);
+						Points += 10;
+						jQuery('#Points').html('Points'+Points);
+					}
+				}
+				
+				for( var t=0; t < tieArr.length; t++){
+					if((pBullets[i].position.x >= tieArr[t].position.x && pBullets[i].position.x <= tieArr[t].position.x + 50) && (pBullets[i].position.y >= tieArr[t].position.y && pBullets[i].position.y <= tieArr[t].position.y+ 50) && (pBullets[i].position.z >= tieArr[t].position.z && pBullets[i].position.z <= tieArr[t].position.z+50)){
+						tieArr[t].type='kill';
+						var id = tieArr[t].sceneID;
+						scene.objects[id].visible = false;
+						objGarbageCollection(tieArr[t]);
+						Points += 100;
+						jQuery('#Points').html('Points:'+Points);
+					}
+				}
+				
+				}catch(e){
+					console.log('oops some bad shit went down ->'+ e);
+				}
+			}
+			for( var i=0; i < eBullets.length; i++){
+				try{
+				var type = 'ebullet';
+				if((eBullets[i].position.x >= camera.position.x && eBullets[i].position.x <= camera.position.x + 50) && (eBullets[i].position.y >= camera.position.y && eBullets[i].position.y <= camera.position.y+ 50) && (eBullets[i].position.z >= camera.position.z && eBullets[i].position.z <= camera.position.z+50)){
+					hitCount(i,type);
+				}
+				}catch(e){
+					console.log('oops some bad shit went down ->'+ e);
+				}
+			}
+		}
+			
+			//lets do some damage to the player character and garbage collection
+			function hitCount(obID, type){
+				var hit = rebel.life * .10;
+				jQuery('#lifemeter').width(jQuery('#lifemeter').width() - hit);
+				var lText = 'Life:';
+				var hp = rebel.life -= hit;
+				jQuery('#lifemeterHP').text(lText+hp);
+				if(jQuery('#lifemeter').width() <= 0){
+					// the fun bus has stopped
+					gameOn = false;
+					pcKilled = true;
+					delete checkGame;
+					playerKilled();
+				  }
+				switch(type)
+				{
+				case 'tie':
+				  var id =  tieArr[obID].sceneID;
+				  scene.objects[id].type = 'kill';
+				  objGarbageCollection(scene.objects[id]);
+				  break;
+				case 'ebullet':
+				  var id =  ebullet[obID].sceneID;
+				  scene.objects[id].type = 'kill';
+				  objGarbageCollection(scene.objects[id]);
+				  break;
+				case 'sphere':
+				  var id =  genSpheres1.MeshArr[obID].sceneID;
+				  scene.objects[id].type = 'kill';
+				  objGarbageCollection(scene.objects[id]);
+				  break;
+				case 'bullet':
+				  pBullets[obID].visible = false;
+				  delete pBullets[obID];
+				  pBullets.splice(obID);
+				  break;
+				default:
+				  return;
+				}
+				
+			}
+			
+			// this is the main game loop where most of the magic happens
+			function animate() {
+				if(gameOn === true){
+					requestAnimationFrame( animate );
+					render();
+					gameLogic();
+					try{
+						water.position.x = camera.position.x;
+						water.position.y = camera.position.y - 100;
+						water.position.z = camera.position.z;
+					}catch(e){
+						console.log('oops some bad shit went down ->'+ e);
+					}
+					stats.update();
+					bulletLogic();
+					if(startEBullets === 0){
+						enemyBulletLoop();
+					}
+					if(eBulletsOn === 1){
+						enemyBulletLogic();
+					}
+					// garbage collection clean up the memory
+					new objGarbageCollection();
+					rebelTilt();
+					if(enemeyInit === true && pcKilled === false){
+						checkGame = function() {
+							check4Win();
+						}
+					}
+				}
+			}
+			
+			//get rid of the trash
+			function objGarbageCollection(kill){	
+			if(kill != undefined){
+				scene.removeObject(kill);
+			}
+				try{
+					for(var i=0;i< scene.objects.length;i++){
+							if(scene.objects[i].type === 'kill' && !scene.objects[i].pcType){
+								scene.objects[i].visible = false;
+								scene.removeObject(scene.objects[i]);
+							}	
+							
+							if(i > 200){
+								if(scene.objects[i].type === 'ebullet' && !scene.objects[i].pcType){
+								scene.objects[i].visible = false;
+								scene.removeObject(scene.objects[i]);
+								}		
+							}
+						}
+						
+						for(var i=0;i< scene.children.length;i++){
+							if(scene.children[i].type === 'kill' && !scene.children[i].pcType){
+								scene.children[i].visible = false;
+								scene.removeObject(scene.children[i]);
+							}	
+						}
+				}catch(e){
+				 	console.log('oops some bad shit went down ->'+ e);
+				}
+			}
+			
+			//enemy bullets only fire when close to the player character
+			function enemyBulletLoop(){
+				startEBullets = 1;
+				setTimeout(
+					function(){
+						eBulletsOn = 1;
+						for(var i=0; i < tieArr.length; i++){
+							try{
+							if ((tieArr[i].position.x < camera.position.x + 100 && tieArr[i].position.x > camera.position.x - 100) && (tieArr[i].position.z < camera.position.z + 100 && tieArr[i].position.z > camera.position.z - 100) && (tieArr[i].position.y < camera.position.y + 100 && tieArr[i].position.y > camera.position.y - 100)){
+							enemyBullets(tieArr[i].position);
+							}
+							}catch(e){
+								
+							}
+						}
+						enemyBulletLoop();
+					},1000);
+			}
+			
+			function bulletLogic(){
+				try{
+					var currentZ = camera.position.z;
+					var maxBullets = currentZ + 500;
+					}catch(e){
+					console.log(e);	
+					}
+					
+					for(var i =0; i < pBullets.length; i++){
+						try{
+							if(pBullets[i].position.z < maxBullets){
+									pBullets[i].position.z+=5;
+							}else{
+									 pBullets[i].visible = false;
+									 delete pBullets[i];
+									 pBullets.splice(i);
+							}
+						}catch(e){
+							console.log('oops some bad shit went down ->'+ e);
+						}
+					}	
+			}
+			
+			function enemyBulletLogic(){
+						for(var i =0; i < eBullets.length; i++){
+							try{
+								if(eBullets[i].position.z < maxBullets){
+										eBullets[i].position.z+=5;
+								}
+							}catch(e){
+								//console.log('oops some bad shit went down ->'+ e);
+							}
+						}
+			}
+			
+			function enemyBullets(enemyPosition){
+				if(eBullets.length < 5){
+				var bullet = new Torus (80, 20, 8, 6) ;
+				bullet.sortFacesByMaterial();
+				var material = new THREE.MeshPhongMaterial({ambient:0xb03e3e, specular:0xd5dcfc, opacity:0.9});
+				var meshArr = new Array();
+				var meshBullet = new THREE.Mesh( bullet, material );
+				try{
+				meshBullet.position.x = enemyPosition.x;
+				meshBullet.position.y = enemyPosition.y;
+				zBullet = enemyPosition.z;
+				meshBullet.position.z = zBullet+200;
+				this.z = meshBullet.position.z;
+				}catch(e){
+					console.log('oops some bad shit went down ->'+ e);
+				}
+				meshBullet.sceneID = scene.children.length - 1;
+				meshBullet.pcType = false;
+				meshBullet.type = 'ebullet';
+				eBullets.push(meshBullet);
+				scene.addObject( meshBullet );
+				}else{
+					try{
+					for(var i=0; i < eBullets.length; i++ ){
+					eBullets[i].visible = false;
+					eBullets.splice(i);
+					eBullets.pop(i);
+					}
+					}catch(e){
+						console.log('oops some bad shit went down ->'+ e);
+					}
+				}
+			}
+			
+			// player character bullets
+			function fireBullets(){
+				var bullet = new Torus (80, 20, 8, 6) ;
+				bullet.sortFacesByMaterial();
+				var material = new THREE.MeshPhongMaterial({ambient:0x04971c, specular:0x03fd2c, opacity:0.9});
+				var meshArr = new Array();
+				var meshBullet = new THREE.Mesh( bullet, material );
+				try{
+					meshBullet.position.x = rebel.position.x;
+					meshBullet.position.y = rebel.position.y;
+					zBullet = rebel.position.z;
+					meshBullet.position.z = zBullet+200;
+					this.z = meshBullet.position.z;
+				}catch(e){
+					console.log('oops some bad shit went down ->'+ e);
+				}
+				pBullets.push(meshBullet);
+				scene.addObject( meshBullet );
+				if(firedown === true){
+					setTimeout(function(){
+						fireBullets();
+						if(pBullets.length > 10){
+							 pBullets[i].visible = false;
+							delete pBullets[i];
+							pBullets.splice(i);
+						}
+					}, 500);
+				}
+			}
+			
+			function render() {
+				var time = new Date().getTime() * 0.01;
+				for ( var i = 0, l = geometry.vertices.length; i < l; i ++ ) {
+					geometry.vertices[ i ].position.z = 35 * Math.sin( i/5 + (time + i)/7 );
+				}
+				water.geometry.__dirtyVertices = true;
+				renderer.render(scene, camera);
+			}
+			
+			
+				
+				$(window).keydown(function(event) {
+				  if (event.keyCode == '18') {
+					 firedown = true;
+					 fireBullets();
+				   }
+				});
+				
+				$(window).keyup(function(event) {
+				  if (event.keyCode == '18') {
+					 firedown = false;
+				   }
+				});
+				
+				// make the rebel plane roll a little bit:)
+				function rebelTilt(){
+					if(rotType === 'right' && rebel.rotation.z <= 0.8 ){
+						rebel.rotation.z += .025;
+					}
+					if(rotType === 'right' && water.rotation.z <= 0.9 ){
+						water.rotation.z += .025;
+					}
+					if(rotType === 'left' && rebel.rotation.z >= -0.8 ){
+						rebel.rotation.z -= .025;
+					}
+					if(rotType === 'left' && water.rotation.z >= -0.9 ){
+						water.rotation.z -= .025;
+					}
+					if(rotType === 'forward' || rotType === 'backward'){
+						if(rebel.rotation.z > 0){
+							rebel.rotation.z -= .025;
+						}
+						if(rebel.rotation.z < 0){
+							rebel.rotation.z += .025;
+						}
+					}
+				}
+				
+				// Player killed stop the game
+				function playerKilled(){
+					 pcKilled = true;
+					 enemeyInit = false;
+					 Points = 0;
+					 jQuery('#Points').html('Points:'+Points);
+					 $('body').css('background-color', '#000');
+					 $('#currentScene').attr('src','images/yourdead.jpg');
+					 $('#lifemeterHP').hide();
+					 $('#lifemeter').width(500);
+					 jQuery('#lifemeterHP').text('Life:100%');
+					 rebel.life = 500;
+					 $('#Points').hide();
+					 $('#lifemeterRed').hide();
+					 $('#lifemeter').hide();
+					 $('#container').html('');
+					 $('#startGame').show();
+					 for(var i=0; i<scene.objects.length; i++){
+						 	scene.children[i].visible = false;
+							delete scene.children[i];
+							scene.children.splice(i);
+							
+							scene.objects[i].visible = false;
+							delete scene.objects[i];
+							scene.objects.splice(i);
+					}
+					 $('#startGame').click(
+						 function(){
+							 $('#startGame').hide();
+							 $('#lifemeterHP').show();
+							 $('#Points').show();
+							 $('#lifemeterRed').show();
+							 $('#lifemeter').show();
+							 $('body').css('background-color', '#ACF');
+							 startGame();
+					 });
+					 //remove the scene and create a new scene variable 
+					 delete scene;
+					 scene = '';
+					 checkGame = '';
+				}
+				
+				//check to see if all tie fighters are dead
+				function check4Win(){
+					for(var i=0; i<tieArr.length; i++){
+						if(tieArr[i].type === 'kill'){
+							tieArr[i].visible = false;
+							delete tieArr[i];
+							tieArr.splice(i);
+						}
+					}
+					if(tieArr.length === 0){
+						enemeyInit = false;
+						for(var i=0; i<scene.objects.length; i++){
+						 	scene.children[i].visible = false;
+							delete scene.children[i];
+							scene.children.splice(i);
+							
+							scene.objects[i].visible = false;
+							delete scene.objects[i];
+							scene.objects.splice(i);
+						 }
+						 Points = 0;
+						 jQuery('#Points').html('Points'+Points);
+						 $('body').css('background-color', '#000');
+						 $('#currentScene').attr('src','images/youwon.jpg');
+						 $('#lifemeterHP').hide();
+						 $('#lifemeter').width(500);
+						 jQuery('#lifemeterHP').text('Life:100%');
+						 rebel.life = 500;
+						 $('#Points').hide();
+						 $('#lifemeterRed').hide();
+						 $('#lifemeter').hide();
+						 $('#container').html('');
+						 $('#startGame').show();
+						 $('#startGame').click(
+							 function(){
+								 $('#startGame').hide();
+								 $('#lifemeterHP').show();
+								 $('#Points').show();
+								 $('#lifemeterRed').show();
+								 $('#lifemeter').show();
+								 $('body').css('background-color', '#ACF');
+								 startGame();
+						 });
+						 //remove the scene and create a new scene variable 
+						 delete scene;
+						 scene = '';
+					}
+				}
+				
+				jQuery(document).ready(function() {
+					 $('#lifemeterHP').hide();
+					 $('#Points').hide();
+					 $('#lifemeterRed').hide();
+					 $('#lifemeter').hide();
+					 
+					 $('#startGame').click(
+						 function(){
+							 $('#startGame').hide();
+							 $('#lifemeterHP').show();
+							 $('#Points').show();
+							 $('#lifemeterRed').show();
+							 $('#lifemeter').show();
+							 $('body').css('background-color', '#ACF');
+							 startGame();
+					 });
+				 
+				});
+		</script>
+
+	</body>
+</html>

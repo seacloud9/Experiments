@@ -1,0 +1,89 @@
+<!DOCTYPE html> 
+<html> 
+<head> 
+<title>Simple HTML5</title>
+<link href='http://fonts.googleapis.com/css?family=Lobster' rel='stylesheet' type='text/css'>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+<script src="jquery.easing.1.3.js"></script>
+<script src="processing.js"></script> 
+<script src="init.js"></script> 
+<style type="text/css">
+body {margin:none; padding:none; overflow:none}
+#txtContainer{font-family: 'Lobster', arial, serif; position:absolute; z-index:30; font-size:3em;}
+</style>
+</head> 
+<body style="width:100%; height:100%;"> 
+<script type="application/processing"> 
+// SC9 
+var winWidth = jQuery(window).width();
+var winHeight = jQuery(window).height();
+jQuery(document).ready(function() {
+	var txtHeight = $('#txtContainer').height() / 2;
+	var txtWidth = $('#txtContainer').width() / 2;
+	var animateTextOut = function(){
+		$('#txtContainer').animate({ 
+    		opacity: 0.4,
+    		fontSize: "6em"
+  		}, 1500, "easeOutBounce", animateTextIn);	
+	};
+	function animateTextIn(){
+		$('#txtContainer').animate({ 
+    		opacity: 1,
+			top:origin.top,
+			left:origin.left,
+    		fontSize: "3em"
+  		}, 1500, "easeOutBounce");	
+	};
+	$('#txtContainer').css('top', (winHeight / 2) - txtHeight + "px" );
+	$('#txtContainer').css('left', (winWidth / 2) - txtWidth + "px" );
+	var origin = $('#txtContainer').offset();
+	$('#txtContainer').hover(function (){
+		$('#txtContainer').animate({ 
+    		opacity: 0.4,
+    		fontSize: "6em"
+  		}, 1500, "easeOutBounce", animateTextIn);
+	});
+  });
+var i = 0;
+
+void setup()
+{
+   size(winWidth, winHeight);
+   background(255, 255, 255);
+}
+
+
+void draw()
+{
+   i++;
+   int x = random(width);
+   int y = random(width);
+   int r = random(50);
+   int r1 = random(50);
+   noStroke();
+   if(!isEven(i)){
+   fill(random(10), random(255), random(255), random(convert(mouseX, 10, 50)));
+   }else{
+   fill(255, 255, 255, random(convert(mouseX, 10, 50)));
+   }
+   quad(x, mouseX, x+r, 0, mouseY, random(height), mouseX-r, random(300));
+   popMatrix();
+   rotate(radians(r1));
+}
+
+int convert(mx, min, max)
+{
+   int range = max - min;
+   int percent = round(mx/width);
+   int n = (percent * range) + min;
+   return n;
+}
+
+function isEven(num) {
+  return !(num % 2);
+}
+ </script> 
+  <canvas id="cv" width="800px" height="600px" ></canvas> 
+  <div id="txtContainer">HTML5 w/ Processing</div>
+</body> 
+</html> 

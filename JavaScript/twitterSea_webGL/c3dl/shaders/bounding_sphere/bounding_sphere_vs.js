@@ -1,0 +1,2 @@
+
+c3dl.bounding_sphere_vs="attribute vec3 Vertex;"+"varying vec4 frontColor;"+"uniform mat4 modelViewProjMatrix;"+"void main(void){"+"  frontColor = vec4(0.0, 0.0, 0.0, 1.0);"+"  gl_Position =  modelViewProjMatrix * vec4(Vertex, 1.0);"+"}";

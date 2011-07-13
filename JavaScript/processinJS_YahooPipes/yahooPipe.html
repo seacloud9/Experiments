@@ -1,0 +1,139 @@
+<html>
+<head>
+<title>Simple ProcessinJS MashUp Consuming Yahoo Pipe</title>
+<script src="processing-0.7.js"></script>
+<script type="text/javascript" src="http://www.google.com/jsapi?key=ABQIAAAAAH3uzH_QIghBQ-AJ4unJYBSUDX9X7m-5nTGuIYAbTGwtO8D1zhTgHxyp4ndq8VBDGHGzyeo0EpriOg"></script>
+<script type="text/javascript">
+google.load("jquery", "1.4.2");
+</script>
+<script type="text/javascript">
+ //<![CDATA[
+var jData;
+var objClik = new Array();
+var colorPool = new Array("#075997","#079714","#970744","#079792","#970769","#078497", "#970718", "#075197", "#079733","#079707");
+function loadFeed(){
+	jQuery.getJSON("http://pipes.yahoo.com/pipes/pipe.run?_id=2432dea4d4d6afa353c425dc5e542fb4&_render=json&_callback=?", function(json) {
+	jData = json;
+	jQuery('#YahooPipe').width(jQuery(window).width());
+	jQuery('#YahooPipe').height(jQuery(window).height());
+	loadProcessing();
+});
+}
+jQuery(document).ready(function() { 
+try{
+if(!jQuery.browser.msie){
+loadFeed();
+}else{
+	jQuery('#result').text("Sorry you are using Internet Explorer an inferior browser please utilize a next generation browser like FireFox, Chrome, or Safari!");
+}
+}catch(err){
+	jQuery('#result').text("Sorry Pipe Failed to Load Please refresh and try again:)");
+}
+});
+
+function loadProcessing(){
+		var script = document.getElementById( 'linkScript' ).text;
+		var canvas = document.getElementById( 'YahooPipe' );
+		Processing(canvas, script);
+	}
+ //]]>
+</script>
+</head>
+<body style="overflow:hidden;">
+<div id="result"></div>
+<div id="proceesing">
+  <canvas id="YahooPipe" width="800" height="800"></canvas>
+</div>
+<script type="application/processing/javascript" id="linkScript">
+ //<![CDATA[
+void setup()
+{
+  strokeWeight(0);
+  noStroke();
+  size(jQuery(window).width(),jQuery(window).height());
+  background(255);
+  smooth();
+}
+PFont font = loadFont("Champagne_Limousines.svg");
+void draw() 
+{
+  for(i = 0; i < jData.value.items.length; i++){
+  int pointX = random(0,jQuery(window).width());
+  int pointY = random(0,jQuery(window).height());
+  int fSize = random(30,65);
+  objClik.push(new alinked(pointX,pointY,fSize,jData.value.items[i].link, jData.value.items[i].title, colorPool[Math.floor(Math.random() * colorPool.length)],colorPool[Math.floor(Math.random() * colorPool.length)])); 
+  
+  }
+  forLinks('render');
+  exit();
+}
+
+
+void forLinks(mode){
+  for(int i=0;i < objClik.length; i++){
+    t=objClik[i];
+    switch(mode){
+      case 'render':objClik[i].render();break;
+      case 'detect':
+        mouseX > objClik[i].x &&   
+        mouseY > objClik[i].y &&
+        mouseY < objClik[i].y+t.size &&
+        mouseX < objClik[i].x+t.anchorWidth?
+          objClik[i].rollOver():
+          objClik[i].rollOut();
+        break;
+      case 'clicks':objClik[i].mouseOver?objClik[i].clicked():0;
+    }
+  }
+}
+
+void mouseMoved(){forLinks('detect');}
+void mouseClicked(){forLinks('clicks');}
+
+class alinked{
+  boolean mouseOver;
+  color current_col;
+  float anchorWidth;
+  alinked(float x, float y, float size, String href,String anchor, Color text_col, Color hover_col)
+  {
+    href=href;    
+    anchor=anchor;    
+    this.size=size;
+    this.x=x,this.y=y;
+    text_col=text_col;
+    hover_col=hover_col;
+    current_col=text_col;
+    mouseOver=false;    
+  }
+  void render(){
+    anchorWidth=font.width(anchor)*size;    
+    clear(x,y,anchorWidth,size+4);
+    textFont(font,size);
+    fill(current_col);
+    mouseOver?rect(x,y+size+2,anchorWidth,1):0;
+    text(anchor,x,y);    
+  }
+  void rollOver(){
+    if(!mouseOver){      
+      mouseOver=true;
+      cursor('pointer');
+      current_col=hover_col;
+      render();
+    }
+  }
+  void rollOut(){
+    if(mouseOver){
+      mouseOver=false;
+      cursor('auto');
+      current_col=text_col;
+      render();
+    }
+  }
+  void clicked(){
+    link(href, "_blank");
+  }
+}    
+ //]]>
+</script>
+</body>
+</html>

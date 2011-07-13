@@ -1,0 +1,68 @@
+# Blender3D MTL File: big man.blend
+# Material Count: 6
+newmtl red_skin_cyborg.007_Untitled.001
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.237126 0.237126 0.237126
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd Untitled
+
+
+newmtl red_skin_cyborg.005_Untitled.001
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.000000 0.000000 0.000000
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd Untitled
+
+
+newmtl red_skin_cyborg.001_Untitled.001
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.800000 0.145774 0.026332
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd Untitled
+
+
+newmtl red_skin_cyborg.002_Untitled.001
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.549908 0.549908 0.549908
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd Untitled
+
+
+newmtl red_skin_cyborg_Untitled.001
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.148905 0.148905 0.148905
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd Untitled
+
+
+newmtl red_skin_cyborg.006_Untitled.001
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.710309 0.706986 0.706986
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd Untitled
+
+

@@ -1,0 +1,21 @@
+.select span span span {
+	filter:alpha(opacity=0);
+	filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=0);
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+	opacity: 0; 
+	color: #ee83bd;  
+	padding: 0; 
+	text-align: center;
+}
+.select span span {
+	padding:0; 
+	cursor: text; 
+	overflow: hidden; 
+	text-align: center;
+}
+
+/* Synchronize the selection colors */
+::-moz-selection{ background-color: #bddee4; color: #6d9acd; }
+::selection { background-color: #bddee4; color: #6d9acd; }
+.hilite { opacity: .65; background-color: #bddee4; }
+a { text-decoration: none;}

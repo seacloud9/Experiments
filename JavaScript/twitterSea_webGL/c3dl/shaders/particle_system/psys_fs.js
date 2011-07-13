@@ -1,0 +1,2 @@
+
+c3dl.psys_fs="#ifdef GL_ES\n"+"precision highp float;\n"+"#endif\n"+"varying vec4 frontColor;"+"uniform sampler2D myTex;"+"uniform int usingTexture;"+"varying vec4 texCoord;"+"void main(void) {"+" if( usingTexture == 1 ){"+"  vec3 texel = vec3(texture2D(myTex, texCoord.xy));"+"  gl_FragColor = vec4(texel,1.0) * frontColor;"+" }"+" else"+" {"+"  gl_FragColor = frontColor;"+" }"+"}";

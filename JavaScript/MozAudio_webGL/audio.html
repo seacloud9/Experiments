@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>JavaScript Audio Write Example</title>
+  </head>
+  <body>
+    <input type="text" size="4" id="freq" value="440"><label for="hz">Hz</label>
+    <button onclick="start()">play</button>
+    <button onclick="stop()">stop</button>
+
+    <script type="text/javascript">      
+
+      function AudioDataDestination(sampleRate, readFn) {
+        // Initialize the audio output.
+        var audio = new Audio();
+        audio.mozSetup(1, sampleRate);
+
+        var currentWritePosition = 0;
+        var prebufferSize = sampleRate / 2; // buffer 500ms
+        var tail = null;
+
+        // The function called with regular interval to populate 
+        // the audio output buffer.
+        setInterval(function() {
+          var written;
+          // Check if some data was not written in previous attempts.
+          if(tail) {  
+            written = audio.mozWriteAudio(tail);
+            currentWritePosition += written;
+            if(written < tail.length) {
+              // Not all the data was written, saving the tail...
+              tail = tail.slice(written);
+              return; // ... and exit the function.
+            }
+            tail = null;
+          }
+
+          // Check if we need add some data to the audio output.
+          var currentPosition = audio.mozCurrentSampleOffset();
+          var available = currentPosition + prebufferSize - currentWritePosition;
+          if(available > 0) {
+            // Request some sound data from the callback function.
+            var soundData = new Float32Array(available);
+            readFn(soundData);
+
+            // Writting the data.
+            written = audio.mozWriteAudio(soundData);
+            if(written < soundData.length) {
+              // Not all the data was written, saving the tail.
+              tail = soundData.slice(written);
+            }
+            currentWritePosition += written;
+          }
+        }, 100);
+      }
+
+      // Control and generate the sound.
+
+      var frequency = 0, currentSoundSample;
+      var sampleRate = 44100;
+
+      function requestSoundData(soundData) {
+        if (!frequency) { 
+          return; // no sound selected
+        }
+
+        var k = 2* Math.PI * frequency / sampleRate;
+        for (var i=0, size=soundData.length; i<size; i++) {
+          soundData[i] = Math.sin(k * currentSoundSample++);
+        }        
+      }
+
+      var audioDestination = new AudioDataDestination(sampleRate, requestSoundData);
+
+      var start = function(playFreq) {
+        currentSoundSample = 0;
+        frequency = playFreq;
+      }
+
+      function stop() {
+        frequency = 0;
+      }
+start(880);
+start(480);
+
+  </script>
+  </body>
+</html>

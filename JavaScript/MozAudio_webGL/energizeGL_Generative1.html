@@ -1,0 +1,85 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>EnergizeGL Generative</title>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+<script type="text/javascript" src="http://energize.cc/get/Math"></script><script type="text/javascript" src="http://energize.cc/get/EnergizeGL"></script>
+</head>
+<body>
+<canvas id="appcanvas" width="800" height="450"></canvas>
+<input type="button" class=".play" value="Play" />
+<div id="applog"></div>
+<script type="text/javascript">
+$(document).ready(function() {
+EnergizeGL.init(document.getElementById('appcanvas'), document.getElementById('applog'));
+EnergizeGL.start();
+/*$('.play').click(function() {
+		//if(EnergizeGL.status == 'loaded' || EnergizeGL.status == 'paused') {
+			EnergizeGL.start();
+			$('#appcanvas').css('background', 'transparent').css('cursor', 'auto');
+		//}
+});*/
+});
+function setup() {
+    zFar(2000);
+    setBackgroundColor(0, 0);
+    setAmbientColor(1);
+    usePointLight();
+    setPointColor(1);
+    setPointPosition(0, 0, 200);
+    setShininess(80);
+    var rand = random(102, 200);
+    useAlpha();
+	loadTexture('skin', 'blueTxt.png');
+    tris = new buildTri();
+    //sp1 = new buildSpiro();
+	
+}
+
+function buildTri(){
+	var c = 60;
+	 startMesh('shape1', c);
+        for(var i = 0; i < c; i++) {
+			addVertex(random(-300, 300), random(-200, 200), random(-200, 200));
+        }
+    endMesh(); 
+ 
+    startMesh('shape2', c);
+        for(var i = 0; i < c; i++) {
+			addVertex(random(-300, 300), random(-200, 200), random(-200, 200));
+        }
+    endMesh();
+	
+}
+
+function buildSpiro(){
+var shapes = 20
+	startMesh('spiro', shapes);
+        for(var i = 0; i < shapes; i++) {
+			addVertex(random(-300, 300), random(-200, 200), random(-200, 200));
+			addVertex(random(-300, 300), random(-200, 200), random(-200, 200));
+        }
+    endMesh();
+}
+
+var cf = 2900;
+var af = 0;
+var zoom = -2;
+var rotX = 0, rotY = 0;
+var y = 5.0;
+
+function draw() {
+	
+    setCamera(0, -40, -400, 0, 0, 0, 0, -1, 0);
+   // bs1 = new buildSpiro();
+    rotateY(Math.sin(af/50));
+    rotateZ(Math.sin(af/100));
+    tween('shape1', 'shape2', TRIANGLE_STRIP, 100, EGLEasing.sin(0, 100, 60, af), 'linear');
+    startLoading();
+	useTexture('skin');
+    af++;
+}
+</script>
+</body>
+</html>

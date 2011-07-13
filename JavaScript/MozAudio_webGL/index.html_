@@ -1,0 +1,451 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>EnergizeGL Generative</title>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+<script type="text/javascript" src="http://energize.cc/get/Math"></script><script type="text/javascript" src="http://energize.cc/get/EnergizeGL"></script>
+<link href='http://fonts.googleapis.com/css?family=Vollkorn' rel='stylesheet' type='text/css'>
+<script src="processing-0.9.7.js" type="text/javascript"></script>
+<script src="jquery.mousewheel.js" type="text/javascript"></script>
+
+</head>
+<body>
+<canvas id="appcanvas" width="800" height="450"></canvas>
+<div id="applog"></div>
+
+<canvas id="proCanvas"></canvas>
+
+<script type="application/processing" id="procssingCode">
+//initialilze variables
+PImage imgPic;
+float y = 100;
+String text1SizeDir = "up";
+String text1Dir = "down";
+int text1FontSize = 20;
+int text1Ypos = 5;
+int text2Ypos = 5;
+String text1AlphaDir = "down";
+float text1Alpha = 255;
+int resizeText = 0;
+
+void setup() 
+{
+        size(256, 256);  // Size should be the first statement
+        stroke(255);     // Set line drawing color to white
+        frameRate(20);
+}	
+void draw() 
+{ 
+        background(0);   // Set the background to black
+		imgPic = loadImage(imageToProcessing[0]);
+        resizeText++;
+		image(imgPic, 0, 0);
+		noFill();
+		beginShape();
+		curveVertex(84,  91);
+		curveVertex(84,  91);
+		curveVertex(68,  19);
+		endShape();
+		if(isEven(resizeText)){
+			if (text1SizeDir == "up") {
+				text1FontSize += 1;
+				if (text1FontSize > 20) {
+					text1SizeDir = "down"
+				}
+			
+			} else {
+				text1FontSize -= 1;
+				if (text1FontSize < 15) {
+					text1SizeDir = "up"
+				}
+			
+			}
+		}
+        if (text1Dir == "down") {
+            text1Ypos += 1;
+        
+        }
+        if(text1Ypos == 256){
+			text1Ypos = 0;
+		}
+        
+        if (text1AlphaDir == 'up') {
+            text1Alpha +=2;
+            if (text1Alpha > 255) {
+                text1Alpha = 255;
+                text1AlphaDir = "down";
+            }
+        } else {
+            text1Alpha -=2;
+            if (text1Alpha < 0) {
+                text1Alpha = 0;
+                text1AlphaDir = "up";
+            }
+        
+        }
+		
+		animatedFont aniFont = new animatedFont("Vollkorn", text1Ypos,"SeaCloud9 --> Transmission");
+		
+		if(text1Ypos > 20 ){
+		animatedFont aniFont1 = new animatedFont("Vollkorn", text1Ypos - 20,"Interactive Development");
+		}
+		if(text1Ypos > 40 ){
+		animatedFont aniFont2 = new animatedFont("Vollkorn", text1Ypos - 40,"1010101010101010101010");
+		}
+}
+
+class animatedFont{
+	string FontName; int text1Ypos; string textMessage;
+	animatedFont(FontName, text1Ypos, textMessage){
+		font = loadFont(FontName);
+        textFont(font,text1FontSize); 
+        fill(255, 255, 0,text1Alpha);
+        text(textMessage,5, text1Ypos-2); 
+        fill(255, 255, 255,text1Alpha) ;
+        text(textMessage,5,text1Ypos);
+	}
+	
+}
+
+</script>
+<script type="text/javascript">
+document.domain = "i-create.org";
+//netscape.security.PrivilegeManager.enablePrivilege("UniversalBrowserRead");
+	var imageToProcessing = new Array();
+	var c = 102;
+	var cf = 2900;
+	var af = 0;
+	var executeProcessingCode;
+	var colorPool = new Array('#0d2c6b','#0a162f','#136103', '#033a61');
+	var mouseX = 0;
+    var mouseY = 0;
+	var deltaM = 0;
+	var _currentX;
+	var _xRotation;
+	var _xRot = 0;
+	var radian; 
+	var degree;
+	
+	var audio;
+	var channels;
+	var rate;
+	var frameBufferLength;
+	var fft;
+	var magnitude;
+	
+	var vidCanvas;
+	var context;
+	var cw;
+	var ch;
+
+	
+    $().mousemove( function(e) {
+    mouseX = e.pageX;
+    mouseY = e.pageY;
+	//console.log(mouseX + "  " + mouseY);
+    });
+	
+	function radian(){
+		var rad = Math.atan2(mouseY, mouseX);
+		return rad;
+	};
+	function degree(){
+		var deg = radian() * 180 / Math.PI;
+		return deg;
+	};
+	function _xRotation(){
+		_xRot += Math.cos(degree() * Math.PI / 180);
+		return _xRot;
+	};
+	
+	jQuery(function($) {
+	//$('body').mousewheel(fn);
+	//$('body').bind('mousewheel', fn);
+	
+	_currentX = -40 + (deltaM * 10);
+	//myXRotation = new _xRotation();
+    $('body')
+        .bind('mousewheel', function(event, delta) {
+            var dir = delta > 0 ? 'Up' : 'Down',
+                vel = Math.abs(delta);
+           // $(this).text(dir + ' at a velocity of ' + vel);
+			deltaM = delta;
+			_currentX = _currentX+deltaM*15;
+            return false;
+        });
+		
+		
+
+			audio = document.getElementById('mediaElement');
+			// not really a test for Firefox 4, but should avoid error messages in browsers 
+			// that don't support audio or Float32Array (as used in FFT constructor below)
+			if (typeof audio.currentSrc === "undefined" || typeof Float32Array === "undefined") {
+				alert("This example requires Firefox 4: \n\nwww.mozilla.com/firefox/beta");
+			} else {
+					
+				/*var canvas = document.getElementById('fft'),
+					ctx = canvas.getContext('2d'),
+					channels,
+					rate,
+					frameBufferLength,
+					fft;*/
+				
+				function loadedMetadata() {
+					channels = audio.mozChannels;
+					rate = audio.mozSampleRate;
+					frameBufferLength = audio.mozFrameBufferLength;	 
+					fft = new FFT(frameBufferLength / channels, rate);
+				}
+				
+				function audioAvailable(event) {
+					var fb = event.frameBuffer,i, t = event.time,signal = new Float32Array(fb.length / channels);
+					
+					for (i = 0, fbl = frameBufferLength / 2; i < fbl; i++) {
+						// Assuming interlaced stereo channels,
+						// need to split and merge into a stero-mix mono signal
+						signal[i] = (fb[2*i] + fb[2*i+1]) / 2;
+					}
+				
+					fft.forward(signal);
+					
+					// Clear the canvas before drawing spectrum
+					//ctx.clearRect(0,0, canvas.width, canvas.height);
+					
+					for (i = 0; i < fft.spectrum.length; i++) {
+						// multiply spectrum by a zoom value
+						magnitude = fft.spectrum[i] * 4000;
+						//console.log( -magnitude);
+						// Draw rectangle bars for each frequency bin
+						//ctx.fillRect(i * 4, canvas.height, 3, -magnitude);
+					}
+				}
+				
+				audio.addEventListener('MozAudioAvailable', audioAvailable, false);
+				audio.addEventListener('loadedmetadata', loadedMetadata, false);
+				
+				// FFT from dsp.js, see below
+				var FFT = function(bufferSize, sampleRate) {
+					this.bufferSize = bufferSize;
+					this.sampleRate = sampleRate;
+					this.spectrum = new Float32Array(bufferSize/2);
+					this.real = new Float32Array(bufferSize);
+					this.imag = new Float32Array(bufferSize);
+					this.reverseTable = new Uint32Array(bufferSize);
+					this.sinTable = new Float32Array(bufferSize);
+					this.cosTable = new Float32Array(bufferSize);
+				
+					var limit = 1,
+						bit = bufferSize >> 1,
+						i;
+				
+					while (limit < bufferSize) {
+						for (i = 0; i < limit; i++) {
+							this.reverseTable[i + limit] = this.reverseTable[i] + bit;
+						}
+						limit = limit << 1;
+						bit = bit >> 1;
+					}
+				
+					for (i = 0; i < bufferSize; i++) {
+					this.sinTable[i] = Math.sin(-Math.PI/i);
+					this.cosTable[i] = Math.cos(-Math.PI/i);
+					}
+				}; // FFT
+					
+				FFT.prototype.forward = function(buffer) {
+					var bufferSize = this.bufferSize,
+						cosTable = this.cosTable,
+						sinTable = this.sinTable,
+						reverseTable = this.reverseTable,
+						real = this.real,
+						imag = this.imag,
+						spectrum = this.spectrum;
+						
+					var i;
+					
+					if (bufferSize !== buffer.length) {
+						throw "Supplied buffer is not the same size as defined FFT. FFT Size: " + bufferSize + " Buffer Size: " + buffer.length;
+					}
+					
+					for (i = 0; i < bufferSize; i++) {
+						real[i] = buffer[reverseTable[i]];
+						imag[i] = 0;
+					}
+					
+					var halfSize = 1,
+						phaseShiftStepReal,	
+						phaseShiftStepImag,
+						currentPhaseShiftReal,
+						currentPhaseShiftImag,
+						off,
+						tr,
+						ti,
+						tmpReal;
+					
+					while (halfSize < bufferSize) {
+						phaseShiftStepReal = cosTable[halfSize];
+						phaseShiftStepImag = sinTable[halfSize];
+						currentPhaseShiftReal = 1.0;
+						currentPhaseShiftImag = 0.0;
+						
+						for (var fftStep = 0; fftStep < halfSize; fftStep++) {
+							i = fftStep;
+							while (i < bufferSize) {
+								off = i + halfSize;
+								tr = (currentPhaseShiftReal * real[off]) - (currentPhaseShiftImag * imag[off]);
+								ti = (currentPhaseShiftReal * imag[off]) + (currentPhaseShiftImag * real[off]);
+								
+								real[off] = real[i] - tr;
+								imag[off] = imag[i] - ti;
+								real[i] += tr;
+								imag[i] += ti;
+								
+								i += halfSize << 1;
+							}
+							tmpReal = currentPhaseShiftReal;
+							currentPhaseShiftReal = (tmpReal * phaseShiftStepReal) - (currentPhaseShiftImag * phaseShiftStepImag);
+							currentPhaseShiftImag = (tmpReal * phaseShiftStepImag) + (currentPhaseShiftImag * phaseShiftStepReal);
+						}
+					
+						halfSize = halfSize << 1;
+					}
+					
+					i = bufferSize/2;
+					while(i--) {
+						spectrum[i] = 2 * Math.sqrt(real[i] * real[i] + imag[i] * imag[i]) / bufferSize;
+					}
+				}; // FFT.prototype.forward
+			
+			} // requires-Firefox 4 warning
+
+	});
+	
+	
+		function setup() {
+			setBackgroundColor(0, 0);
+			setAmbientColor(0.5);
+			zFar(2000);
+			usePointLight();
+			setPointColor(1);
+			setPointPosition(0, 0, 100);
+			setShininess(3);
+			useAlpha();
+			loadTexture('skin', 'blueTxt.png');
+			loadTexture('myTexture', 'blueTxt.png');
+			createTexture('myCanvas2D', 256, 256);
+			createTexture('vid', 256, 256);
+			startLoading();
+			star = new starMesh();
+			star1 = new starMesh1();
+			executeProcessingCode = new executeProceessing();
+			executeVideos();	
+		}
+		
+		
+			function starMesh(){
+				startMesh('starMesh', c);
+					for(var i = 0; i < c; i++) {
+						addVertex(random(-200, 200), random(-200, 200), random(-200, 200));
+					}
+			endMesh(); 		
+			}
+			
+			
+			function starMesh1(){
+				startMesh('starMesh1', c);
+						for(var i = 0; i < c; i++) {
+							setColor(random(0.2, 0.5), random(0.8, 1), random(0.5, 0.8));
+							addVertex(random(-50, 50), random(-50, 50), random(-50, 50));
+						}
+				endMesh();
+			}
+
+
+		function draw() {
+			//console.log(_xRotation());
+			//_currentX = _currentX+deltaM*8;
+			setCamera(0, _currentX, -100, 0, 0, 0, 1, 1, 0);
+			//rotateX(_xRotation());
+			rotateY(Math.sin(mouseY/50));
+		   // rotateX(Math.sin(_xRotation()));
+    		rotateZ(Math.sin(af/100));
+			star2 = new starMesh1();
+			updateTexture('myCanvas2D');
+			useTexture('myCanvas2D');
+        		cube(0, 0, 0, 512, 512, 512);
+    		noTexture();
+			tween('starMesh1', 'starMesh', TRIANGLE_STRIP, 100, EGLEasing.sin(0, 100, 60 * magnitude, af), 'linear');
+			//if(frame == 1000) stop();
+			af++;
+			if(context != undefined){
+				translate(0, 0, 0);
+				updateTexture('vid');
+				useTexture('vid');
+				rectangle();
+				//noTexture();
+			}
+			
+
+		}
+
+		function executeVideos(){
+			if(context === null || context === undefined){
+				setTimeout("executeVideos()", 5000);
+			}
+			var ctx = getTextureCanvas('vid');
+			ctx.canvas = context;
+			console.log(context);
+			updateTexture("vid");
+		}
+		
+		function executeProceessing(){
+			imageToProcessing.push("ballons.png");			
+			// Get the Canvas2D this texture is made of
+			var ctx = getTextureCanvas('myCanvas2D');
+			var div1Element = ctx.canvas;			
+			var processingCode = new Processing(div1Element, jQuery('#procssingCode').text());
+			updateTexture("myCanvas2D");
+		}
+		
+		StartEnergizeGL('appcanvas', '', 'applog');
+		
+		function isEven(value){
+			if (value%2 == 0)
+				return true;
+			else
+				return false;
+		}
+
+
+document.addEventListener('DOMContentLoaded', function(){
+
+vidCanvas = document.getElementById('vidCanvas');
+context = vidCanvas.getContext('2d');
+cw = Math.floor(vidCanvas.clientWidth / 100);
+ch = Math.floor(vidCanvas.clientHeight / 100);
+//vidCanvas.width = cw;
+//vidCanvas.height = ch;
+audio.addEventListener('play', function(){
+drawVideo(this,context,cw,ch);
+},false);
+
+},false);
+
+
+function drawVideo(audio,c,w,h) {
+    if(audio.paused || audio.ended) return false;
+    c.drawImage(audio,0,-100,512,512);
+    setTimeout(drawVideo,20,audio,c,512, 512);
+};
+
+
+
+
+
+</script>
+
+<video id="mediaElement" src="crystal.ogv" controls="controls" autoplay="autoplay"></video>
+<canvas id="vidCanvas" style="width:480px; height:350px"></canvas>
+</body>
+</html>

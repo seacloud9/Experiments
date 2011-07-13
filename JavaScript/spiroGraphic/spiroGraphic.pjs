@@ -1,0 +1,84 @@
+//initialilze variables
+
+int masterXflower = 1;
+void setup() 
+{
+        size(600, 600);  // Size should be the first statement
+        stroke(255);     // Set line drawing color to white
+        frameRate(30);
+}	
+void draw() 
+{ 
+        background(255); 		pushMatrix();
+		spiroGraphic sG1 = new spiroGraphic();
+		rotate(45);
+		spiroGraphic sG2 = new spiroGraphic();
+		popMatrix();
+}
+
+class spiroGraphic{
+		spiroGraphic(){
+		float angle = 0.0;
+		float inc = 0.01;
+		inc += 0.01;
+		masterXflower++;
+		int locX = random(500)+(masterXflower*-1);
+		int locY = random(-10, 100);
+		angle = sin(inc) / 10.0 + sin(inc*1.2)/20.0;
+		for(int i = 0; i < 35; i++){
+			color shade = new color(random(10), random(255), random(255), random(convert(mouseX, 10, 50)));
+			stroke(random(10), random(255), random(255), random(convert(mouseX, 50, 100)));
+			fill(random(10), random(255), random(255), random(convert(mouseX, 50, 100)));
+			stem st1 = new stem(locX+i, 25 + i, -1*angle/1.3*i, locY+i,shade);
+			rotate(random(180));
+		}
+	}
+		
+}
+
+class stem{
+	    int locX; int units; float angle; int locY; color shade;
+		stem(locX, units, angle, locY, shade){
+			pushMatrix();
+			translate(locX, 500);
+				for(int i = units; i > 0; i--){
+					fill(shade);
+					strokeWeight(i);
+					line(0,0,0,locY);
+					translate(0,locY);
+					rotate(angle * (0.1 * mouseX*2));
+					petal pt1 = new petal(locX+i+random(-2,2),locY+i+random(-2,2), random(2), mouseX, shade);
+				}
+			popMatrix();
+			
+		}
+}
+
+class petal{
+		int locX; int locY; int size; int dir; color shade;
+		petal(locX,locY,size,dir, shade){
+			pushMatrix();
+			translate(locX,locY);
+			scale(size);
+			fill(random(10), random(255), random(255), random(convert(mouseX, 50, 100)));
+			//ellipse(locX, locY, random(10), random(20));
+			beginShape();
+			vertex(1.0*dir, -0.7);
+			bezierVertex(1.0*dir, -0.7, 0.4*dir, -1.0,0.0,0.0);
+			bezierVertex(0.0, 0.0, 1.0*dir,0.4,1.0*dir, -0.7);
+			endShape();
+			popMatrix();
+		}
+}
+
+int convert(mx, min, max)
+{
+   int range = max - min;
+   int percent = round(mx/width);
+   int n = (percent * range) + min;
+   return n;
+}
+ 
+function isEven(num) {
+  return !(num % 2);
+}

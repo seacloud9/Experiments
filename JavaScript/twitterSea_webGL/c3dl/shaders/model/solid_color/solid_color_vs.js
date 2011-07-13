@@ -1,0 +1,2 @@
+
+c3dl.solid_color_vs="attribute vec3 Vertex;"+"attribute vec3 Normal;"+"attribute vec3 Texture;"+"uniform mat4 modelViewProjMatrix;"+"uniform vec3 color;"+"varying vec4 frontColor;"+"void main(void){"+"  vec3 dummy = Normal;"+"  frontColor = vec4(color, 1.0);"+"  gl_Position =  modelViewProjMatrix * vec4(Vertex, 1.0);"+"}";

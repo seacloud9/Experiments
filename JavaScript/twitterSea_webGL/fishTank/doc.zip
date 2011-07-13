@@ -1,0 +1,190 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<kml xmlns='http://earth.google.com/kml/2.1'>
+<Folder>
+    <name>golden japanese fish</name>
+    <description><![CDATA[Created with <a href="http://sketchup.google.com/">Google SketchUp 6.4.112</a>]]></description>
+    <DocumentSource>SketchUp</DocumentSource>
+<visibility>1</visibility>
+<LookAt>
+<heading>307.698</heading>
+<tilt>74.7013</tilt>
+<latitude>40.01696094976127</latitude>
+<longitude>-105.2828915300501</longitude>
+<range>11.56921050965331</range>
+<altitude>3.1270566599556</altitude>
+</LookAt>
+<Folder>
+<name>Tour</name>
+<Placemark>
+<name>Scene 1</name>
+<visibility>1</visibility>
+<LookAt>
+<heading>212.312</heading>
+<tilt>86.1828</tilt>
+<latitude>40.0170867093304</latitude>
+<longitude>-105.2829089016458</longitude>
+<range>23.97471377555944</range>
+<altitude>1.598423969893708</altitude>
+</LookAt>
+</Placemark>
+<Placemark>
+<name>Scene 2</name>
+<visibility>1</visibility>
+<LookAt>
+<heading>236.357</heading>
+<tilt>83.6035</tilt>
+<latitude>40.01706008495525</latitude>
+<longitude>-105.2828738226567</longitude>
+<range>18.01039360125052</range>
+<altitude>2.014889533190738</altitude>
+</LookAt>
+</Placemark>
+<Placemark>
+<name>Scene 3</name>
+<visibility>1</visibility>
+<LookAt>
+<heading>186.904</heading>
+<tilt>86.335</tilt>
+<latitude>40.01709983949964</latitude>
+<longitude>-105.2829575066973</longitude>
+<range>3.877818976935764</range>
+<altitude>0.2482219118990027</altitude>
+</LookAt>
+</Placemark>
+<Placemark>
+<name>Scene 4</name>
+<visibility>1</visibility>
+<LookAt>
+<heading>167.944</heading>
+<tilt>89.2569</tilt>
+<latitude>40.01709854276803</latitude>
+<longitude>-105.2829977781364</longitude>
+<range>95.46188573203637</range>
+<altitude>1.238101836304636</altitude>
+</LookAt>
+</Placemark>
+<Placemark>
+<name>Scene 5</name>
+<visibility>1</visibility>
+<LookAt>
+<heading>160.363</heading>
+<tilt>68.1023</tilt>
+<latitude>40.0170884207099</latitude>
+<longitude>-105.2830107334485</longitude>
+<range>13.04427839139468</range>
+<altitude>5.1154742200947</altitude>
+</LookAt>
+</Placemark>
+<Placemark>
+<name>Scene 6</name>
+<visibility>1</visibility>
+<LookAt>
+<heading>131.085</heading>
+<tilt>59.3764</tilt>
+<latitude>40.01705684822808</latitude>
+<longitude>-105.2830529880651</longitude>
+<range>11.94728126040313</range>
+<altitude>6.737008505098757</altitude>
+</LookAt>
+</Placemark>
+<Placemark>
+<name>Scene 7</name>
+<visibility>1</visibility>
+<LookAt>
+<heading>129.477</heading>
+<tilt>40.9217</tilt>
+<latitude>40.01704285635949</latitude>
+<longitude>-105.2830354207006</longitude>
+<range>9.050739166081472</range>
+<altitude>9.309594021140475</altitude>
+</LookAt>
+</Placemark>
+<Placemark>
+<name>Scene 8</name>
+<visibility>1</visibility>
+<LookAt>
+<heading>214.729</heading>
+<tilt>42.0634</tilt>
+<latitude>40.01705588354547</latitude>
+<longitude>-105.2829257271105</longitude>
+<range>9.25220348787794</range>
+<altitude>9.170251166160274</altitude>
+</LookAt>
+</Placemark>
+<Placemark>
+<name>Scene 9</name>
+<visibility>1</visibility>
+<LookAt>
+<heading>217.822</heading>
+<tilt>66.5265</tilt>
+<latitude>40.01707353899963</latitude>
+<longitude>-105.2829020282339</longitude>
+<range>12.36744277514559</range>
+<altitude>5.220468404789282</altitude>
+</LookAt>
+</Placemark>
+<Placemark>
+<name>Scene 10</name>
+<visibility>1</visibility>
+<LookAt>
+<heading>224.25</heading>
+<tilt>76.0177</tilt>
+<latitude>40.01707100571323</latitude>
+<longitude>-105.2828870399531</longitude>
+<range>13.38179968371486</range>
+<altitude>3.298961572460008</altitude>
+</LookAt>
+</Placemark>
+<Placemark>
+<name>Scene 11</name>
+<visibility>1</visibility>
+<LookAt>
+<heading>229.174</heading>
+<tilt>83.857</tilt>
+<latitude>40.01706669600268</latitude>
+<longitude>-105.2828775440147</longitude>
+<range>16.34214116567437</range>
+<altitude>1.755519327486891</altitude>
+</LookAt>
+</Placemark>
+<Placemark>
+<name>Scene 12</name>
+<visibility>1</visibility>
+<LookAt>
+<heading>235.489</heading>
+<tilt>86.5229</tilt>
+<latitude>40.01705908910385</latitude>
+<longitude>-105.2828692857968</longitude>
+<range>0.7282647993062071</range>
+<altitude>0.04422325213647636</altitude>
+</LookAt>
+</Placemark>
+</Folder>
+  <Placemark>
+    <name>Model</name>
+    <description><![CDATA[this model is created by majid yeganegi. e-mail : forsubdo@yahoo.com]]></description>
+    <Style id='default'>
+    </Style>
+    <Model>
+        <altitudeMode>relativeToGround</altitudeMode>
+        <Location>
+            <longitude>-105.283000000000</longitude>
+            <latitude>40.017000000000</latitude>
+            <altitude>0.000000000000</altitude>
+        </Location>
+        <Orientation>
+            <heading>0</heading>
+            <tilt>0</tilt>
+            <roll>0</roll>
+        </Orientation>
+        <Scale>
+            <x>1.0</x>
+            <y>1.0</y>
+            <z>1.0</z>
+        </Scale>
+        <Link>
+            <href>models/golden japanese fish.dae</href>
+        </Link>
+    </Model>
+  </Placemark></Folder>
+</kml>

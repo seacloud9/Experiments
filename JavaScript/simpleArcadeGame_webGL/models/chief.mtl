@@ -1,0 +1,121 @@
+# Blender MTL File: 'untitled.blend'
+# Material Count: 11
+newmtl material_5_8ID_texture1.jpg
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.000000 0.000000 0.000000
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd C:\Users\brendonsmith\Documents\SugarSync\sc9_Labs\js\spaceHarrier\models\images\texture1.jpg
+
+
+newmtl material_2_0ID_texture0.jpg
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.103530 0.100392 0.125490
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd C:\Users\brendonsmith\Documents\SugarSync\sc9_Labs\js\spaceHarrier\models\images\texture0.jpg
+
+
+newmtl material_0_1_0ID_texture0.jpg
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd C:\Users\brendonsmith\Documents\SugarSync\sc9_Labs\js\spaceHarrier\models\images\texture0.jpg
+
+
+newmtl material_0_1_0ID_texture1.jpg
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd C:\Users\brendonsmith\Documents\SugarSync\sc9_Labs\js\spaceHarrier\models\images\texture1.jpg
+
+
+newmtl material_3_3_0ID_texture2.jpg
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd C:\Users\brendonsmith\Documents\SugarSync\sc9_Labs\js\spaceHarrier\models\images\texture2.jpg
+
+
+newmtl material_1_2_0ID_texture1.jpg
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd C:\Users\brendonsmith\Documents\SugarSync\sc9_Labs\js\spaceHarrier\models\images\texture1.jpg
+
+
+newmtl material_0_1_8ID_texture0.jpg
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd C:\Users\brendonsmith\Documents\SugarSync\sc9_Labs\js\spaceHarrier\models\images\texture0.jpg
+
+
+newmtl material_2_0ID
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.103530 0.100392 0.125490
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+
+
+newmtl material_1_2_0ID_texture0.jpg
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd C:\Users\brendonsmith\Documents\SugarSync\sc9_Labs\js\spaceHarrier\models\images\texture0.jpg
+
+
+newmtl material_4_0ID
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.558431 0.505098 0.385882
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+
+
+newmtl material_1_2_8ID_texture1.jpg
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd C:\Users\brendonsmith\Documents\SugarSync\sc9_Labs\js\spaceHarrier\models\images\texture1.jpg
+
+

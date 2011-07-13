@@ -1,0 +1,78 @@
+// 	Processing.js Example
+
+void setup() 
+        {
+        size(400, 400);  // Size should be the first statement
+        stroke(255);     // Set line drawing color to white
+        frameRate(30);
+        }
+    float y = 100;
+    String text1SizeDir = "up";
+    String text1Dir = "right";
+    int text1FontSize = 20;
+    int text1Ypos = 5;
+    String text1AlphaDir = "down";
+    float text1Alpha = 255;
+    void draw() 
+        { 
+        background(0);   // Set the background to black
+        
+        
+        if (text1SizeDir == "up") {
+            text1FontSize += 1;
+            if (text1FontSize > 40) {
+                text1SizeDir = "down"
+            }
+        
+        } else {
+            text1FontSize -= 1;
+            if (text1FontSize < 20) {
+                text1SizeDir = "up"
+            }
+        
+        }
+        
+        if (text1Dir == "right") {
+            text1Xpos += 10;
+            
+            if (text1Xpos > 460) {
+                text1Dir = "left";
+            }
+        } else {
+            text1Xpos -= 10;
+            
+            if (text1Xpos < 10) {
+                text1Dir = "right";
+            }
+        
+        }
+        
+        
+        if (text1AlphaDir == 'up') {
+            text1Alpha +=16;
+            if (text1Alpha > 255) {
+                text1Alpha = 255;
+                text1AlphaDir = "down";
+            }
+        } else {
+            text1Alpha -=16;
+            if (text1Alpha < 0) {
+                text1Alpha = 0;
+                text1AlphaDir = "up";
+            }
+        
+        }
+        
+        
+        font = loadFont("_sans");
+        textFont(font,text1FontSize); 
+        fill(200, 200, 200,text1Alpha);
+        text(procsObjs[1].tweet[1],text1Xpos+2, 82); 
+        fill(256, 0, 0,text1Alpha) ;
+        text(procsObjs[1].tweet[1],text1Xpos,80); 
+        
+        
+
+        
+        
+        }

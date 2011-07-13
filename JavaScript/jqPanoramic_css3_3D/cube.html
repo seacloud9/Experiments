@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>untitled</title>
+	<style>
+		body, html {
+			width: 100%; height: 100%;
+			overflow: hidden;
+		}
+		body {
+			background: -webkit-gradient(radial, 50 400, 2000, 800 200, 40, from(#1F1F1F), to(#FFFFFF));
+		}
+		
+		#container {
+			width: 100%;
+			position:absolute;
+			/*-webkit-perspective: 200;
+			-webkit-transform: translateZ(800px);
+			transform-origin:50% 50% 0;
+			-webkit-transform: perspective(50px) translateZ(80px);*/
+			-webkit-transform-style: preserve-3d;
+			 -webkit-transform: perspective(200) translateZ(225px) translateY(-100px);
+			
+			
+			
+			
+		}
+		
+		#shape {
+			position: relative;
+			top: 160px;
+			margin: 0 auto;
+			height: 200px;
+			width: 200px;
+			
+			-webkit-animation : spin 5s infinite linear;
+			-webkit-transform-style: preserve-3d;
+		}
+		
+		@-webkit-keyframes spin {
+			from { -webkit-transform: rotateY(0) rotateX(0); }
+			to   { -webkit-transform: rotateY(-360deg) rotateX(360deg); }
+		}
+		#shape > div {
+			position: absolute;
+			height: 200px;
+			width: 200px;
+			border: 1px solid #e3e3e3;
+			-webkit-border-radius: 10px;
+			-moz-border-radius: 10px;
+			opacity: .6;			
+		}
+		
+		#shape > div:hover {
+			opacity: 1;
+			-webkit-transition: opacity .3s linear;
+		}
+		
+		#shape > div img {
+			width: 100%; height: 100%;
+		}
+		
+		/* CUBE SIDES */
+		
+		.one {
+			-webkit-transform: rotateX(90deg) translateZ(100px);
+		}
+		
+		.two {
+			-webkit-transform: translateZ(100px);
+		}
+		
+		.three {
+			-webkit-transform: rotateY(90deg) translateZ(100px);
+		}	
+		
+		.four {
+			-webkit-transform: rotateY(180deg) translateZ(100px);
+		}	
+		
+		.five {
+			-webkit-transform: rotateY(-90deg) translateZ(100px);
+		}
+		
+		.six {
+			-webkit-transform: rotateX(-90deg) translateZ(100px);
+		}
+	</style>
+</head>
+<body>
+     <div id="container">
+      <div id="shape">
+        <div class="one"><a href="http://net.tutsplus.com/articles/web-roundups/color-inspiration-awesome-red-websites/"><img src="http://s3.amazonaws.com/nettuts/654_redSites/preview.jpg" /></a></div>
+        <div class="two"><a href="http://net.tutsplus.com/tutorials/javascript-ajax/using-twitters-anywhere-service-in-6-steps/"><img src="http://s3.amazonaws.com/nettuts/649_twitterAnywhere/intro.png" /></a></div>
+        <div class="three"><a href="http://net.tutsplus.com/freebies/themes/exclusive-free-psds-for-premium-members/"><img src="http://nettutsplus.s3.amazonaws.com/66_freePSDs/200x200.jpg" /></a></div>
+        <div class="four"><a href="http://net.tutsplus.com/tutorials/asp-net/a-jquery-ui-and-net-image-organiser/"><img src="http://s3.amazonaws.com/nettuts/650_jquerynet/200x200.jpg" /></a></div>
+        <div class="five"><a href="http://net.tutsplus.com/tutorials/wordpress/integrating-the-piecemaker-3d-gallery-into-your-wordpress-theme/"><img src="http://s3.amazonaws.com/nettuts/646_slicer/200x200.jpg" /></a></div>
+        <div class="six"><a href="http://net.tutsplus.com/tutorials/php/magento-for-designers-part-2/"><img src="http://s3.amazonaws.com/nettuts/632_magento/images/200x200.jpg" /></a></div>
+      </div>
+  </div>
+</body>
+</html>	

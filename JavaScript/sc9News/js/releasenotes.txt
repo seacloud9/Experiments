@@ -1,0 +1,92 @@
+Release Notes TypeSelect 0.1
+==================================
+July 7, 2009
+
+
+
+Requirements
+==================================
+- jQuery 1.3.2+
+- GNU GPL / public domain or free font file(s) in .ttf format
+- Compatible browser (see list below)
+
+
+
+
+Modern Browser Compatibility
+==================================
+
+Works:
+--------------------------------
+- Mozilla Firefox 2.0+ (Mac, Win, Ubuntu)
+- Google Chrome 2.0.172.33 *
+- Safari 4.0 (Windows and Mac)
+- Camino 1.6 (Mac)
+- K-Meleon 1.5.3
+
+ * 	Antialiasing / transparency 
+	issues are detectable, but 
+	minimal
+
+
+Graceful Fail (renders text, but not selectable):
+--------------------------------
+- Internet Explorer 6,7,8
+
+
+Complete Fail (does not render text):
+--------------------------------
+- Opera 9+
+- Safari 3.2.1 (Mac)
+- Internet Explorer 5
+
+
+
+
+How to download
+==================================
+
+All releases can be obtained at: 
+https://sourceforge.net/projects/typeselect/files/
+
+
+
+
+Installing TypeSelect
+==================================
+
+Download the current release.  
+In the <head> of your document, include the following files in this order:
+
+2. The stripped-down version of typeface.js (based on typeface-0.12.js currently),
+3. Any converted font files you want to use,
+4. jQuery 1.3.2 and,
+5. typeselect.js
+6. Add class="select" to the elements you want to be selectable
+7. Specify the font-family and styling you wish to apply to a given element
+
+See http://www.typeselect.org/usage.php for more details
+
+
+
+
+Known Issues
+==================================
+
+1.	YUI Fonts causes irregularities
+2.	Setting line-height without specifying units causes all text to overlap on one line. 
+	Avoid, line-height: 1; Instead, line-height: 1em.
+3.	Google's Chrome browser does a poor job of antialiasing text (get with the program Google).
+4.	Selections sometimes skip characters
+5.	With larger blocks of text, Firefox Firebug can cause fairly significant slowdowns.
+
+
+
+
+Looking for more information?
+==================================
+
+Main URL:				http://www.typeselect.org
+Sourceforge Project: 	http://www.sourceforge.net/projects/typeselect
+Mailing Lists: 			http://sourceforge.net/mail/admin/?group_id=267665
+Twitter:				http://www.twitter.com/typeselect

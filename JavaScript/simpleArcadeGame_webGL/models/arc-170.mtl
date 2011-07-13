@@ -1,0 +1,165 @@
+# Material Count: 15
+newmtl Blad_blur
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.642086 0.642086 0.642086
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 0.000000
+illum 1
+map_Kd textures\\blade copy.png
+
+
+newmtl Larg_Wings_largwing.jpg
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.584191 0.584191 0.584191
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 1
+map_Kd textures\largwing.jpg
+
+
+newmtl rings_Main_Body.jpg
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.000000 0.000000 0.000000
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 1
+map_Kd textures\Main Body.jpg
+
+
+newmtl Jet_effect_cyl_halo.png
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 0.000000
+illum 0
+map_Kd textures\cyl halo.png
+
+
+newmtl Small_Wings_small_wing.jpg
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.575216 0.575216 0.575216
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 1
+map_Kd textures\small wing.jpg
+
+
+newmtl jet_cyl_halo.png
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.000000 0.453306 0.800000
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 0.000000
+illum 0
+map_Kd textures\cyl halo.png
+
+
+newmtl Class_Main_Body.jpg
+Ns 100.000000
+Ka 0.000000 0.000000 0.000000
+Kd 0.000000 0.000000 0.000000
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 1
+map_Kd textures\Main Body.jpg
+
+
+newmtl Spinning__Thing
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.000000 0.000000 0.000000
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 1
+map_Kd textures\\net.jpg
+
+
+newmtl Landing_gear
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 1
+
+
+newmtl Blad_blur_blade_copy.png
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.642086 0.642086 0.642086
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 0.000000
+illum 1
+map_Kd textures\blade copy.png
+
+
+newmtl Main_Body_Main_Body.jpg
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 1
+map_Kd textures\Main Body.jpg
+
+
+newmtl Turbine_turbine_blades.png
+Ns 468.627451
+Ka 0.000000 0.000000 0.000000
+Kd 0.108539 0.108539 0.108539
+Ks 0.857733 0.857733 0.857733
+Ni 1.000000
+d 0.000000
+illum 2
+map_Kd textures\turbine blades.png
+
+
+newmtl black.001_largwing.jpg
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.000000 0.000000 0.000000
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 1
+map_Kd textures\largwing.jpg
+
+
+newmtl Larg_Wings
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.584191 0.584191 0.584191
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 1
+map_Kd textures\\largwing.jpg
+
+
+newmtl Material.002
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 0.000000
+illum 0
+map_Kd textures\\cyl halo.png
+
+

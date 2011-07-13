@@ -1,0 +1,93 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Flower</title>
+<script type="text/javascript" src="http://www.google.com/jsapi?key=ABQIAAAAAH3uzH_QIghBQ-AJ4unJYBSUDX9X7m-5nTGuIYAbTGwtO8D1zhTgHxyp4ndq8VBDGHGzyeo0EpriOg"></script>
+
+<script type="text/javascript">
+google.load("jquery", "1.4.2");
+</script>
+<style type="text/css">
+.flower {
+	background:transparent url(flower.png) no-repeat;
+	width:120px;
+	height:120px;
+	position:absolute;
+	z-index:10;
+}
+.flower2 {
+	background:transparent url(flowerYellow.png) no-repeat;
+	width:120px;
+	height:120px;
+	position:absolute;
+	z-index:11;
+}
+.flower3 {
+	background:transparent url(flowerBlue.png) no-repeat;
+	width:120px;
+	height:120px;
+	position:absolute;
+	z-index:13;
+}
+.flower4 {
+	background:transparent url(flowerRed.png) no-repeat;
+	width:120px;
+	height:120px;
+	position:absolute;
+	z-index:12;
+}
+body {
+	margin-left: 0px;
+	margin-top: 0px;
+	margin-right: 0px;
+	margin-bottom: 0px;
+}
+</style>
+</head>
+<body>
+<center>
+<div id="flowerBed" style="width:550px; height:400px;"></div>
+</center>
+</body>
+<script type="text/javascript">
+
+function bloom(){
+var scale = 120;
+var rotation = 0;
+var flower = '<div class="flower"></div>';
+var flower2 = '<div class="flower2"></div>';
+var flower3 = '<div class="flower3"></div>';
+var flower4 = '<div class="flower4"></div>';
+ for(i=0; i<40; i++){
+ $('#flowerBed').append(flower);
+ $('#flowerBed').append(flower2);
+ $('#flowerBed').append(flower4);
+ $('#flowerBed').append(flower3);
+ $('.flower').css('top', $('#flowerBed').height() / 2);
+ $('.flower').css('left', $('#flowerBed').width() / 2);
+ $('.flower').animate({rotate: '+=20deg', scale: '+=0.06', opacity: 0.90}, 400);
+ $('.flower2').css('top', $('#flowerBed').height() / 2);
+ $('.flower2').css('left', $('#flowerBed').width() / 2);
+ $('.flower2').animate({rotate: '+=40deg', scale: '+=0.04', opacity: 0.60}, 600);
+ $('.flower4').css('top', $('#flowerBed').height() / 2);
+ $('.flower4').css('left', $('#flowerBed').width() / 2);
+ $('.flower4').animate({rotate: '+=60deg', scale: '+=0.03', opacity: 0.30}, 800); 
+ $('.flower3').css('top', $('#flowerBed').height() / 2);
+ $('.flower3').css('left', $('#flowerBed').width() / 2);
+ $('.flower3').animate({rotate: '+=80deg', scale: '+=0.01'}, 1000); 
+ }
+}
+
+$(document).ready(function() { 
+if(!$.browser.msie){						   
+ bloom();
+}else{
+	$('#flowerBed').append("Please don't use this browser it lacks HTML5 capablites and is the bane of Web Development!  Go get <a href='http://www.google.com/chrome/index.html' target='_blank'>Chrome</a>, <a href='http://www.mozilla.com/en-US/firefox/upgrade.html' target='_blank'>Firefox</a>, <a href='http://www.apple.com/safari/download/' target='_blank'>Safari</a>, something!");
+}
+});
+</script>
+<script type="text/javascript" src="jquery-ui-1.8.custom/js/jquery-ui-1.8.custom.min.js"></script>
+<script type="text/javascript" src="jquery-css-transform/jquery-css-transform.js"></script>
+<script type="text/javascript" src="jquery-animate-css-rotate-scale.js"></script>
+</html>

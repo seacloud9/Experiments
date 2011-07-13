@@ -1,0 +1,771 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>SC9--News</title></link>
+    <link media="all" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/themes/ui-lightness/jquery-ui.css"
+        rel="stylesheet">
+    <link media="all" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/themes/start/jquery-ui.css"
+        rel="stylesheet">
+    <style type="text/css">
+        .container
+        {
+            float: left;
+        }
+        body
+        {
+            font-family: Bauhaus Medium;
+            font-size: 10px;
+            line-height: 1.4em;
+            letter-spacing: 0.5pt;
+            background-color: #fff;
+            color: #0E1836;
+            overflow-x: hidden;
+        }
+        .map
+        {
+            width: 900px;
+            float: left;
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+        #newsMap
+        {
+            width: 100%;
+            float: left;
+            padding: 10px;
+        }
+        .typeface-js-selected-text
+        {
+            color: #000;
+            font-family: Bauhaus Medium;
+            font-size: 10px;
+            line-height: 1em;
+            letter-spacing: 0.5pt;
+        }
+		 #MSDNNews
+        {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+        }
+        #MSDNNews li
+        {
+            margin: 0 3px 3px 3px;
+            padding: 0.4em;
+            padding-left: 1.5em;
+            font-size: 1.4em;
+            min-height: 10px;
+            max-height: 100px;
+        }
+        #MSDNNews li span
+        {
+            float: left;
+            margin-left: -1.3em;
+            margin-top: -3px;
+        }
+		 #worldNews
+        {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+        }
+        #worldNews li
+        {
+            margin: 0 3px 3px 3px;
+            padding: 0.4em;
+            padding-left: 1.5em;
+            font-size: 1.4em;
+            min-height: 10px;
+            max-height: 100px;
+        }
+        #worldNews li span
+        {
+            float: left;
+            margin-left: -1.3em;
+            margin-top: -3px;
+        }
+		 #OpenCourse
+        {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+        }
+        #OpenCourse li
+        {
+            margin: 0 3px 3px 3px;
+            padding: 0.4em;
+            padding-left: 1.5em;
+            font-size: 1.4em;
+            min-height: 10px;
+            max-height: 100px;
+        }
+        #OpenCourse li span
+        {
+            float: left;
+            margin-left: -1.3em;
+            margin-top: -3px;
+        }
+        #blogSphere
+        {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+        }
+        #blogSphere li
+        {
+            margin: 0 3px 3px 3px;
+            padding: 0.4em;
+            padding-left: 1.5em;
+            font-size: 1.4em;
+            min-height: 10px;
+            max-height: 100px;
+        }
+        #blogSphere li span
+        {
+            float: left;
+            margin-left: -1.3em;
+            margin-top: -3px;
+        }
+        #AdobeNews
+        {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+        }
+        #AdobeNews li
+        {
+            margin: 0 3px 3px 3px;
+            padding: 0.4em;
+            padding-left: 1.5em;
+            font-size: 1.4em;
+            min-height: 10px;
+            max-height: 100px;
+        }
+        #AdobeNews li span
+        {
+            float: left;
+            margin-left: -1.3em;
+            margin-top: -3px;
+        }
+        #AdobeNews li
+        {
+            min-height: 10px;
+            max-height: 100px;
+        }
+        #riaNews
+        {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+        }
+        #riaNews li
+        {
+            margin: 0 3px 3px 3px;
+            padding: 0.4em;
+            padding-left: 1.5em;
+            font-size: 1.4em;
+            min-height: 10px;
+            max-height: 100px;
+        }
+        #riaNews li span
+        {
+            float: left;
+            margin-left: -1.3em;
+            margin-top: -3px;
+        }
+        h4
+        {
+            display: inline;
+        }
+        .hover
+        {
+            filter: alpha(opacity=85);
+            filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=85);
+            -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=85)";
+            opacity: .85;
+            z-index: 10;
+            background: #070321;
+            width: 300px;
+            height: auto;
+            float: left;
+            padding: 10px;
+            line-height: 1.4em;
+            position: absolute;
+            margin-top: 10px;
+            color: #FFF;
+        }
+        .hoverY
+        {
+            /*-filter:alpha(opacity=85);
+    filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=85);
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=85)";
+	opacity: .85;
+	z-index:10;*/
+            background: #070321;
+            width: 880px;
+            height: auto;
+            padding: 10px;
+            line-height: 1.4em;
+            position: absolute;
+            margin-top: 10px;
+            margin-left: auto;
+            margin-right: auto;
+            color: #FFF;
+            max-height: 200px;
+            overflow: hidden;
+            font-size: 1.4em;
+            vertical-align: middle;
+        }
+        span
+        {
+            display: block;
+            width: auto;
+            height: auto;
+        }
+        a:link, .ui-state-default a:visited
+        {
+            color: #0E1836;
+            outline-color: -moz-use-text-color;
+            outline-style: none;
+            outline-width: medium;
+            text-decoration: none;
+        }
+        .ui-state-default
+        {
+            color: #0E1836;
+        }
+        #public_imagesContainer
+        {
+            margin-left: auto;
+            margin-right: auto;
+            vertical-align: top;
+            width: 900px;
+            height: 135px;
+            vertical-align: middle;
+            overflow: hidden;
+        }
+        #public_images
+        {
+            margin-left: auto;
+            margin-right: auto;
+            vertical-align: top;
+            width: 1200px;
+            height: 135px;
+            vertical-align: middle;
+        }
+        #videContainer
+        {
+            margin: auto;
+            width: 900px;
+            overflow: hidden;
+            height: 165px;
+            position: relative;
+            vertical-align: middle;
+        }
+        #videoYoutube
+        {
+            float: left;
+            vertical-align: top;
+            width: 1300px;
+            color: #0E1836;
+            font-family: Bauhaus Medium;
+        }
+        #videoYoutube a
+        {
+            border: none;
+            color: #0E1836;
+            font-family: Bauhaus Medium;
+        }
+        #videoYoutube img
+        {
+            max-height: 80px;
+            min-height: 80px;
+            float: left;
+        }
+        #public_images img
+        {
+            float: left;
+            vertical-align: top;
+            max-height: 140px;
+            border: none;
+        }
+        #public_images a
+        {
+            border: none;
+            color: #0E1836;
+        }
+        .imgNone img
+        {
+            display: none;
+            float: none;
+        }
+        .imgNone
+        {
+            font-family: Bauhaus Medium;
+            font-size: 1.4em;
+            color: #0E1836FFF;
+        }
+        .arrowUp
+        {
+            height: 0;
+            width: 0;
+            border-bottom: 12px solid #070321;
+            border-left: 12px dotted transparent;
+            border-right: 12px dotted transparent;
+            left: 0px;
+            top: 0px;
+            margin-left: 20px;
+            margin-top: -22px;
+            z-index: 10;
+        }
+        .arrowUp2
+        {
+            position: relative;
+            left: -10px;
+            top: 2px;
+            height: 0;
+            width: 0;
+            filter: alpha(opacity=85);
+            filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=85);
+            -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=85)";
+            opacity: .85;
+            border-bottom: 10px solid #070321;
+            border-left: 10px dotted transparent;
+            border-right: 10px dotted transparent;
+            z-index: 11;
+        }
+        .hoverF
+        {
+            filter: alpha(opacity=85);
+            filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=85);
+            -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=85)";
+            opacity: .85;
+            z-index: 10;
+            background: #070321;
+            width: 300px;
+            height: auto;
+            padding: 10px;
+            line-height: 1.4em;
+            position: absolute;
+            margin-top: 10px;
+            color: #FFF;
+        }
+        .ui-state-default
+        {
+            background: #FFF url(images/bgimg.png) repeat-x scroll 50% 50%;
+            color: #0E1836;
+            border: 1px solid #0E1836;
+        }
+        #contentForVideo
+        {
+            width: 900px;
+            display: inline-block;
+            height: min-height:200px;
+            margin-left: auto;
+            margin-right: auto;
+            background: #070321;
+            color: #FFF;
+            vertical-align: middle;
+        }
+        #contentForVideo a
+        {
+            color: #FFF;
+        }
+        .newsContainer
+        {
+            width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+            vertical-align: middle;
+        }
+        #ScrollerContoller
+        {
+            width: 900px; ;margin-left:auto;margin-right:auto;vertical-align:middle;height:15px;background-color:#0E1836;}
+        #divScrollerContoller
+        {
+            float: left;
+            width: 100%;
+        }
+        .pigsFly
+        {
+            position: absolute;
+        }
+    </style>
+
+
+    <script type="text/javascript" src="http://i-create.org/JavaScript/sc9News/js/typeface-custom.min.js"></script>
+
+    <script type="text/javascript" src="http://i-create.org/JavaScript/sc9News/js/Bauhaus_medium.typeface.js"></script>
+
+    <script type="text/javascript" src="http://i-create.org/JavaScript/sc9News/js/jquery-1.3.2.min.js"></script>
+
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.min.js"></script>
+
+    <script type="text/javascript" src="http://i-create.org/JavaScript/sc9News/js/typeselect.min.js"></script>
+
+    <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;sensor=true&amp;key=ABQIAAAAAH3uzH_QIghBQ-AJ4unJYBSUDX9X7m-5nTGuIYAbTGwtO8D1zhTgHxyp4ndq8VBDGHGzyeo0EpriOg"
+        type="text/javascript"></script>
+
+    <script type="text/javascript">
+        var flickrDescription = new Array();
+        var arrayTwit = new Array();
+        var twitSearch = new Object();
+        var map;
+        var geoXml;
+        function myFeedObject(packPipe, location, type) {
+            this.descList = new Array();
+            this.itemList = "";
+            this.type = type;
+            fireUpYahooPipe(this, packPipe, location);
+        }
+
+        function output_feed_items(obj, json, location) {
+            var heading = '<h3>' + json.value.title + '</h3>';
+            for (i = 0; i < json.count; i++) {
+                if (obj.type == "generic") {
+                    obj.itemList += make_feed_item(obj, json.value.items[i], i, location);
+                } else {
+                    var ypipeImage = json.value.items[i].description;
+                    ypipeImage = $(ypipeImage).find('img');
+                    try {
+                        var ypipeOBJ = new Object();
+                        var myReg = /cdn.c.ooyala.com/;
+                        var myQuestion = ypipeImage[0].src;
+                        var myResult = myQuestion.match(myReg);
+                        if (myResult == null) {
+                            ypipeOBJ.image = ypipeImage[0].src;
+                            ypipeOBJ.linked = json.value.items[i].link;
+                            obj.itemList += make_feed_item_images(obj, ypipeOBJ, i, location);
+                        } else {
+                            ypipeOBJ.image = null;
+                        }
+                    }
+                    catch (err) {
+                        //console.log(err + "Lame");
+                    }
+                }
+                obj.descList.push(make_feed_desc(obj, json.value.items[i], i, location));
+            }
+            return obj.itemList;
+        }
+        function make_feed_item_images(obj, item, item_id, location) {
+            var Quo = "\'";
+            return '<div id="heading-' + item_id + "_" + location + '" style="float:left">' +
+      '<a href="' + item.linked + '" target="_blank" onMouseover="toggle_feed_desc(' + location + ' ,' + item_id + ', ' + Quo + location + Quo + ' );" onMouseout="goHide(' + Quo + location + Quo + ' ,' + item_id + ', ' + Quo + location + Quo + ' )"><img src=\"' +
+      item.image + '\"/></a></div>';
+        }
+        function make_feed_item(obj, item, item_id, location) {
+            var Quo = "\'";
+            return '<li id="li" class="ui-state-default"><h4 id="heading-' + item_id + "_" + location + '">' +
+      '<a href="' + item.link + '" target="_blank" style="color:#0E1836;" onMouseover="toggle_feed_desc(' + location + ' ,' + item_id + ', ' + Quo + location + Quo + ' );" onMouseout="goHide(' + Quo + location + Quo + ' ,' + item_id + ', ' + Quo + location + Quo + ' )">' +
+      item.title + '</a></h4></li>';
+        }
+        function goHide(obj, item_id, location) {
+            var myDescription = "#desc-";
+            $(myDescription + item_id + "_" + location).css('display', 'none');
+        }
+        function make_feed_desc(obj, item, item_id, location) {
+            var desc_info = '<span="item-submitted">Published: ' + item.pubDate + '</span>';
+            var desc_info = '<div class="item-info">' + desc_info + '</div>';
+            if (obj.type == "images") {
+                return '<div class="hoverY" id="desc-' + item_id + "_" + location + '">' +
+    desc_info + item.description + '</div>';
+            } else {
+                return '<div class="hover" id="desc-' + item_id + "_" + location + '"><div class="arrowUp"><div class="arrowUp2"></div></div>' +
+    desc_info + item.description + '</div>';
+            }
+        }
+
+        function toggle_feed_desc(obj, item_id, location) {
+            var heading = '#heading-' + item_id + "_" + location;
+            var desc = '#desc-' + item_id + "_" + location;
+            if (obj.type == "images") {
+                //Pay attention the code below automagically gets the dom x and y to set the item_div x,y :)
+                var x = $(heading).offset().left;
+                var y = 80;
+                var wi = x / 2;
+                x = x - wi;
+                var item_div = obj.descList[item_id] + "_" + location;
+                $('#contentForVideo').append(obj.descList[item_id]);
+            } else {
+                $(heading).after(obj.descList[item_id]);
+            }
+        }
+        function twitterSearch(searchTag) {
+            $(document).ready(function() {
+                $.getJSON("http://search.twitter.com/search.json?q=" + searchTag + "&callback=?",
+        function(data) {
+            $.each(data.results, function(i, item) {
+                twitSeach = item;
+                arrayTwit.push(twitSeach);
+            });
+            whenPigsFly();
+        });
+            });
+        }
+        function fireUpYahooPipe(obj, packPipe, location, type) {
+            $(document).ready(function() {
+                var content = "";
+                $.getJSON(packPipe,
+   function(json) {
+       if (json.count > 0) {
+           content = output_feed_items(obj, json, location);
+           $(function() {
+               $("#" + location).sortable();
+               $("#" + location).disableSelection();
+           });
+       } else {
+           content = "The request did not return results.";
+       }
+       $("#ldr" + location).remove();
+       $("#" + location).html(content);
+   }
+  );
+            });
+        }
+
+        function myFlickerImages(tag) {
+            $(document).ready(function() {
+                $.getJSON("http://api.flickr.com/services/feeds/photos_public.gne?tags=" + tag + "&tagmode=any&format=json&jsoncallback=?",
+        function(data) {
+            for (i = 0; i < 10; i++) {
+                $("<img id ='img" + i + "' />").attr("src", data.items[i].media.m).appendTo("#public_images").wrap("<a id='aimg" + i + "' href='" + data.items[i].link + "' target='_blank' onMouseover='toggle_flickr_desc(" + i + ")' onMouseout='goHideFlickr(" + i + ")'></a>");
+                var myFlickerDes = make_flickr_desc(data.items[i], i);
+                flickrDescription.push(myFlickerDes);
+            }
+        });
+            });
+        }
+
+        function make_scrollController() {
+            $('newsContainer').after('<div id="ScrollerContoller" ><span id="Go" style="color:#fff; cursor:pointer; font-weight:bold;float:left;" onclick="goMove(\'+=210px\');"/&uarr;</span><span style="color:#fff; cursor:pointer; font-weight:bold; float:left;" onclick="goMove(\'-=210px\');"/>&darr;</span></div>');
+        }
+
+        function make_flickr_desc(data, i) {
+            var desc_info = '<span="item-submitted">Title: ' + data.title + '</span>';
+            var desc_info = '<div class="item-info">' + desc_info + '</div>';
+            return '<div class="hoverF imgNone" id="desc-' + i + '"><div class="arrowUp"><div class="arrowUp2"> </div></div>' +
+    desc_info + data.description + '</div>';
+        }
+
+        function toggle_flickr_desc(i) {
+            var heading = '#img' + i;
+            //Pay attention the code below automagically gets the dom x and y to set the item_div x,y :)
+            var x = $(heading).offset().left;
+            var y = $(heading).offset().top;
+            y = y + 160;
+            var item_div = 'div#desc-' + i;
+            $(heading).after(flickrDescription[i]);
+            $(item_div).css('left', x);
+            $(item_div).css('top', y);
+        }
+
+        function goHideFlickr(i) {
+            var myDescription = "#desc-";
+            $(myDescription + i).css('display', 'none');
+        }
+
+
+        function goMove(goDirection) {
+            $('#videoYoutube').css('width', '880px');
+            $('#videoYoutube').css('position', 'absolute');
+            $("#videoYoutube").animate({ "top": goDirection }, "slow");
+        }
+
+        function whenPigsFly() {
+            var randomPiggyNote = Math.floor(Math.random() * arrayTwit.length);
+            var randomY = Math.floor(Math.random() * 60);
+            var piggy = '<div id="divPigsFlying" onMouseOver="stopFlyingPig();" onMouseOut="continueFlyingPig();" ><div><a id="twitLink" href="" target="_blank" style="color:#fff"><div id="divPiggContent" style="height:40px; display:inline-block; font-weight:1.4em; color:#0E1836; border:none;"  ></div><img class="pigsFly" src="images/when_pigs_fly.png" style="border:none;" /></a></div></div>';
+            $('#divWhenPigsFly').html(piggy);
+            var goLink = "http://twitter.com/" + arrayTwit[randomPiggyNote].from_user;
+            $('#twitLink').attr('href', goLink);
+            var HowFatisThePig = $('#divPigsFlying').width();
+            var myPiggyStartLocation = 0 - HowFatisThePig;
+            $('#divPigsFlying').css('left', myPiggyStartLocation);
+            $('#divPigsFlying').css('top', randomY);
+            $('#divPiggContent').append(arrayTwit[randomPiggyNote].text);
+            $('#divPigsFlying').fadeIn(1000, function() {
+                var left = $('#divPigsFlying').offset().left;
+                var goDistance = window.innerWidth;
+                left = left + 900;
+                $('#divPigsFlying').css('position', 'absolute');
+                $('#divPigsFlying').animate({ left: goDistance }, 20000, function() {
+                    $('#divPigsFlying').fadeOut(1000, function() { whenPigsFly(); });
+                });
+            });
+        }
+
+        function stopFlyingPig() {
+            $('#divPigsFlying').stop();
+        }
+
+        function continueFlyingPig() {
+            var goDistance = window.innerWidth;
+            $('#divPigsFlying').animate({ left: goDistance }, 20000, function() {
+                $('#divPigsFlying').fadeOut(1000, function() { whenPigsFly(); });
+            });
+        }
+
+        function goSearch() {
+            var Quo = '\"';
+            $('#public_images').html('');
+            var content = $('#Search').val();
+            videoYoutube = new myFeedObject('http://pipes.yahoo.com/pipes/pipe.run?Search=' + content + '&_id=aE4GjZv63BGt4u90l7okhQ&_render=json&_callback=?', 'videoYoutube', 'images');
+            myFlickerImages(content);
+            twitterSearch(content);
+            $('#geoCodeNewsMain').html('');
+            loadGmap(content);
+        }
+
+        function loadGmap(content) {
+            if (GBrowserIsCompatible()) {
+                map = new GMap2(document.getElementById("geoCodeNewsMain"));
+                geoXml = new GGeoXml("http://pipes.yahoo.com/pipes/pipe.run?_id=5157b1e8036007e4334fd092860f7372&_render=kml&textinput1=" + content);
+                map.setCenter(new GLatLng(0, 0), 1);
+                map.addOverlay(geoXml);
+            }
+        }
+
+        // Note it is important to name the location the same as the ul id and object name the same because I use location to send the toggle object look at the code. http://pipes.yahoo.com/pipes/pipe.run?Search=generative+art&_id=aE4GjZv63BGt4u90l7okhQ&_render=json
+
+        AdobeNews = new myFeedObject('http://pipes.yahoo.com/pipes/pipe.run?_id=af4c93eb0e4fd18859cc9ab840c5f745&_render=json&_callback=?', 'AdobeNews', 'generic');
+        riaNews = new myFeedObject('http://pipes.yahoo.com/pipes/pipe.run?_id=f207a19ea9a846e4ca242c5239a0d0df&_render=json&_callback=?', 'riaNews', 'generic');
+        MSDNNews = new myFeedObject('http://pipes.yahoo.com/pipes/pipe.run?_id=8250c5383b9990d7c8b0ef8129d820db&_render=json&_callback=?', 'MSDNNews', 'generic');
+        videoYoutube = new myFeedObject('http://pipes.yahoo.com/pipes/pipe.run?Search=art&_id=aE4GjZv63BGt4u90l7okhQ&_render=json&_callback=?', 'videoYoutube', 'images');
+		worldNews = new myFeedObject('http://pipes.yahoo.com/pipes/pipe.run?_id=e946b09b5c463a833d53699438633056&_render=json&_callback=?', 'worldNews', 'generic');
+		blogSphere = new myFeedObject('http://pipes.yahoo.com/pipes/pipe.run?_id=8f6ff698cbc6531b78bd76aa12850541&_render=json&delmax=10&diggmin=200&redmax=10&slashmin=100&trunc=50&_callback=?', 'blogSphere', 'generic');
+		OpenCourse = new myFeedObject('http://pipes.yahoo.com/pipes/pipe.run?_id=fc65cd7d5080b4e32744fd730d49bfff&_render=json&_callback=?', 'OpenCourse', 'generic');
+		
+		
+        myFlickerImages("art");
+        $(document).ready(function() {
+            twitterSearch("when pigs fly");
+            loadGmap("war");
+        });
+</script>
+
+</head>
+<body>
+    <div style="margin: auto; height: min-height:1500px;">
+        <div style="margin: auto; width: 900px; height: 1500px;">
+            <div style="margin: auto; width: 900px; height: 30px; overflow: hidden; position: relative;
+                margin-top: 10px; margin-bottom: 10px;">
+                <div style="float: left; width: 100%; float: right; text-align: right;">
+                    <input type="text" id="Search" /><input type="button" style="background: transparent url(images/searchBG.jpg) repeat-x;
+                        color: #0E1836; padding: 2px 6px;" value="Search" title="Search" onclick="goSearch();" />
+                </div>
+            </div>
+            <div style="margin: auto; width: 900px; height: 120px; overflow: hidden; position: relative;
+                margin-top: 10px; margin-bottom: 10px; border: solid 2px; ##0e1836">
+                <div id="divWhenPigsFly" style="overflow: hidden; width: 4500px; height: 120px; float: left;
+                    background: transparent url(images/piggBG.jpg) repeat-x;">
+                </div>
+            </div>
+            <div id="public_imagesContainer" style="border: solid 2px; ##0e1836">
+                <div id="public_images">
+                </div>
+            </div>
+            <div class="newsContainer">
+                <div class="container">
+                    <div style="padding: 10px; color: #0E1836; font-size: 2em; text-align: center;">
+                        RIA News</div>
+                    <div id="pipes-feed-content" style="width: 300px; height: 500px; float: left; overflow: auto;
+                        overflow-x: hidden;">
+                        <ul id="riaNews">
+                            <div id="ldrriaNews" style="vertical-align: middle; margin-left: auto; margin-right: auto;
+                                text-align: center">
+                                <img src="images/loading.gif" /></div>
+                        </ul>
+                    </div>
+                </div>
+                <div class="container">
+                    <div style="padding: 10px; color: #0E1836; font-size: 2em; text-align: center;">
+                        MSDN News</div>
+                    <div id="pipes-feed-content" style="width: 300px; height: 500px; float: left; overflow: auto;
+                        overflow-x: hidden;">
+                        <ul id="MSDNNews">
+                            <div id="ldrMSDNNews" style="vertical-align: middle; margin-left: auto; margin-right: auto;
+                                text-align: center">
+                                <img src="images/loading.gif" /></div>
+                        </ul>
+                    </div>
+                </div>
+                <div class="container">
+                    <div style="padding: 10px; color: #0E1836; font-size: 2em; text-align: center;">
+                        Adobe News</div>
+                    <div id="pipes-feed-content" style="width: 300px; height: 500px; float: left; overflow: auto;
+                        overflow-x: hidden;">
+                        <ul id="AdobeNews">
+                            <div id="ldrAdobeNews" style="vertical-align: middle; margin-left: auto; margin-right: auto;
+                                text-align: center">
+                                <img src="images/loading.gif" /></div>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div id="divScrollerContoller" style="margin-top: 10px;">
+                <div id="ScrollerContoller">
+                    <span id="Go" style="color: #fff; cursor: pointer; font-weight: bold; float: left;
+                        padding-right: 5px; padding-left: 5px;" onclick="goMove('+=170px');" />&uarr;</span><span
+                            style="color: #fff; cursor: pointer; font-weight: bold; float: left;" onclick="goMove('-=170px');" />&darr;</span></div>
+                <div id="videContainer">
+                    <div id="videoYoutube">
+                    </div>
+                </div>
+            </div>
+            <div style="width: 900px; overflow: hidden; height: min-height:200px; margin-left: auto;
+                margin-right: auto; background: #070321; color: #FFF; vertical-align: middle;">
+                <div id="contentForVideo" style="min-height: 210px; height: auto;">
+                </div>
+            </div>
+            <div class="newsContainer">
+                <div class="container">
+                    <div style="padding: 10px; color: #0E1836; font-size: 2em; text-align: center;">
+                        World News</div>
+                    <div id="pipes-feed-content" style="width: 300px; height: 500px; float: left; overflow: auto;
+                        overflow-x: hidden;">
+                        <ul id="worldNews">
+                            <div id="ldrworldNews" style="vertical-align: middle; margin-left: auto; margin-right: auto;
+                                text-align: center">
+                                <img src="images/loading.gif" /></div>
+                        </ul>
+                    </div>
+                </div>
+                <div class="container">
+                    <div style="padding: 10px; color: #0E1836; font-size: 2em; text-align: center;">
+                        BlogoSphere</div>
+                    <div id="pipes-feed-content" style="width: 300px; height: 500px; float: left; overflow: auto;
+                        overflow-x: hidden;">
+                        <ul id="blogSphere">
+                            <div id="ldrblogSphere" style="vertical-align: middle; margin-left: auto; margin-right: auto;
+                                text-align: center">
+                                <img src="images/loading.gif" /></div>
+                        </ul>
+                    </div>
+                </div>
+                <div class="container">
+                    <div style="padding: 10px; color: #0E1836; font-size: 2em; text-align: center;">
+                        Open Course Ware</div>
+                    <div id="pipes-feed-content" style="width: 300px; height: 500px; float: left; overflow: auto;
+                        overflow-x: hidden;">
+                        <ul id="OpenCourse">
+                            <div id="ldrOpenCourse" style="vertical-align: middle; margin-left: auto; margin-right: auto;
+                                text-align: center">
+                                <img src="images/loading.gif" /></div>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div id="geoCodeNewsMain" class="map" style="height: 200px">
+            </div>
+        </div>
+    </div>
+</body>
+</html>

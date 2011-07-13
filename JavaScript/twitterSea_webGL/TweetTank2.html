@@ -1,0 +1,298 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>TweetTank</title>
+<script type="text/javascript" src="http://www.google.com/jsapi?key=ABQIAAAAAH3uzH_QIghBQ-AJ4unJYBSUDX9X7m-5nTGuIYAbTGwtO8D1zhTgHxyp4ndq8VBDGHGzyeo0EpriOg"></script>
+<script type="text/javascript">
+        google.load("jquery", "1.4.2");
+</script>
+<style type="text/css">
+<!--
+body, td, th {
+	color: #FFF;
+}
+body {
+	background-color: #003;
+}
+-->
+</style>
+</head>
+<body style="overflow-x:hidden; margin:0px; padding:0px;">
+<canvas id="tweetTank" width="800" height="800"></canvas>
+<div id="tweetSearch">
+  <input type="text" id="tweetSearchTxt" />
+  <input type="button" value="Search" id="executeTweetSuite" onclick="goTwitter();
+  " />
+</div>
+<script type="text/javascript">
+var CANVAS_WIDTH = $(window).width();
+var CANVAS_HEIGHT = $(window).height()*2;
+$('#tweetTank').width(CANVAS_WIDTH);
+$('#tweetTank').height(CANVAS_HEIGHT);
+$('#tweetTank').css('display','block');
+</script>
+<script type="application/javascript" src="c3dl/c3dapi.js"></script>
+<script type="application/javascript">
+		var arrayTwit;
+        var schooloffish;
+        var fishArray = [];
+        var bubblesArray = [];
+        var bubbles;
+		var objectsHit = "";
+		var objectSelected;
+		var searchInt = 0;
+        function mRandom(r) {
+            var randomInt = Math.floor(Math.random() * r + 1);
+            return randomInt;
+        }
+        
+        c3dl.addModel("fish.dae");
+        c3dl.addModel("OceanSphere.dae"); 
+        // The program main
+        function canvasMain(canvasName) {
+
+            // Create new c3dl.Scene object
+            scn = new c3dl.Scene();
+            scn.setCanvasTag(canvasName);
+
+            // Create GL context
+            renderer = new c3dl.WebGL();
+            renderer.addTexture("bubble.jpg");
+            renderer.createRenderer(this);
+
+            // Attach renderer to the scene
+            scn.setRenderer(renderer);
+            scn.init(canvasName);
+
+            //the isReady() function tests whether or not a renderer
+            //is attached to a scene.  If the renderer failed to
+            //initialize this will return false but only after you
+            //try to attach it to a scene.
+            if (renderer.isReady()) {
+                // Create a Collado object that
+                // will contain a imported
+                // model of something to put
+                // in the scene.
+
+                //fish.setAngularVel(new Array(0.0, 0.0001, 0.0));
+
+                var schooloffish = mRandom(100);
+                var ocean = new c3dl.Collada();
+                ocean.init("OceanSphere.dae");
+                ocean.setAngularVel(new Array(0, .00005, 0));
+                ocean.scale([20.0, 20.0, 20.0]);
+                ocean.setPickable(false);
+                scn.addObjectToScene(ocean); 
+				//console.log(arrayTwit.length);
+                for (var i = 0; i < arrayTwit.length; i++) {
+					//console.log(arrayTwit[i]);
+                    fishArray[i] = new c3dl.Collada();
+                    fishArray[i].init("fish.dae");
+                    fishArray[i].yaw(45.0);
+					fishArray[i].ID = "Fish" + i;
+                    //fish.roll(25.0);
+                    fishArray[i].pitch(-86.4);
+					fishArray[i].setLinearVel([0,0,-2]);
+                    fishArray[i].url = "http://twitter.com/" + arrayTwit[i].from_user;
+                    //fish.setPosition([1200, 100, 700]);
+                    fishArray[i].setPosition([mRandom(1200), mRandom(900), mRandom(1500)]);
+                    scn.addObjectToScene(fishArray[i]);
+                }
+                for (var i = 0; i < 7; i++) {
+                    bubblesArray[i] = new c3dl.ParticleSystem();
+                    bubblesArray[i].setMinVelocity([-2, 0, -2]);
+                    bubblesArray[i].setMaxVelocity([2, 25, 2]);
+                    bubblesArray[i].setMinLifetime(5.3);
+                    bubblesArray[i].setMaxLifetime(10.7);
+                    bubblesArray[i].setMinColor([0, 0, 0.3, 0]);
+                    bubblesArray[i].setMaxColor([0, 0.3, 0.5, 1]);
+                    bubblesArray[i].setSrcBlend(c3dl.ONE);
+                    bubblesArray[i].setDstBlend(c3dl.ONE);
+                    bubblesArray[i].setMinSize(0.5);
+                    bubblesArray[i].setMaxSize(5.0);
+                    bubblesArray[i].setTexture("bubble.gif");
+                    bubblesArray[i].setAcceleration([0, 9, 0]);
+                    bubblesArray[i].setEmitRate(40);
+                    bubblesArray[i].init(150);
+                    bubblesArray[i].setPosition([mRandom(1200), mRandom(100), mRandom(700)]);
+                    scn.addObjectToScene(bubblesArray[i]);
+                }
+                // Create a camera
+                //var cam = new c3dl.FreeCamera();
+                
+                
+               
+               // scn.setCamera(cam);
+                cam = new c3dl.OrbitCamera();
+                cam.setFarthestDistance(2000);
+                //cam.pitch(90);
+                cam.setPosition(new Array(3000.0, 300.0, 200.0));
+                //cam.setLookAtPoint(new Array(0.0, 0.0, 0.0));
+                cam.setOrbitPoint(new Array(800.0, 100.0, 200.0));
+                cam.setClosestDistance(200);
+                cam.setDistance(900);
+                //cam.pitch(1);
+                scn.setCamera(cam);
+                // Start the scene
+                scn.startScene();
+                scn.setPickingCallback(goLink);
+                scn.setKeyboardCallback(onKeyUp, onKeyDown);
+                scn.setMouseCallback(mouseMove, mouseWheel);
+                
+            }
+        }
+		
+		function goLink(pickingObj)
+		{
+ 			var objectsHit = pickingObj.getObjects();
+
+ 			if( objectsHit.length > 0 )
+			 {
+ 				var sepiaEffect = new c3dl.Effect();
+				sepiaEffect.init(c3dl.effects.SEPIA);
+ 				window.open(objectsHit[0].url, '_blank');
+				objectsHit[0].setEffect(sepiaEffect);
+ 					for(var i = 0; i < arrayTwit.length; i++){
+ 						if(objectsHit[0].url == scn.getObj(i).url)
+ 					scn.getObject(i).setEffect(sepiaEffect);
+ 					}
+ 				}
+		} 
+		
+
+        function onKeyUp(event) {
+            if (event.keyCode == 89) { keyD = false; }
+        }
+
+        
+        function mouseWheel(event) {
+            var delta = 0;
+
+            // Chromium
+            if (event.wheelDelta) {
+                delta = -event.wheelDelta / 20;
+            }
+            // Minefield
+            else if (event.detail) {
+                delta = event.detail * 4;
+            }
+
+            else {
+                if (keyD) {
+                    cam.yaw(delta * ZOOM_SENSITIVITY / 100);
+                }
+                else {
+
+                    // towards user
+                    if (-delta * ZOOM_SENSITIVITY < 0) {
+                        cam.goFarther(-1 * -delta * ZOOM_SENSITIVITY);
+                    }
+
+                    // towards screen
+                    else {
+                        cam.goCloser(-delta * ZOOM_SENSITIVITY);
+                    }
+                }
+            }
+        }
+
+
+        function onKeyDown(event) {
+            if (event.keyCode == 65) {
+                cam.setOrbitPoint([0, 0, 0]);
+            }
+            if (event.keyCode == 89) {
+                keyD = true;
+            }
+        }
+        function mouseMove(event) {
+            // get mouse coords relative to window
+            var mmx = event.pageX - 1;
+            var mmy = event.pageY - 1;
+
+           
+
+            if (mmx != null && mmy != null) {
+                // NDC
+                var normalizedDeviceCoords = [
+        (2 * mmx / CANVAS_WIDTH) - 1,
+       -((2 * mmy / CANVAS_HEIGHT) - 1),
+        1, 1];
+
+                // Sometimes this is called before the perspective transform
+                // is setup which causes warnings. This check prevents that.
+                if (c3dl.isValidMatrix(scn.getProjectionMatrix())) {
+                    var iproj = c3dl.inverseMatrix(scn.getProjectionMatrix());
+
+                    // To get the clip coords, we multiply the viewspace coordinates by
+                    // the projection matrix.
+                    // Working backwards across the pipeline, we have to take the normalized
+                    // device coordinates and multiply by the inverse projection matrix to get
+                    // the clip coordinates.
+                    var clipCoords = c3dl.multiplyMatrixByVector(iproj, normalizedDeviceCoords);
+
+                    // perspective divide
+                    clipCoords[0] /= clipCoords[3];
+                    clipCoords[1] /= clipCoords[3];
+                    clipCoords[2] /= clipCoords[3];
+                    clipCoords[2] = -clipCoords[2];
+
+                    var rayInitialPoint = cam.getPosition();
+
+                    var x = clipCoords[0];
+                    var y = clipCoords[1];
+                    var z = clipCoords[2];
+
+                    var kludge = c3dl.multiplyVector(cam.getLeft(), -1);
+                    var viewMatrix = c3dl.makePoseMatrix(kludge, cam.getUp(), cam.getDir(), cam.getPosition());
+
+                    var rayTerminalPoint = c3dl.multiplyMatrixByVector(viewMatrix, [x, y, z, 0]);
+                    var rayDir = c3dl.normalizeVector(rayTerminalPoint);
+
+                    // get angle
+                    var angle = Math.acos(-1 * rayDir[1]);
+                    var camHeight = rayInitialPoint[1];
+
+                    var hyp = camHeight / Math.cos(angle);
+
+                    mx = hyp * rayDir[0] + rayInitialPoint[0];
+                    my = hyp * rayDir[1];
+                    mz = hyp * rayDir[2] + rayInitialPoint[2];
+                }
+            }
+        }
+function twitterSearch(searchTag) {
+	//console.log(searchTag);
+	arrayTwit = "";
+	arrayTwit = new Array();
+                $.getJSON("http://search.twitter.com/search.json?q=" + searchTag + "&callback=?",
+        function(data) {
+            $.each(data.results, function(i, item) {
+                twitSeach = item;
+                arrayTwit.push(twitSeach);
+            });
+		
+			if(searchInt >=1){
+			//c3dl.addMainCallBack(canvasMain, "tweetTank");
+			canvasMain("tweetTank");
+			}else{
+			searchInt++;	
+			
+			c3dl.addMainCallBack(canvasMain, "tweetTank");
+			//c3dl.init();
+			}
+        });
+		
+        }
+$(document).ready(function() {
+            twitterSearch("fishing");
+        });
+
+function goTwitter(){
+var tweet =  $('#tweetSearchTxt').val();
+twitterSearch(tweet);	
+}
+</script>
+</body>
+</html>

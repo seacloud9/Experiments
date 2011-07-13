@@ -1,0 +1,264 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>TweetTank</title>
+<link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>
+<link href="http://static.jquery.com/ui/css/base2.css" rel="stylesheet" type="text/css"/>
+<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/themes/start/jquery-ui.css" type="text/css" />
+<script type="text/javascript" src="http://www.google.com/jsapi?"></script>
+<script type="text/javascript">
+google.load("jquery", "1.4.2");
+google.load("jqueryui", "1.8.1");
+</script>
+<style type="text/css">
+body, td, th {
+	color: #FFF;
+}
+body {
+	background-color: #003;
+}
+div {
+	margin:10px
+}
+
+</style>
+</head>
+<body style="overflow-x:hidden; margin:0px; padding:0px;" style="background-color:#060337">
+<div style="width:100%; float:left; height:100%; background-color:#060337; margin:0px;">
+  <div style="float:left; height:100%; width:55px;">
+    <div style="width:40px;height:100%;">
+      <div id="sliderVeritcal" style="min-height:500px;"></div>
+    </div>
+  </div>
+  <div style="float:left;height:80%; width:85%">
+    <div id="tweetSearch">
+      <input id="tweetSearchTxt" type="text">
+      <input value="Search" id="executeTweetSuite" onclick="goTwitter();" type="button">
+    </div>
+    <div id="sliderHorizontal"></div>
+    <div id="TweetTankBowl" style="overflow:hidden;float:left; width:100%; height:80%;">
+      <canvas style="display: block;" id="tweetTank" width="800" height="800"></canvas>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+var CANVAS_WIDTH = $(window).width;
+var CANVAS_HEIGHT = $(window).height()*2;
+$('#tweetTank').width(CANVAS_WIDTH);
+$('#tweetTank').height(CANVAS_HEIGHT);
+$('#tweetTank').css('display','block');
+</script>
+<script type="application/javascript" src="c3dl/c3dapi.js"></script>
+<script type="application/javascript">
+		var arrayTwit;
+        var schooloffish;
+        var fishArray = [];
+        var bubblesArray = [];
+        var bubbles;
+		var objectsHit = "";
+		var objectSelected;
+		var cam;
+		var ID1;
+		var ID;
+		var searchInt = 0;
+        function mRandom(r) {
+            var randomInt = Math.floor(Math.random() * r + 1);
+            return randomInt;
+        }
+        
+        c3dl.addModel("fish.dae");
+        c3dl.addModel("OceanSphere.dae"); 
+        // The program main
+        function canvasMain(canvasName) {
+
+            // Create new c3dl.Scene object
+            scn = new c3dl.Scene();
+            scn.setCanvasTag(canvasName);
+
+            // Create GL context
+            renderer = new c3dl.WebGL();
+            renderer.addTexture("bubble.jpg");
+            renderer.createRenderer(this);
+
+            // Attach renderer to the scene
+            scn.setRenderer(renderer);
+            scn.init(canvasName);
+            //the isReady() function tests whether or not a renderer
+            //is attached to a scene.  If the renderer failed to
+            //initialize this will return false but only after you
+            //try to attach it to a scene.
+			
+            if (renderer.isReady()) {
+                var schooloffish = mRandom(100);
+                var ocean = new c3dl.Collada();
+                ocean.init("OceanSphere.dae");
+                ocean.setAngularVel(new Array(0, .00005, 0));
+                ocean.scale([20.0, 20.0, 20.0]);
+                ocean.setPickable(false);
+                scn.addObjectToScene(ocean); 
+				//console.log(arrayTwit.length);
+                for (var i = 0; i < arrayTwit.length; i++) {
+					//console.log(arrayTwit[i]);
+                    fishArray[i] = new c3dl.Collada();
+                    fishArray[i].init("fish.dae");
+                    fishArray[i].yaw(45.0);
+					fishArray[i].ID = "Fish" + i;
+                    //fish.roll(25.0);
+                    fishArray[i].pitch(-57.4);
+					fishArray[i].setLinearVel([0,0,-0.05]);
+                    fishArray[i].url = "http://twitter.com/" + arrayTwit[i].from_user;
+                    //fish.setPosition([1200, 100, 700]);
+                    fishArray[i].setPosition([mRandom(1200), mRandom(900), mRandom(1500)]);
+                    scn.addObjectToScene(fishArray[i]);
+                }
+                for (var i = 0; i < 7; i++) {
+                    bubblesArray[i] = new c3dl.ParticleSystem();
+                    bubblesArray[i].setMinVelocity([-2, 0, -2]);
+                    bubblesArray[i].setMaxVelocity([2, 25, 2]);
+                    bubblesArray[i].setMinLifetime(5.3);
+                    bubblesArray[i].setMaxLifetime(10.7);
+                    bubblesArray[i].setMinColor([0, 0, 0.3, 0]);
+                    bubblesArray[i].setMaxColor([0, 0.3, 0.5, 1]);
+                    bubblesArray[i].setSrcBlend(c3dl.ONE);
+                    bubblesArray[i].setDstBlend(c3dl.ONE);
+                    bubblesArray[i].setMinSize(0.5);
+                    bubblesArray[i].setMaxSize(5.0);
+                    bubblesArray[i].setTexture("bubble.gif");
+                    bubblesArray[i].setAcceleration([0, 9, 0]);
+                    bubblesArray[i].setEmitRate(40);
+                    bubblesArray[i].init(150);
+                    bubblesArray[i].setPosition([mRandom(1200), mRandom(100), mRandom(700)]);
+                    scn.addObjectToScene(bubblesArray[i]);
+                }
+                // Create a camera
+                //var cam = new c3dl.FreeCamera();
+                
+                
+               
+               // scn.setCamera(cam);
+                cam = new c3dl.OrbitCamera();
+                cam.setFarthestDistance(2000);
+                //cam.pitch(90);
+                cam.setPosition(new Array(3000.0, 300.0, 200.0));
+                //cam.setLookAtPoint(new Array(0.0, 0.0, 0.0));
+                cam.setOrbitPoint(new Array(800.0, 100.0, 200.0));
+                cam.setClosestDistance(200);
+                cam.setDistance(900);
+                //cam.pitch(1);
+                scn.setCamera(cam);
+                // Start the scene
+                scn.startScene();
+                scn.setPickingCallback(goLink);
+                //scn.setKeyboardCallback(onKeyUp, onKeyDown);
+                scn.setMouseCallback(mouseWheel);
+                
+            }
+        }
+		
+		function goLink(pickingObj)
+		{
+ 			var objectsHit = pickingObj.getObjects();
+
+ 			if( objectsHit.length > 0 )
+			 {
+ 				var sepiaEffect = new c3dl.Effect();
+				sepiaEffect.init(c3dl.effects.SEPIA);
+ 				window.open(objectsHit[0].url, '_blank');
+				objectsHit[0].setEffect(sepiaEffect);
+ 					for(var i = 0; i < arrayTwit.length; i++){
+ 						if(objectsHit[0].url == scn.getObj(i).url)
+ 					scn.getObject(i).setEffect(sepiaEffect);
+ 					}
+ 				}
+		}
+        
+        function mouseWheel(event) {
+            var delta = 0;
+			const ZOOM_SENSITIVITY = 3;
+            // Chromium
+            if (event.wheelDelta) {
+                delta = -event.wheelDelta / 20;
+            }
+            // Minefield
+            else if (event.detail) {
+                delta = event.detail * 4;
+            }
+
+            else {
+                if (keyD) {
+                    cam.yaw(delta * ZOOM_SENSITIVITY / 100);
+                }
+                else {
+
+                    // towards user
+                    if (-delta * ZOOM_SENSITIVITY < 0) {
+                        cam.goFarther(-1 * -delta * ZOOM_SENSITIVITY);
+                    }
+
+                    // towards screen
+                    else {
+                        cam.goCloser(-delta * ZOOM_SENSITIVITY);
+                    }
+                }
+            }
+        }
+
+
+function twitterSearch(searchTag) {
+	//console.log(searchTag);
+	arrayTwit = "";
+	arrayTwit = new Array();
+                $.getJSON("http://search.twitter.com/search.json?q=" + searchTag + "&callback=?",
+        function(data) {
+            $.each(data.results, function(i, item) {
+                twitSeach = item;
+                arrayTwit.push(twitSeach);
+            });
+		
+			if(searchInt >=1){
+				searchInt++;
+				$('#TweetTankBowl').html("");
+				$('#TweetTankBowl').html('<canvas style="display: block;" id="tweetTank" width="800" height="800"></canvas>');
+				$('#tweetTank').width(CANVAS_WIDTH);
+				$('#tweetTank').height(CANVAS_HEIGHT);
+				$('#tweetTank').css('display','block');
+				canvasMain("tweetTank");
+			}else{
+				searchInt++;	
+				c3dl.addMainCallBack(canvasMain, "tweetTank");
+			}
+		 });
+}
+$(document).ready(function() {
+            twitterSearch("fishing");
+			sliderGo();
+        });
+
+function goTwitter(){
+var tweet =  $('#tweetSearchTxt').val();
+twitterSearch(tweet);	
+}
+
+function sliderGo(){
+$("#sliderVeritcal").slider({
+				step: 0.15,
+				min: 0.00,
+				max:360.00,
+				orientation: 'vertical',
+				slide: function(event, ui) {  
+					cam.pitch(ui.value);
+				}
+			});
+				$("#sliderHorizontal").slider({
+				step: 0.15,
+				min: 0.00,
+				max:360.00,
+				slide: function(event, ui) {  
+					cam.yaw(ui.value);
+				}
+			});	
+}
+</script>
+</body>
+</html>
