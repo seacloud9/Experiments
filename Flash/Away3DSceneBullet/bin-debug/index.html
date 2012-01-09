@@ -1,0 +1,561 @@
+<!DOCTYPE HTML>
+<html lang="en">
+	<head>
+		<title>Pirate Island</title>
+		<meta charset="utf-8">
+         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+         <script type="text/javascript" src="js/Three.js"></script>
+         <script type="text/javascript" src="js/ThreeExtras.js"></script>
+         <!--<script type="text/javascript" src="js/glge-compiled-min.js"></script>-->
+         <script type="text/javascript" src="js/binaryReader.js"></script>
+         <script type="text/javascript" src="js/MD2.js"></script>
+		 <script type="text/javascript" src="js/Detector.js"></script>
+		 <script type="text/javascript" src="js/RequestAnimationFrame.js"></script>
+		 <script type="text/javascript" src="js/Stats.js"></script>
+         <script type="text/javascript" src="js/jiglib/geom/glMatrix.js"></script>							
+         
+        
+        <script type="text/javascript" src="js/jiglib/jiglib.js"></script>
+        
+        <script type="text/javascript" src="js/jiglib/geom/Vector3D.js"></script>
+        <script type="text/javascript" src="js/jiglib/geom/Matrix3D.js"></script>
+        
+        <script type="text/javascript" src="js/jiglib/math/JMatrix3D.js"></script>
+        <script type="text/javascript" src="js/jiglib/math/JMath3D.js"></script>
+        <script type="text/javascript" src="js/jiglib/math/JNumber3D.js"></script>
+        
+        <script type="text/javascript" src="js/jiglib/cof/JConfig.js"></script>
+        <script type="text/javascript" src="js/jiglib/data/CollOutData.js"></script>
+        <script type="text/javascript" src="js/jiglib/data/ContactData.js"></script>
+        <script type="text/javascript" src="js/jiglib/data/PlaneData.js"></script>
+        <script type="text/javascript" src="js/jiglib/data/EdgeData.js"></script>
+        <script type="text/javascript" src="js/jiglib/data/TerrainData.js"></script>
+        <script type="text/javascript" src="js/jiglib/geometry/JAABox.js"></script>
+        <script type="text/javascript" src="js/jiglib/data/OctreeCell.js"></script>
+        <script type="text/javascript" src="js/jiglib/data/CollOutBodyData.js"></script>
+        <script type="text/javascript" src="js/jiglib/data/TriangleVertexIndices.js"></script>
+        <script type="text/javascript" src="js/jiglib/data/SpanData.js"></script>
+        <script type="text/javascript" src="js/jiglib/physics/constraint/JConstraint.js"></script>
+        <script type="text/javascript" src="js/jiglib/physics/constraint/JConstraintMaxDistance.js"></script>
+        <script type="text/javascript" src="js/jiglib/physics/constraint/JConstraintWorldPoint.js"></script>
+        <script type="text/javascript" src="js/jiglib/physics/constraint/JConstraintPoint.js"></script>
+        <script type="text/javascript" src="js/jiglib/physics/MaterialProperties.js"></script>
+        <script type="text/javascript" src="js/jiglib/geometry/JTriangle.js"></script>
+        <script type="text/javascript" src="js/jiglib/geometry/JSegment.js"></script>
+        <script type="text/javascript" src="js/jiglib/collision/CollPointInfo.js"></script>
+        <script type="text/javascript" src="js/jiglib/collision/CollisionInfo.js"></script>
+        <script type="text/javascript" src="js/jiglib/collision/CollDetectInfo.js"></script>
+        <script type="text/javascript" src="js/jiglib/collision/CollDetectFunctor.js"></script>
+        <script type="text/javascript" src="js/jiglib/collision/CollDetectBoxTerrain.js"></script>
+        <script type="text/javascript" src="js/jiglib/collision/CollDetectSphereMesh.js"></script>
+        <script type="text/javascript" src="js/jiglib/collision/CollDetectCapsuleBox.js"></script>
+        <script type="text/javascript" src="js/jiglib/collision/CollDetectSphereCapsule.js"></script>
+        <script type="text/javascript" src="js/jiglib/collision/CollDetectCapsuleTerrain.js"></script>
+        <script type="text/javascript" src="js/jiglib/collision/CollDetectSphereBox.js"></script>
+        <script type="text/javascript" src="js/jiglib/collision/CollDetectSphereTerrain.js"></script>
+        <script type="text/javascript" src="js/jiglib/collision/CollDetectBoxBox.js"></script>
+        <script type="text/javascript" src="js/jiglib/collision/CollDetectBoxMesh.js"></script>
+        <script type="text/javascript" src="js/jiglib/collision/CollDetectBoxPlane.js"></script>
+        <script type="text/javascript" src="js/jiglib/collision/CollDetectCapsuleCapsule.js"></script>
+        <script type="text/javascript" src="js/jiglib/collision/CollDetectSphereSphere.js"></script>
+        <script type="text/javascript" src="js/jiglib/collision/CollDetectSpherePlane.js"></script>
+        <script type="text/javascript" src="js/jiglib/collision/CollDetectCapsulePlane.js"></script>
+        <script type="text/javascript" src="js/jiglib/collision/CollisionSystemAbstract.js"></script>
+        <script type="text/javascript" src="js/jiglib/collision/CollisionSystemGridEntry.js"></script>
+        <script type="text/javascript" src="js/jiglib/collision/CollisionSystemGrid.js"></script>
+        <script type="text/javascript" src="js/jiglib/collision/CollisionSystemBrute.js"></script>
+        <script type="text/javascript" src="js/jiglib/geometry/JIndexedTriangle.js"></script>
+        <script type="text/javascript" src="js/jiglib/geometry/JOctree.js"></script>
+        <script type="text/javascript" src="js/jiglib/geometry/JRay.js"></script>
+        <script type="text/javascript" src="js/jiglib/events/JCollisionEvent.js"></script>
+        <script type="text/javascript" src="js/jiglib/physics/constraint/JConstraint.js"></script>
+        <script type="text/javascript" src="js/jiglib/physics/constraint/JConstraintMaxDistance.js"></script>
+        <script type="text/javascript" src="js/jiglib/physics/constraint/JConstraintWorldPoint.js"></script>
+        <script type="text/javascript" src="js/jiglib/physics/constraint/JConstraintPoint.js"></script>
+        <script type="text/javascript" src="js/jiglib/physics/PhysicsController.js"></script>
+        <script type="text/javascript" src="js/jiglib/physics/CachedImpulse.js"></script>
+        <script type="text/javascript" src="js/jiglib/physics/HingeJoint.js"></script>
+        <script type="text/javascript" src="js/jiglib/physics/BodyPair.js"></script>
+        <script type="text/javascript" src="js/jiglib/physics/PhysicsState.js"></script>
+        <script type="text/javascript" src="js/jiglib/physics/PhysicsSystem.js"></script>
+        <script type="text/javascript" src="js/jiglib/physics/RigidBody.js"></script>
+        <script type="text/javascript" src="js/jiglib/geometry/JSphere.js"></script>
+        <script type="text/javascript" src="js/jiglib/geometry/JTriangleMesh.js"></script>
+        <script type="text/javascript" src="js/jiglib/geometry/JPlane.js"></script>
+        <script type="text/javascript" src="js/jiglib/geometry/JTerrain.js"></script>
+        <script type="text/javascript" src="js/jiglib/geometry/JBox.js"></script>
+        <script type="text/javascript" src="js/jiglib/geometry/JCapsule.js"></script>
+        <script type="text/javascript" src="js/jiglib/debug/Stats.js"></script>
+        
+        <script type="text/javascript" src="js/jiglib/vehicles/JChassis.js"></script>
+        <script type="text/javascript" src="js/jiglib/vehicles/JWheel.js"></script>
+        <script type="text/javascript" src="js/jiglib/vehicles/JCar.js"></script>
+         
+	
+         <style type="text/css">
+         	body{width:100%;height:100%; margin:0px}
+		  	/*canvas{width:100%;height:100%}*/
+			/*#container{width:100%;height:100%}*/
+         </style>
+	</head>
+	<body>
+		<div id="container"></div>
+		<script type="text/javascript">
+			if ( ! Detector.webgl ) {
+				Detector.addGetWebGLMessage();
+				document.getElementById( 'container' ).innerHTML = "";
+			}
+			
+			//global variables
+			var container;
+			var camera, controls, scene, renderer, loader, cameraCube, meshC, meshCl, island, projector, system;
+			var mesh, texture,geometry, material, water, textureW, materialW, meshW, meshC, cubeTarget, sphere;
+			var worldWidth = 128, worldDepth = 128, sceneCube;
+			worldHalfWidth = worldWidth / 2, worldHalfDepth = worldDepth / 2;
+			var t0 = new Date().getTime();
+			var clock = new THREE.Clock();
+			
+			function startGame(){
+				gameOn = true;
+				init();
+				animate();
+			}
+			
+			function init_jiglib(){
+				system = jiglib.PhysicsSystem.getInstance();
+				system.setGravity([0,-5200,0, 0]);//-120
+				system.setCollisionSystem(true, 200000, 200000, 200000, 200000, 200000, 200000, 200000, 200000, 200000); // CollisionSystemGrid
+				system.setSolverType('FAST');//FAST, NORMAL, ACCUMULATED
+				/*var ground = new jiglib.JPlane();
+				ground.set_y(-100);
+				ground.set_rotationX(90);
+				ground.set_movable(false);				
+				system.addBody( ground );*/
+
+				
+				startGame();	
+			}
+			
+			function init() {
+				
+				projector = new THREE.Projector();
+				loader = new THREE.JSONLoader( true );
+				container = document.getElementById( 'container' );
+				camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 1, 20000 );
+				camera.position.x = -130;
+				camera.position.y = 189;
+				camera.position.z = -12;
+				cameraCube = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 1, 100000 );
+				cubeTarget = new THREE.Vector3( 0, 0, 0 );
+				controls = new THREE.FirstPersonControls( camera );
+				controls.movementSpeed = 100;
+				controls.lookSpeed = 0.02;
+				sceneCube = new THREE.Scene()
+				scene = new THREE.Scene();
+				scene.fog = new THREE.FogExp2( 0xaaccff, 0.0007 );
+				//camera.target.position.z = - 0;
+				//camera.position.y = 220;
+				//camera.position.x = 240;
+				//camera.position.z = 240;
+				//camera.target.position.y = camera.position.y;
+				//cameraCube = new THREE.Camera( 60, window.innerWidth / window.innerHeight, 1, 100000 );
+				throwShit();
+				var radius = Math.random() * 40 / 2;
+				materialCl = new THREE.MeshNormalMaterial();
+				var geometryCl = new THREE.SphereGeometry( radius, 2000, 20 );
+				meshCl = new THREE.Mesh( geometryCl, materialCl );
+				meshCl.matrixAutoUpdate = false;
+				meshCl.overdraw = true;					
+				meshCl.position.x = -130;
+				meshCl.position.y = 189;
+				meshCl.position.z = -12;
+				console.log(meshCl);
+				scene.add( meshCl );
+		
+				sphere = new jiglib.JSphere( null, radius );
+				sphere.set_mass( 4 / 30 * Math.PI * Math.pow( radius, 3 ) );
+				sphere.moveTo( new Vector3D( meshCl.position.x, meshCl.position.y, meshCl.position.z, 0 ) );
+				system.addBody( sphere );
+				meshCl.rigidBody = sphere;
+				var path = "assets/skybox/";
+				var format = '.jpg';
+				var urls = [
+					path + 'px' + format, path + 'nx' + format,
+					path + 'py' + format, path + 'ny' + format,
+					path + 'pz' + format, path + 'nz' + format
+				];
+ 
+				var textureCube = THREE.ImageUtils.loadTextureCube( urls );
+				
+				var shader = THREE.ShaderUtils.lib[ "cube" ];
+				shader.uniforms[ "tCube" ].texture = textureCube;
+
+				var material = new THREE.ShaderMaterial( {
+					fragmentShader: shader.fragmentShader,
+					vertexShader: shader.vertexShader,
+					uniforms: shader.uniforms
+				} ),
+				
+				meshC = new THREE.Mesh( new THREE.CubeGeometry( 200000, 200000, 200000 ), material );
+				meshC.flipSided = true;
+				
+				//sceneCube.add( meshC );
+				//var myModel=new GLGE.MD2;
+				//myModel.setSrc("assets/test/tris.md2");
+				//console.log(myModel);
+				md = new MD2("assets/test/tris.md2");
+				var textureW = THREE.ImageUtils.loadTexture( "assets/shipwreck/textures/water.jpg" );
+				textureW.wrapS = textureW.wrapT = THREE.RepeatWrapping;
+				textureW.repeat.set( 5, 5 );
+				//md_mesh = new THREE.Mesh( md, new THREE.MeshBasicMaterial( { color: 0x0044ff, map: textureW } ) );
+				//md.material = textureW;
+				md_mesh = new THREE.Mesh( md, getMaterial("assets/test/Ratamahatta.jpg") );
+				
+				md_mesh.rotation.y = -1.57;
+				md_mesh.position.x = -145;
+				md_mesh.position.z = -12;
+				md_mesh.geometry.dynamic = true;
+				md_mesh.autoUpdateMatrix = false;
+				scene.add( md_mesh );
+				md_mesh.position.y = 189;
+				md_mesh.scale.x = 0.2, md_mesh.scale.y = 0.2, md_mesh.scale.z = 0.2;
+				changeAnim("stand");
+				document.body.appendChild( loader.statusDomElement );
+				scene.add( new THREE.AmbientLight( 0xeef103 ) );
+				spotLight = new THREE.SpotLight( 0xffddbb, 8.15 );
+				spotLight.position.set( 500, 2000, 0 );
+				spotLight.castShadow = true;
+				scene.add( spotLight );	
+				loader.load( "assets/shipwreck/shipwreck.js", createScene );
+				
+				
+				function createScene( geometry ) {
+					//console.log(geometry)
+					island = new THREE.Mesh( geometry, new THREE.MeshFaceMaterial() );
+					island.overdraw = true;
+					island.matrixAutoUpdate = false;
+					island.geometry.dynamic = true;
+					island.geometry.__dirtyVertices = true;
+					island.autoUpdateMatrix = false;
+					//island.rigidBody.set_mass(500);
+					/*var ground = new jiglib.JTerrain(island);
+					ground.set_friction(10);
+					system.addBody(ground);
+					ground.moveTo([0,-650,0,0]);*/
+					
+					scene.add( island );
+					//var triangleMesh = new jiglib.JTriangleMesh(island.geometry,new Vector3D(island.position.x,island.position.y,island.position.z,0 ),new jiglib.Matrix3D(),10,10);
+					var triangleMesh = getPhysicalBody(island.geometry,[island.position.x,island.position.y,island.position.z,0]);
+					triangleMesh.set_movable(false);
+					triangleMesh.set_mass(500);
+					
+					triangleMesh.set_friction(0.2);
+                    triangleMesh.set_restitution(0.9);
+					system.addBody(triangleMesh);
+					island.rigidBody = triangleMesh;
+					//island.rigidBody.enableCollisions(triangleMesh);
+					
+				}
+
+			
+				water = new THREE.PlaneGeometry( 20000, 20000, worldWidth - 1, worldDepth - 1 );
+				water.dynamic = true;
+
+				var i, j, il, jl;
+
+				for ( i = 0, il = water.vertices.length; i < il; i ++ ) {
+									water.vertices[ i ].position.z = 35 * Math.sin( i/2 );
+				}
+
+
+
+				water.computeFaceNormals();
+				water.computeVertexNormals();
+
+				var textureW = THREE.ImageUtils.loadTexture( "assets/shipwreck/textures/water.jpg" );
+				textureW.wrapS = textureW.wrapT = THREE.RepeatWrapping;
+				textureW.repeat.set( 5, 5 );
+
+				materialW = new THREE.MeshBasicMaterial( { color: 0x0044ff, map: textureW } );
+
+				meshW = new THREE.Mesh( water, materialW );
+				meshW.rotation.x = - 90 * Math.PI / 180;
+				meshW.position.y = 145;
+				scene.add( meshW );
+				
+				//render all the cool stuff
+				renderer = new THREE.WebGLRenderer( { antialias: false,  clearColor: 0xaaccff, clearAlpha: 1} );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				//renderer.autoClear = false;
+				renderer.setFaceCulling(0);
+				container.innerHTML = "";
+				container.appendChild( renderer.domElement );
+				stats = new Stats();
+				stats.domElement.style.position = 'absolute';
+				stats.domElement.style.top = '0px';
+				container.appendChild( stats.domElement );
+				document.addEventListener( 'mousedown', onDocumentMouseDown, false );
+			}
+		
+			
+			// this is the main game loop where most of the magic happens
+			function animate() {
+				if(gameOn === true){
+					
+					requestAnimationFrame( animate );
+					updateDynamicsWorld();
+					render();
+					stats.update();
+				}
+			}
+			
+			function getMaterial (texture) {
+				//var material = new THREE.MeshPhongMaterial( { map: new THREE.ImageUtils.loadTexture( texture ), ambient: 0xDEDEDE, specular: 0xAAAAAA, shading: THREE.SmoothShading } );		
+				
+				var material = new THREE.MeshPhongMaterial( { ambient: 0x030303, color: 0x030303, specular: 0x990000, shininess: 30 } )
+				/*var img = new Image();
+				material.map.image = img;
+				img.onload = function () {
+					material.map.image.loaded = 1;
+				};
+				img.src = texture;*/
+
+				return material;
+			}
+			
+			function render() {
+				var time = new Date().getTime() * 0.01;
+				
+				
+				var delta = clock.getDelta(),
+			    time = clock.getElapsedTime() * 10;
+
+				for ( var i = 0, l = water.vertices.length; i < l; i ++ ) {
+
+						water.vertices[ i ].position.z = 5 * Math.sin( i / 5 + ( time + i ) / 7 );
+
+				}
+
+				
+				meshW.geometry.__dirtyVertices = true;
+				controls.update( delta );
+				cubeTarget.x = - camera.position.x;
+				cubeTarget.y = - camera.position.y;
+				cubeTarget.z = - camera.position.z;
+				md.update(60);
+				// mark as dirty for update, thanks to alteredq :)
+				md.__dirtyVertices = true;	
+				
+				/*try{
+					meshCl.position.x = camera.position.x;
+					meshCl.position.y = camera.position.y;
+					meshCl.position.z = camera.position.z;
+				}catch(e){
+				
+				}*/
+				
+				//renderer.clear();
+				renderer.render( sceneCube, cameraCube );
+				renderer.render(scene, camera);
+				
+			}
+			
+				jQuery(document).ready(function() {
+					init_jiglib();
+				});
+				
+			function changeAnim(label) {
+				if (label == "stop") {
+					md.stop();
+					//mdw.stop();
+					return;
+				}
+				md.gotoAndPlay(label, true);
+				//mdw.gotoAndPlay(label, true);
+			}	
+			function updateDynamicsWorld() {
+				//sphere.moveTo( new Vector3D( meschCl.position.x, meschCl.position.y, meschCl.position.z, 0 ) );
+				var t1 = new Date().getTime();
+				var ms = t1 - t0;
+				t0 = t1;
+				
+				
+				system.integrate( ms / 500 );				
+				
+				for ( var i = 0, l = scene.objects.length; i < l; i ++ ) {
+ 
+					var mesh = scene.objects[i];
+ 
+					if (mesh.rigidBody) {
+
+					    var pos = mesh.rigidBody.get_currentState().position;
+					    var dir = mesh.rigidBody.get_currentState().orientation.get_rawData();
+
+					    var matrix = new THREE.Matrix4();
+					    matrix.setTranslation( pos.x, pos.y, pos.z );
+					    var rotate = new THREE.Matrix4(dir[0], dir[1], dir[2], dir[3], dir[4], dir[5], dir[6], dir[7], dir[8], dir[9], dir[10], dir[11], dir[12], dir[13], dir[14], dir[15]);
+					    matrix.multiplySelf(rotate);
+
+
+						mesh.matrix = matrix;
+						mesh.matrixWorldNeedsUpdate = true;
+						//mesh.update(false, true, camera);
+
+						
+					}
+					
+					
+				}
+			
+			
+			
+			}
+			
+			function getPhysicalBody(threeGeometry,initPos)
+			{
+				var vertices = [];
+				var indices = [];
+			
+				for (i = 0; i < threeGeometry.vertices.length; i++) {
+				
+					
+					var vert_x = threeGeometry.vertices[i].position.x;
+					var vert_y = threeGeometry.vertices[i].position.y;
+					var vert_z = threeGeometry.vertices[i].position.z;
+					vertices.push(new Vector3D(vert_x,vert_y,vert_z,0 ));
+				}
+			
+				/*for (i = 0; i < 4; i++) {
+					var x = threeGeometry.faces[i];
+					for (j = 0; j < 4; j++)
+					{
+						var t = { i0: x.a };
+						t.i1 = x.b;
+						t.i2 = x.c;
+						t.i3 = x.d;
+						indices.push(t);
+					}
+				}*/
+				for (i = 0; i < threeGeometry.faces.length; i++) {
+					var face = threeGeometry.faces[ i ];
+					var tri = {i0:0, i1:0};
+					if ( face instanceof THREE.Face3 ) {
+						tri.i0 = face.a;
+						tri.i1 = face.b;
+						tri.i2 = face.c;
+						indices.push( tri );
+						
+					} else if ( face instanceof THREE.Face4 ) {
+						tri.i0 = face.a;
+						tri.i1 = face.b;
+						tri.i2 = face.d;
+						
+						indices.push( tri );
+						tri.i0 = face.b;
+						tri.i1 = face.c;
+						tri.i2 = face.d;
+						
+						indices.push( tri );
+					}
+				}
+				//console.log(indices);
+				var skin = { vertices: vertices, indices: indices };
+				var pos = new Vector3D(island.position.x,island.position.y,island.position.z,0 );
+				var rot = new jiglib.Matrix3D();
+				var body = new jiglib.JTriangleMesh(skin, pos, rot, 10, 10);
+				return body;        
+			}
+			
+			
+			function throwShit(){
+			material_ = new THREE.MeshNormalMaterial();
+
+				//var ground = new THREE.Mesh( new Cube( 40, 0, 40 ), material );
+				//ground.position.x = 0;
+				//ground.position.y = -10;
+				//ground.position.z = 0;
+				//scene.addObject( ground );				
+				
+				for ( var i = 0; i < 20; i ++ ) {
+
+					if (Math.random() > .5) {
+
+						var width = Math.random() * 4;
+						var height = Math.random() * 4;
+						var depth = Math.random() * 4;
+					
+						var geometryCC = new THREE.CubeGeometry( width, height, depth );
+						var meshCC = new THREE.Mesh( geometryCC, material_ );
+						//meshC = new THREE.Mesh( new THREE.CubeGeometry( 200000, 200000, 200000 ), material );
+						meshCC.matrixAutoUpdate = false;
+						meshCC.overdraw = true;					
+						
+						meshCC.position.x = -130;
+						meshCC.position.y = 250;
+						meshCC.position.z = -12;
+	
+						scene.add( meshCC );
+		
+						var cube = new jiglib.JBox( null, width, depth, height );
+						cube.set_mass( width * height * depth );
+						cube.moveTo( new Vector3D( meshCC.position.x, meshCC.position.y, meshCC.position.z, 0 ) );
+						system.addBody( cube );						
+						meshCC.rigidBody = cube;
+						console.log(meshCC.position);
+					} else {
+						
+						var radius = Math.random() * 4 / 2;
+					
+						var geometryCC = new THREE.SphereGeometry( radius, 5, 5 );
+						var meshCC = new THREE.Mesh( geometryCC, material_ );
+	
+						meshCC.matrixAutoUpdate = false;
+						meshCC.overdraw = true;					
+						
+						meshCC.position.x = -130;
+						meshCC.position.y = 189;
+						meshCC.position.z = -12;
+						console.log(meshCC.position);
+						scene.add( meshCC );
+		
+						var spheres = new jiglib.JSphere( null, radius );
+						spheres.set_mass( 4 / 3 * Math.PI * Math.pow( radius, 3 ) );
+						spheres.moveTo( new Vector3D( meshCC.position.x, meshCC.position.y, meshCC.position.z, 0 ) );
+						system.addBody( spheres );
+						
+						meshCC.rigidBody = spheres;
+												
+					}
+
+				}
+				
+			}
+			
+			function onDocumentMouseDown( event ) {
+ 
+				event.preventDefault();
+ 
+				var vector = new THREE.Vector3( ( event.clientX / window.innerWidth ) * 2 - 1, - ( event.clientY / window.innerHeight ) * 2 + 1, 0.5 );
+				projector.unprojectVector( vector, camera );
+ 
+				var ray = new THREE.Ray( camera.position, vector.subSelf( camera.position ).normalize() );
+ 
+				var intersects = ray.intersectScene( scene );
+ 
+				if ( intersects.length > 0 ) {
+ 
+ 					var object = intersects[ 0 ].object;
+ 					
+ 					if ( object.rigidBody ) {
+ 						
+ 						object.rigidBody.setLineVelocity( new Vector3D( 0, -20, 0 ), false );
+ 
+ 					}
+ 
+				}
+ 
+			}
+			
+		</script>
+	</body>
+</html>

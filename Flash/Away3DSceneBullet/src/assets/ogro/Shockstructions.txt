@@ -1,0 +1,17 @@
+Shockarmor Player Mod
+
+made by, oddly enough, shocktrooper a.k.a. John Siar
+
+to use in sauerbraten go to your sauerbraten/packages/models/monster/ogro 
+directory and move tris.md2 and skin.jpg to another folder to store.  Extract
+the contents of this zip file with or without the instructions to the ogro file.
+
+Fire up Sauer and frag!
+
+Remember where you put the ogro files in case you want to switch them back.
+
+Not tested in Cube...  input is appreciated.
+
+special thanks to Mykilx for helping test the armor.
+
+

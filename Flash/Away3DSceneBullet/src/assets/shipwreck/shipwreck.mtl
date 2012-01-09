@@ -1,0 +1,59 @@
+# mtl file of Cube 2 level
+
+newmtl slot23
+map_Kd textures/mad065.jpg
+
+newmtl slot24
+map_Kd textures/mad065.jpg
+
+newmtl slot25
+map_Kd textures/mad063.jpg
+
+newmtl slot31
+map_Kd textures/mad064.jpg
+
+newmtl slot32
+map_Kd textures/muv185.jpg
+
+newmtl slot52
+map_Kd textures/032-15a.jpg
+
+newmtl slot187
+map_Kd textures/Box12b.jpg
+
+newmtl slot350
+map_Kd textures/4_conc_floor01.jpg
+
+newmtl slot358
+map_Kd textures/5_trim02.jpg
+
+newmtl slot416
+map_Kd textures/mot001.jpg
+
+newmtl slot417
+map_Kd textures/mot067_2.jpg
+
+newmtl slot418
+map_Kd textures/mot067_2.jpg
+
+newmtl slot419
+map_Kd textures/mot067_2.jpg
+
+newmtl slot420
+map_Kd textures/mot067_2.jpg
+
+newmtl slot452
+map_Kd textures/rock01.jpg
+
+newmtl slot454
+map_Kd textures/block01d.jpg
+
+newmtl slot455
+map_Kd textures/block01d.jpg
+
+newmtl slot456
+map_Kd textures/rock01.jpg
+
+newmtl slot457
+map_Kd textures/rock01.jpg
+

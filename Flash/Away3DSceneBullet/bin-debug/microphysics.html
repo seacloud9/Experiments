@@ -1,0 +1,259 @@
+<!DOCTYPE HTML>
+<html lang="en">
+	<head>
+		<title>Simple BSP</title>
+		<meta charset="utf-8">
+         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+         <script type="text/javascript" src="js/Three.js"></script>
+         <script type="text/javascript" src="js/ThreeExtras.js"></script>
+         <!--<script type="text/javascript" src="js/glge-compiled-min.js"></script>-->
+         <script type="text/javascript" src="js/binaryReader.js"></script>
+         <script type="text/javascript" src="js/MD2.js"></script>
+		 <script type="text/javascript" src="js/Detector.js"></script>
+		 <script type="text/javascript" src="js/RequestAnimationFrame.js"></script>
+		 <script type="text/javascript" src="js/Stats.js"></script>
+         <script type="text/javascript" src="js/physics.js"></script>
+         <script type="text/javascript" src="js/THREEx.microphysics.js"></script>
+         <style type="text/css">
+         	body{width:100%;height:100%; margin:0px}
+		  	/*canvas{width:100%;height:100%}*/
+			/*#container{width:100%;height:100%}*/
+         </style>
+	</head>
+	<body>
+		<div id="container"></div>
+		<script type="text/javascript">
+			if ( ! Detector.webgl ) {
+				Detector.addGetWebGLMessage();
+				document.getElementById( 'container' ).innerHTML = "";
+			}
+			
+			//global variables
+			var container;
+			var camera, controls, scene, renderer, loader, cameraCube, meshC, island, microphysics, gravity;
+			var mesh, texture,geometry, material, water, textureW, materialW, meshW, cubeTarget;
+			var worldWidth = 128, worldDepth = 128, sceneCube;
+			worldHalfWidth = worldWidth / 2, worldHalfDepth = worldDepth / 2;
+			var clock = new THREE.Clock();
+			
+			function startGame(){
+				gameOn = true;
+				init();
+				animate();
+			}
+
+			function init() {
+				loader = new THREE.JSONLoader( true );
+				container = document.getElementById( 'container' );
+				microphysics	= new THREEx.Microphysics({
+					timStep	: 1/180
+				});
+				microphysics.start();
+				camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 1, 20000 );
+				camera.position.x = -130;
+				camera.position.y = 189;
+				camera.position.z = -12;
+				cameraCube = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 1, 100000 );
+				cubeTarget = new THREE.Vector3( 0, 0, 0 );
+				controls = new THREE.FirstPersonControls( camera );
+				controls.movementSpeed = 100;
+				controls.lookSpeed = 0.02;
+				sceneCube = new THREE.Scene()
+				scene = new THREE.Scene();
+				//scene.fog = new THREE.FogExp2( 0xaaccff, 0.0007 );
+				//camera.target.position.z = - 0;
+				//camera.position.y = 220;
+				//camera.position.x = 240;
+				//camera.position.z = 240;
+				//camera.target.position.y = camera.position.y;
+				//cameraCube = new THREE.Camera( 60, window.innerWidth / window.innerHeight, 1, 100000 );
+				var path = "assets/skybox/";
+				var format = '.jpg';
+				var urls = [
+					path + 'px' + format, path + 'nx' + format,
+					path + 'py' + format, path + 'ny' + format,
+					path + 'pz' + format, path + 'nz' + format
+				];
+ 
+				var textureCube = THREE.ImageUtils.loadTextureCube( urls );
+				
+				var shader = THREE.ShaderUtils.lib[ "cube" ];
+				shader.uniforms[ "tCube" ].texture = textureCube;
+
+				var material = new THREE.ShaderMaterial( {
+					fragmentShader: shader.fragmentShader,
+					vertexShader: shader.vertexShader,
+					uniforms: shader.uniforms
+				} ),
+				
+				meshC = new THREE.Mesh( new THREE.CubeGeometry( 200000, 200000, 200000 ), material );
+				meshC.flipSided = true;
+				
+				//sceneCube.add( meshC );
+				//var myModel=new GLGE.MD2;
+				//myModel.setSrc("assets/test/tris.md2");
+				//console.log(myModel);
+				md = new MD2("assets/test/tris.md2");
+				var textureW = THREE.ImageUtils.loadTexture( "assets/shipwreck/textures/water.jpg" );
+				textureW.wrapS = textureW.wrapT = THREE.RepeatWrapping;
+				textureW.repeat.set( 5, 5 );
+				//md_mesh = new THREE.Mesh( md, new THREE.MeshBasicMaterial( { color: 0x0044ff, map: textureW } ) );
+				//md.material = textureW;
+				md_mesh = new THREE.Mesh( md, getMaterial("assets/test/Ratamahatta.jpg") );
+				
+				md_mesh.rotation.y = -1.57;
+				md_mesh.position.x = -145;
+				md_mesh.position.z = -12;
+				scene.add( md_mesh );
+				md_mesh.position.y = 189;
+				md_mesh.scale.x = 0.2, md_mesh.scale.y = 0.2, md_mesh.scale.z = 0.2;
+				var vphyOpts	= {
+					physics	: {
+						restitution	: 0.9
+					}
+				};
+				microphysics.bindMesh(md_mesh, vphyOpts);
+				changeAnim("stand");
+				document.body.appendChild( loader.statusDomElement );
+				
+				
+			
+				scene.add( new THREE.AmbientLight( 0xeef103 ) );
+
+				spotLight = new THREE.SpotLight( 0xffddbb, 8.15 );
+				spotLight.position.set( 500, 2000, 0 );
+				spotLight.castShadow = true;
+				scene.add( spotLight );
+				
+			loader.load( "assets/shipwreck/shipwreck.js", createScene );
+			function createScene( geometry ) {
+				//console.log(geometry)
+				island = new THREE.Mesh( geometry, new THREE.MeshFaceMaterial() );
+				island.overdraw = true;
+				microphysics.bindMesh(island, {
+					physics	: {
+						restitution	: 1.3
+					}
+				});
+				// gravity
+				gravity	= new vphy.LinearAccelerator({
+					x	: 0, 
+					y	: -9.8 * 250,
+					z	: 0
+				});
+				microphysics.world().add(gravity);
+				
+				scene.add( island );
+			}
+
+			
+				water = new THREE.PlaneGeometry( 20000, 20000, worldWidth - 1, worldDepth - 1 );
+				water.dynamic = true;
+
+				var i, j, il, jl;
+
+				for ( i = 0, il = water.vertices.length; i < il; i ++ ) {
+
+									water.vertices[ i ].position.z = 35 * Math.sin( i/2 );
+
+				}
+
+
+
+				water.computeFaceNormals();
+				water.computeVertexNormals();
+
+				var textureW = THREE.ImageUtils.loadTexture( "assets/shipwreck/textures/water.jpg" );
+				textureW.wrapS = textureW.wrapT = THREE.RepeatWrapping;
+				textureW.repeat.set( 5, 5 );
+
+				materialW = new THREE.MeshBasicMaterial( { color: 0x0044ff, map: textureW } );
+
+				meshW = new THREE.Mesh( water, materialW );
+				meshW.rotation.x = - 90 * Math.PI / 180;
+				meshW.position.y = 145;
+				scene.add( meshW );
+				
+				//render all the cool stuff
+				renderer = new THREE.WebGLRenderer( { antialias: false,  clearColor: 0xaaccff, clearAlpha: 1} );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				renderer.autoClear = false;
+				container.innerHTML = "";
+				container.appendChild( renderer.domElement );
+				stats = new Stats();
+				stats.domElement.style.position = 'absolute';
+				stats.domElement.style.top = '0px';
+				container.appendChild( stats.domElement );
+
+			}
+		
+			
+			// this is the main game loop where most of the magic happens
+			function animate() {
+				if(gameOn === true){
+					requestAnimationFrame( animate );
+					render();
+					stats.update();
+				}
+			}
+			
+			function getMaterial (texture) {
+				//var material = new THREE.MeshPhongMaterial( { map: new THREE.ImageUtils.loadTexture( texture ), ambient: 0xDEDEDE, specular: 0xAAAAAA, shading: THREE.SmoothShading } );		
+				
+				var material = new THREE.MeshPhongMaterial( { ambient: 0x030303, color: 0x030303, specular: 0x990000, shininess: 30 } )
+				/*var img = new Image();
+				material.map.image = img;
+				img.onload = function () {
+					material.map.image.loaded = 1;
+				};
+				img.src = texture;*/
+
+				return material;
+			}
+			
+			function render() {
+				var time = new Date().getTime() * 0.01;
+				
+				microphysics.update();
+				var delta = clock.getDelta(),
+			    time = clock.getElapsedTime() * 10;
+
+				for ( var i = 0, l = water.vertices.length; i < l; i ++ ) {
+
+						water.vertices[ i ].position.z = 5 * Math.sin( i / 5 + ( time + i ) / 7 );
+
+				}
+
+				
+				meshW.geometry.__dirtyVertices = true;
+				controls.update( delta );
+				cubeTarget.x = - camera.position.x;
+				cubeTarget.y = - camera.position.y;
+				cubeTarget.z = - camera.position.z;
+				md.update(60);
+				// mark as dirty for update, thanks to alteredq :)
+				md.__dirtyVertices = true;	
+				renderer.clear();
+				renderer.render( sceneCube, cameraCube );
+				renderer.render(scene, camera);
+				
+			}
+			
+			startGame();
+				jQuery(document).ready(function() {
+					startGame();
+				});
+				
+			function changeAnim(label) {
+				if (label == "stop") {
+					md.stop();
+					//mdw.stop();
+					return;
+				}
+				md.gotoAndPlay(label, true);
+				//mdw.gotoAndPlay(label, true);
+			}	
+			
+		</script>
+	</body>
+</html>
