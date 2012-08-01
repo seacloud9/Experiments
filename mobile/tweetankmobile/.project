@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+	<name>tweetankmobile</name>
+	<comment></comment>
+	<projects>
+	</projects>
+	<buildSpec>
+		<buildCommand>
+			<name>com.adobe.flexbuilder.project.flexbuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+		<buildCommand>
+			<name>com.adobe.flexbuilder.project.apollobuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+	</buildSpec>
+	<natures>
+		<nature>com.adobe.flexide.project.multiplatform.multiplatformnature</nature>
+		<nature>com.adobe.flexbuilder.project.apollonature</nature>
+		<nature>com.adobe.flexbuilder.project.flexnature</nature>
+		<nature>com.adobe.flexbuilder.project.actionscriptnature</nature>
+	</natures>
+	<linkedResources>
+		<link>
+			<name>[source path] HYPE-src</name>
+			<type>2</type>
+			<location>/Users/brendonsmith/Google Drive/gDrive/codeLibraries/as3/HYPE/src</location>
+		</link>
+		<link>
+			<name>[source path] as3</name>
+			<type>2</type>
+			<location>/Users/brendonsmith/Google Drive/gDrive/codeLibraries/as3/lee/as3</location>
+		</link>
+		<link>
+			<name>[source path] away3d-core-fp11_4_0_7_gold-src</name>
+			<type>2</type>
+			<location>/Users/brendonsmith/Google Drive/gDrive/codeLibraries/as3/away3d-core-fp11_4_0_7_gold/src</location>
+		</link>
+		<link>
+			<name>[source path] greensock-tweening-platform-as3</name>
+			<type>2</type>
+			<location>/Users/brendonsmith/Google Drive/gDrive/codeLibraries/as3/greensock-tweening-platform-as3/greensock-tweening-platform-as3</location>
+		</link>
+		<link>
+			<name>[source path] soundcloud</name>
+			<type>2</type>
+			<location>/Users/brendonsmith/Google Drive/gDrive/codeLibraries/as3/soundcloud</location>
+		</link>
+	</linkedResources>
+</projectDescription>
