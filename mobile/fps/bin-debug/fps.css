@@ -1,0 +1,15 @@
+/* CSS file */
+@namespace s "library://ns.adobe.com/flex/spark"; 
+s|ActionBar
+{
+	chromeColor: #860524;
+	height:20px;
+	titleAlign: center;
+}
+
+s|ActionBar #titleDisplay { 
+	color:white;
+	background-Image: Embed('assets/images/windowbg.png');
+	background-Repeat:x-repeat;
+}
+

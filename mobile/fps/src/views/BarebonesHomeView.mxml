@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		xmlns:s="library://ns.adobe.com/flex/spark" 
+		title="Simple-FPS" 
+		xmlns:views="views.*" 
+		backgroundAlpha="0" 
+		addedToStage="onAdded(event)">
+	
+	<fx:Script>
+		
+		<![CDATA[
+			
+			
+			protected function onAdded(event:Event):void
+			{
+				fitToStage();
+				stage.addEventListener(StageOrientationEvent.ORIENTATION_CHANGE,stageOrientationChangeHandler);
+			}
+			
+			private function stageOrientationChangeHandler( e:StageOrientationEvent ):void{
+				
+				fitToStage();
+			}
+			
+			/**
+			 * Fits the container3D component to stage size 
+			 * taking into account 44 pixel high navigation bar
+			 * */
+			private function fitToStage():void{
+				var dpi:Number = Capabilities.screenDPI;
+				container3D.width = stage.stageWidth; 
+				container3D.height = stage.stageHeight;	
+				imgController.x = 25;
+				//imgController.y = (this.screen.height / 2) - (imgController.height / 2);
+				trace(imgController.y);
+				cT.x += 25;
+				cB.x += 25;
+				cL.x += 25;
+				cR.x += 25;
+				cT.y = imgController.y + 4;
+				cB.y = imgController.y + 100;
+				cR.y = imgController.y + 57;
+				cL.y = imgController.y + 61;
+			}
+			
+			
+			
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<views:UIComponent3D id="container3D"/>
+	<s:Image id="imgController" x="-2" y="57" width="163" height="163"
+			 source="assets/images/imgController.png"/>
+	<s:Button x="61"  width="38" height="45" id="cT" alpha="0"  touchBegin="container3D.moveForward(true)" touchEnd="container3D.moveForward(false)" touchOver="container3D.moveForward(true)" touchOut="container3D.moveForward(false)" />
+	<s:Button x="58"  width="41" height="54" id="cB" alpha="0"  touchBegin="container3D.moveBackwards(true)" touchEnd="container3D.moveBackwards(false)" touchOver="container3D.moveBackwards(true)" touchOut="container3D.moveBackwards(false)"   />
+	<s:Button x="97"  width="64" height="40" id="cR" alpha="0"  touchBegin="container3D.moveRight(true)" touchEnd="container3D.moveRight(false)" touchOver="container3D.moveRight(true)" touchOut="container3D.moveRight(false)"   />
+	<s:Button x="0" width="59" height="36" id="cL" alpha="0"  touchBegin="container3D.moveLeft(true)" touchEnd="container3D.moveLeft(false)" touchOver="container3D.moveLeft(true)" touchOut="container3D.moveLeft(false)"   />
+</s:View>
